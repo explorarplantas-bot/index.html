@@ -1,1 +1,485 @@
 # Explorarplantas-
+
+```html
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explorar Plantas & Jogo Floricultura Tycoon</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React & ReactDOM CDN -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <!-- Babel CDN for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Custom Styles */
+        @keyframes pulse-slow {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .animate-pulse-slow {
+            animation: pulse-slow 3s infinite;
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(8px);
+        }
+    </style>
+</head>
+<body class="bg-emerald-50 font-sans text-gray-800 min-h-screen flex flex-col">
+
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // --- DADOS DAS PLANTAS ---
+        const plantData = [
+            {
+                id: 1,
+                name: "Costela-de-Adão",
+                scientific: "Monstera deliciosa",
+                category: "Interior",
+                difficulty: "Fácil",
+                light: "Luz Indireta / Meia-sombra",
+                water: "1 a 2 vezes por semana",
+                description: "Famosa por suas folhas grandes e recortadas, traz um toque tropical marcante para ambientes internos.",
+                growthTime: 10, // segundos para o jogo
+                sellPrice: 50,
+                cost: 20,
+                image: "🪴"
+            },
+            {
+                id: 2,
+                name: "Suculenta Jade",
+                scientific: "Crassula ovata",
+                category: "Suculentas",
+                difficulty: "Muito Fácil",
+                light: "Sol Direto / Muita Luz",
+                water: "A cada 15 dias",
+                description: "Conhecida como a planta da sorte, possui folhas gordinhas que armazenam água e exige pouquíssima manutenção.",
+                growthTime: 5,
+                sellPrice: 25,
+                cost: 10,
+                image: "🌵"
+            },
+            {
+                id: 3,
+                name: "Orquídea Phalaenopsis",
+                scientific: "Phalaenopsis spp.",
+                category: "Flores",
+                difficulty: "Média",
+                light: "Luz Indireta Forte",
+                water: "1 vez por semana",
+                description: "Símbolo de elegância, possui floradas duradouras com cores vibrantes e exige cuidados moderados.",
+                growthTime: 15,
+                sellPrice: 100,
+                cost: 40,
+                image: "🌸"
+            },
+            {
+                id: 4,
+                name: "Espada-de-São-Jorge",
+                scientific: "Dracaena trifasciata",
+                category: "Interior",
+                difficulty: "Muito Fácil",
+                light: "Sombra até Sol Direto",
+                water: "A cada 2 semanas",
+                description: "Extremamente resistente e excelente para purificar o ar de espaços internos.",
+                growthTime: 8,
+                sellPrice: 35,
+                cost: 15,
+                image: "🌿"
+            },
+            {
+                id: 5,
+                name: "Girassol",
+                scientific: "Helianthus annuus",
+                category: "Exterior",
+                difficulty: "Fácil",
+                light: "Sol Direto Pleno",
+                water: "3 a 4 vezes por semana",
+                description: "Planta radiante que se move acompanhando o sol. Traz alegria e vivacidade ao jardim.",
+                growthTime: 12,
+                sellPrice: 60,
+                cost: 25,
+                image: "🌻"
+            }
+        ];
+
+        // --- COMPONENTE PRINCIPAL ---
+        function App() {
+            const [activeTab, setActiveTab] = useState('explore'); // 'explore' ou 'game'
+
+            return (
+                <div class="flex-1 flex flex-col">
+                    {/* Header / Navegação */}
+                    <header class="bg-emerald-800 text-white shadow-lg sticky top-0 z-50">
+                        <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-3xl">🌿</span>
+                                <h1 class="text-2xl font-bold tracking-wide">Mundo Botânico</h1>
+                            </div>
+                            <nav class="flex space-x-2">
+                                <button 
+                                    onClick={() => setActiveTab('explore')}
+                                    class={`px-4 py-2 rounded-lg font-semibold transition-all duration-200 ${
+                                        activeTab === 'explore' 
+                                        ? 'bg-emerald-600 text-white shadow-md' 
+                                        : 'bg-emerald-900/50 hover:bg-emerald-700 text-emerald-100'
+                                    }`}
+                                >
+                                    🔍 Explorar Plantas
+                                </button>
+                                <button 
+                                    onClick={() => setActiveTab('game')}
+                                    class={`px-4 py-2 rounded-lg font-semibold transition-all duration-200 ${
+                                        activeTab === 'game' 
+                                        ? 'bg-amber-500 text-white shadow-md' 
+                                        : 'bg-emerald-900/50 hover:bg-emerald-700 text-emerald-100'
+                                    }`}
+                                >
+                                    🎮 Floricultura Tycoon
+                                </button>
+                            </nav>
+                        </div>
+                    </header>
+
+                    {/* Conteúdo */}
+                    <main class="flex-1 max-w-6xl w-full mx-auto p-4 sm:p-6">
+                        {activeTab === 'explore' ? <ExploreSection /> : <GameSection />}
+                    </main>
+
+                    {/* Rodapé */}
+                    <footer class="bg-emerald-900 text-emerald-200 py-6 text-center text-sm mt-auto">
+                        <p>© 2026 Mundo Botânico & Floricultura Tycoon. Criado com React & Tailwind CSS.</p>
+                    </footer>
+                </div>
+            );
+        }
+
+        // --- SEÇÃO 1: EXPLORAR PLANTAS ---
+        function ExploreSection() {
+            const [search, setSearch] = useState('');
+            const [category, setCategory] = useState('Todas');
+            const [selectedPlant, setSelectedPlant] = useState(null);
+
+            const categories = ['Todas', 'Interior', 'Exterior', 'Suculentas', 'Flores'];
+
+            const filteredPlants = plantData.filter(plant => {
+                const matchesSearch = plant.name.toLowerCase().includes(search.toLowerCase()) || 
+                                      plant.scientific.toLowerCase().includes(search.toLowerCase());
+                const matchesCategory = category === 'Todas' || plant.category === category;
+                return matchesSearch && matchesCategory;
+            });
+
+            return (
+                <div class="space-y-6">
+                    {/* Hero Banner */}
+                    <div class="bg-gradient-to-r from-emerald-600 to-teal-700 text-white p-6 sm:p-8 rounded-2xl shadow-md">
+                        <h2 class="text-3xl font-extrabold mb-2">Guia & Enciclopédia de Plantas</h2>
+                        <p class="text-emerald-100 max-w-2xl">
+                            Descubra espécies incríveis, aprenda os cuidados ideais de rega e iluminação e encontre a planta perfeita para o seu ambiente.
+                        </p>
+                    </div>
+
+                    {/* Filtros e Busca */}
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-emerald-100 flex flex-col md:flex-row gap-4 justify-between items-center">
+                        <div class="w-full md:w-1/2">
+                            <input 
+                                type="text"
+                                placeholder="Buscar por nome comum ou científico..."
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                            />
+                        </div>
+                        <div class="flex flex-wrap gap-2 w-full md:w-auto">
+                            {categories.map(cat => (
+                                <button
+                                    key={cat}
+                                    onClick={() => setCategory(cat)}
+                                    class={`px-3 py-1.5 text-sm rounded-full font-medium transition-colors ${
+                                        category === cat 
+                                        ? 'bg-emerald-600 text-white' 
+                                        : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
+                                    }`}
+                                >
+                                    {cat}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Grid de Plantas */}
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {filteredPlants.map(plant => (
+                            <div 
+                                key={plant.id}
+                                class="bg-white rounded-xl shadow-sm border border-emerald-100 hover:shadow-md transition-shadow overflow-hidden flex flex-col justify-between"
+                            >
+                                <div class="p-6">
+                                    <div class="text-5xl mb-4 text-center bg-emerald-50 py-6 rounded-lg">{plant.image}</div>
+                                    <div class="flex justify-between items-start mb-2">
+                                        <div>
+                                            <h3 class="text-xl font-bold text-gray-800">{plant.name}</h3>
+                                            <p class="text-sm italic text-gray-500">{plant.scientific}</p>
+                                        </div>
+                                        <span class="text-xs bg-emerald-100 text-emerald-800 px-2 py-1 rounded-md font-semibold">
+                                            {plant.category}
+                                        </span>
+                                    </div>
+                                    <p class="text-gray-600 text-sm mt-3 line-clamp-3">{plant.description}</p>
+                                </div>
+
+                                <div class="px-6 pb-6 pt-2 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
+                                    <span class="text-xs text-gray-500 font-medium">Dificuldade: <b class="text-emerald-700">{plant.difficulty}</b></span>
+                                    <button 
+                                        onClick={() => setSelectedPlant(plant)}
+                                        class="px-3 py-1.5 text-sm bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg transition-colors"
+                                    >
+                                        Ver Cuidados
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Modal de Detalhes */}
+                    {selectedPlant && (
+                        <div class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+                            <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl relative animate-pulse-slow">
+                                <button 
+                                    onClick={() => setSelectedPlant(null)}
+                                    class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 font-bold text-xl"
+                                >
+                                    ✕
+                                </button>
+                                <div class="text-6xl text-center mb-4">{selectedPlant.image}</div>
+                                <h3 class="text-2xl font-bold text-gray-800 text-center">{selectedPlant.name}</h3>
+                                <p class="text-center italic text-gray-500 mb-4">{selectedPlant.scientific}</p>
+                                
+                                <div class="space-y-3 bg-emerald-50 p-4 rounded-xl text-sm mb-4">
+                                    <p>☀️ <b>Iluminação:</b> {selectedPlant.light}</p>
+                                    <p>💧 <b>Rega:</b> {selectedPlant.water}</p>
+                                    <p>🌱 <b>Categoria:</b> {selectedPlant.category}</p>
+                                    <p>⭐ <b>Dificuldade:</b> {selectedPlant.difficulty}</p>
+                                </div>
+
+                                <p class="text-gray-600 text-sm mb-6">{selectedPlant.description}</p>
+
+                                <button 
+                                    onClick={() => setSelectedPlant(null)}
+                                    class="w-full py-2 bg-emerald-700 text-white font-bold rounded-lg hover:bg-emerald-800 transition-colors"
+                                >
+                                    Fechar
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        // --- SEÇÃO 2: FLORICULTURA TYCOON (JOGO) ---
+        function GameSection() {
+            const [money, setMoney] = useState(100);
+            const [inventory, setInventory] = useState([]); // Plantas compradas
+            const [plots, setPlots] = useState([
+                { id: 1, plant: null, progress: 0, ready: false },
+                { id: 2, plant: null, progress: 0, ready: false },
+                { id: 3, plant: null, progress: 0, ready: false },
+                { id: 4, plant: null, progress: 0, ready: false },
+            ]);
+            const [selectedSeed, setSelectedSeed] = useState(null);
+
+            // Timer de crescimento do jogo
+            useEffect(() => {
+                const interval = setInterval(() => {
+                    setPlots(prevPlots => 
+                        prevPlots.map(plot => {
+                            if (plot.plant && !plot.ready) {
+                                const newProgress = plot.progress + 1;
+                                if (newProgress >= plot.plant.growthTime) {
+                                    return { ...plot, progress: plot.plant.growthTime, ready: true };
+                                }
+                                return { ...plot, progress: newProgress };
+                            }
+                            return plot;
+                        })
+                    );
+                }, 1000);
+
+                return () => clearInterval(interval);
+            }, []);
+
+            // Comprar Semente
+            const buySeed = (plant) => {
+                if (money >= plant.cost) {
+                    setMoney(money - plant.cost);
+                    setSelectedSeed(plant);
+                } else {
+                    alert("Moedas insuficientes!");
+                }
+            };
+
+            // Plantar no Vaso
+            const plantInPlot = (plotId) => {
+                if (!selectedSeed) {
+                    alert("Selecione uma semente comprada no painel de sementes primeiro!");
+                    return;
+                }
+
+                setPlots(plots.map(plot => {
+                    if (plot.id === plotId && !plot.plant) {
+                        return { ...plot, plant: selectedSeed, progress: 0, ready: false };
+                    }
+                    return plot;
+                }));
+
+                setSelectedSeed(null); // Consome a seleção
+            };
+
+            // Colher e Vender
+            const harvest = (plotId) => {
+                const plot = plots.find(p => p.id === plotId);
+                if (plot && plot.ready) {
+                    setMoney(prev => prev + plot.plant.sellPrice);
+                    setPlots(plots.map(p => p.id === plotId ? { ...p, plant: null, progress: 0, ready: false } : p));
+                }
+            };
+
+            return (
+                <div class="space-y-6">
+                    {/* Painel do Jogador */}
+                    <div class="bg-amber-100 border-2 border-amber-300 rounded-2xl p-6 flex flex-col sm:flex-row justify-between items-center shadow-md">
+                        <div>
+                            <h2 class="text-2xl font-black text-amber-900">🌻 Floricultura Tycoon</h2>
+                            <p class="text-amber-800 text-sm">Compre sementes, plante nos vasos, espere crescer e venda com lucro!</p>
+                        </div>
+                        <div class="mt-4 sm:mt-0 bg-white px-6 py-3 rounded-xl shadow border border-amber-200 flex items-center space-x-2">
+                            <span class="text-2xl">💰</span>
+                            <span class="text-2xl font-bold text-amber-600">{money} Moedas</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        {/* Loja de Sementes */}
+                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 space-y-4">
+                            <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                                🛒 Loja de Sementes
+                            </h3>
+                            <div class="space-y-3">
+                                {plantData.map(plant => (
+                                    <div key={plant.id} class="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-100">
+                                        <div class="flex items-center space-x-3">
+                                            <span class="text-3xl">{plant.image}</span>
+                                            <div>
+                                                <h4 class="font-semibold text-sm">{plant.name}</h4>
+                                                <p class="text-xs text-gray-500">Custo: 💰 {plant.cost} | Venda: 💰 {plant.sellPrice}</p>
+                                                <p class="text-xs text-amber-600">Tempo: {plant.growthTime}s</p>
+                                            </div>
+                                        </div>
+                                        <button
+                                            onClick={() => buySeed(plant)}
+                                            disabled={money < plant.cost}
+                                            class={`px-3 py-1.5 text-xs font-bold rounded-lg transition-colors ${
+                                                money >= plant.cost 
+                                                ? 'bg-amber-500 hover:bg-amber-600 text-white' 
+                                                : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                                            }`}
+                                        >
+                                            Comprar
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Estufa / Vasos */}
+                        <div class="lg:col-span-2 bg-white p-5 rounded-2xl shadow-sm border border-gray-100 space-y-4">
+                            <div class="flex justify-between items-center">
+                                <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                                    🏡 Sua Estufa
+                                </h3>
+                                {selectedSeed && (
+                                    <span class="text-xs bg-amber-100 text-amber-800 px-3 py-1 rounded-full font-semibold animate-bounce">
+                                        Pronto para plantar: {selectedSeed.name} {selectedSeed.image} (Clique num vaso vazio)
+                                    </span>
+                                )}
+                            </div>
+
+                            <div class="grid grid-cols-2 sm:grid-cols-2 gap-4">
+                                {plots.map(plot => (
+                                    <div 
+                                        key={plot.id}
+                                        onClick={() => !plot.plant && plantInPlot(plot.id)}
+                                        class={`h-48 rounded-xl border-2 border-dashed p-4 flex flex-col justify-between items-center transition-all ${
+                                            plot.plant 
+                                            ? 'bg-emerald-50 border-emerald-300' 
+                                            : 'bg-gray-50 border-gray-300 hover:border-amber-400 cursor-pointer'
+                                        }`}
+                                    >
+                                        {!plot.plant ? (
+                                            <div class="flex flex-col items-center justify-center h-full text-gray-400">
+                                                <span class="text-3xl mb-1">🪴</span>
+                                                <span class="text-xs font-semibold">Vaso Vazio</span>
+                                                <span class="text-[10px]">Clique com semente selecionada</span>
+                                            </div>
+                                        ) : (
+                                            <div class="w-full flex flex-col items-center justify-between h-full">
+                                                <span class="text-xs bg-white px-2 py-0.5 rounded shadow-sm text-gray-600 font-medium">
+                                                    {plot.plant.name}
+                                                </span>
+
+                                                {/* Ícone crescendo */}
+                                                <div class="text-4xl my-2 transition-transform duration-500" style={{
+                                                    transform: `scale(${0.5 + (plot.progress / plot.plant.growthTime) * 0.5})`
+                                                }}>
+                                                    {plot.plant.image}
+                                                </div>
+
+                                                {/* Barra de Progresso ou Botão Colher */}
+                                                {plot.ready ? (
+                                                    <button 
+                                                        onClick={() => harvest(plot.id)}
+                                                        class="w-full py-1.5 bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs rounded-lg shadow animate-pulse"
+                                                    >
+                                                        Colher (+💰{plot.plant.sellPrice})
+                                                    </button>
+                                                ) : (
+                                                    <div class="w-full space-y-1">
+                                                        <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                                                            <div 
+                                                                class="bg-emerald-500 h-2 transition-all duration-300"
+                                                                style={{ width: `${(plot.progress / plot.plant.growthTime) * 100}%` }}
+                                                            ></div>
+                                                        </div>
+                                                        <p class="text-[10px] text-center text-gray-500">
+                                                            Crescendo... ({plot.plant.growthTime - plot.progress}s)
+                                                        </p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // Renderização do app
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
+```
