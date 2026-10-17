@@ -8,11 +8,7 @@
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-    body {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      background-color: #f9f6f0;
-      color: #1e293b;
-    }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f9f6f0; color: #1e293b; }
   </style>
 </head>
 <body class="antialiased min-h-screen flex flex-col">
@@ -35,194 +31,40 @@
       </div>
       
       <nav class="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm font-bold">
-        <button onclick="showTab('home')" id="nav-home" class="px-3.5 py-2 rounded-xl bg-[#084c3c] text-white shadow-md transition">
-          <i data-lucide="home" class="w-4 h-4 inline mr-1"></i> Início
-        </button>
-        <button onclick="showTab('catalogo')" id="nav-catalogo" class="px-3.5 py-2 rounded-xl text-[#084c3c] hover:bg-[#eae3d2] transition">
-          <i data-lucide="book-open" class="w-4 h-4 inline mr-1"></i> Catálogo
-        </button>
-        <button onclick="showTab('blog')" id="nav-blog" class="px-3.5 py-2 rounded-xl text-[#084c3c] hover:bg-[#eae3d2] transition">
-          <i data-lucide="newspaper" class="w-4 h-4 inline mr-1"></i> Blog
-        </button>
-        <button onclick="showTab('identificar')" id="nav-identificar" class="px-3.5 py-2 rounded-xl text-[#084c3c] hover:bg-[#eae3d2] transition">
-          <i data-lucide="scan" class="w-4 h-4 inline mr-1"></i> Identificar
-        </button>
+        <button onclick="showTab('home')" id="nav-home" class="px-3.5 py-2 rounded-xl bg-[#084c3c] text-white shadow-md transition">Início</button>
+        <button onclick="showTab('catalogo')" id="nav-catalogo" class="px-3.5 py-2 rounded-xl text-[#084c3c] hover:bg-[#eae3d2] transition">Catálogo</button>
+        <button onclick="showTab('blog')" id="nav-blog" class="px-3.5 py-2 rounded-xl text-[#084c3c] hover:bg-[#eae3d2] transition">Blog</button>
+        <button onclick="showTab('identificar')" id="nav-identificar" class="px-3.5 py-2 rounded-xl text-[#084c3c] hover:bg-[#eae3d2] transition">Identificar</button>
       </nav>
     </div>
   </header>
 
   <main class="max-w-6xl mx-auto px-4 py-8 flex-1 w-full space-y-8">
-
     <section id="sec-home" class="space-y-8">
-      <div class="bg-[#084c3c] text-white rounded-3xl p-6 sm:p-10 shadow-xl relative overflow-hidden">
-        <div class="max-w-2xl space-y-3 z-10 relative">
-          <span class="px-3 py-1 rounded-full text-xs font-bold tracking-wide bg-white/10 text-emerald-200 border border-white/20">
-            Bem-vindo ao @ExplorarPlantas
-          </span>
-          <h1 class="text-3xl sm:text-5xl font-black leading-tight">
-            O seu portal completo sobre jardinagem e cultivo.
-          </h1>
-          <p class="text-emerald-100 text-sm sm:text-base leading-relaxed">
-            Navegue pelo nosso catálogo com fotografias reais, leia conteúdos exclusivos no blog ou identifique espécies usando inteligência artificial.
-          </p>
-        </div>
-      </div>
-
-      <div class="bg-[#f2ebd9] border border-[#dcd3bf] p-6 rounded-3xl shadow-sm space-y-4 relative overflow-hidden">
-        <div class="flex items-center justify-between border-b border-[#dcd3bf] pb-3">
-          <div class="flex items-center gap-2 text-[#084c3c] font-bold text-sm">
-            <div class="w-8 h-8 rounded-full bg-[#084c3c] text-white flex items-center justify-center">
-              <i data-lucide="sparkles" class="w-4 h-4"></i>
-            </div>
-            <span>Curiosidade do Dia</span>
-          </div>
-          <span id="factCounter" class="text-[11px] font-bold text-[#084c3c]/80 bg-[#e5dfd3] px-3 py-1 rounded-full">
-            1 de 5
-          </span>
-        </div>
-
-        <div class="min-h-[60px] flex items-center">
-          <p id="factText" class="text-sm sm:text-base font-semibold text-slate-800 leading-relaxed transition-all duration-300">
-            A carregar curiosidade do dia...
-          </p>
-        </div>
-
-        <div class="flex justify-end pt-2">
-          <button onclick="nextFact()" class="px-4 py-2.5 rounded-xl bg-[#084c3c] text-white text-xs font-bold hover:bg-[#06382c] transition flex items-center gap-2 shadow-md cursor-pointer">
-            <span>Próxima curiosidade</span>
-            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
-          </button>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div onclick="showTab('catalogo')" class="bg-[#f2ebd9] border border-[#dcd3bf] p-6 rounded-2xl shadow-sm hover:shadow-md hover:border-[#084c3c] transition cursor-pointer group space-y-4">
-          <div class="w-12 h-12 bg-[#084c3c] text-white rounded-xl flex items-center justify-center shadow-md group-hover:scale-110 transition">
-            <i data-lucide="book-open" class="w-6 h-6"></i>
-          </div>
-          <div>
-            <h3 class="text-xl font-bold text-[#084c3c] group-hover:underline">Catálogo de Plantas</h3>
-            <p class="text-xs text-slate-700 mt-2 leading-relaxed">Enciclopédia de espécies com fotografias em alta definição, cuidados de rega e iluminação.</p>
-          </div>
-        </div>
-
-        <div onclick="showTab('blog')" class="bg-[#f2ebd9] border border-[#dcd3bf] p-6 rounded-2xl shadow-sm hover:shadow-md hover:border-[#084c3c] transition cursor-pointer group space-y-4">
-          <div class="w-12 h-12 bg-[#084c3c] text-white rounded-xl flex items-center justify-center shadow-md group-hover:scale-110 transition">
-            <i data-lucide="newspaper" class="w-6 h-6"></i>
-          </div>
-          <div>
-            <h3 class="text-xl font-bold text-[#084c3c] group-hover:underline">Blog & Dicas</h3>
-            <p class="text-xs text-slate-700 mt-2 leading-relaxed">Artigos de cultivo, receitas de substratos drenantes e truques para adubação saudável.</p>
-          </div>
-        </div>
-
-        <div onclick="showTab('identificar')" class="bg-[#f2ebd9] border border-[#dcd3bf] p-6 rounded-2xl shadow-sm hover:shadow-md hover:border-[#084c3c] transition cursor-pointer group space-y-4">
-          <div class="w-12 h-12 bg-[#084c3c] text-white rounded-xl flex items-center justify-center shadow-md group-hover:scale-110 transition">
-            <i data-lucide="scan-line" class="w-6 h-6"></i>
-          </div>
-          <div>
-            <h3 class="text-xl font-bold text-[#084c3c] group-hover:underline">Identificar por Foto</h3>
-            <p class="text-xs text-slate-700 mt-2 leading-relaxed">Carregue uma imagem e receba um diagnóstico botânico com inteligência artificial.</p>
-          </div>
-        </div>
+      <div class="bg-[#084c3c] text-white rounded-3xl p-6 sm:p-10 shadow-xl">
+        <h1 class="text-3xl sm:text-5xl font-black leading-tight">O seu portal completo sobre jardinagem e cultivo.</h1>
       </div>
     </section>
 
     <section id="sec-catalogo" class="space-y-6 hidden">
-      <div class="relative rounded-3xl overflow-hidden bg-[#084c3c] p-6 sm:p-10 shadow-xl text-white">
-        <h1 class="text-3xl sm:text-5xl font-black leading-tight">Guia & Enciclopédia de Plantas</h1>
-        <p class="text-emerald-100 text-sm sm:text-base mt-2">Aprenda técnicas profissionais de cultivo com fotografias reais em alta definição.</p>
-      </div>
-
-      <div class="flex flex-col md:flex-row gap-4 justify-between items-center bg-[#f2ebd9] p-3.5 rounded-2xl border border-[#dcd3bf]">
-        <div class="relative w-full md:w-80">
-          <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"></i>
-          <input type="text" id="searchInput" onkeyup="filterPlants()" placeholder="Buscar por nome ou espécie..." class="w-full pl-10 pr-4 py-2.5 bg-[#fdfbf7] border border-[#dcd3bf] rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#084c3c] transition">
-        </div>
-        <div class="flex flex-wrap gap-2 w-full md:w-auto">
-          <button onclick="filterCategory('todas')" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-[#084c3c] text-white shadow-md">Todas</button>
-          <button onclick="filterCategory('interior')" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#e5dfd3] text-[#084c3c] hover:bg-[#084c3c] hover:text-white transition">Interiores</button>
-          <button onclick="filterCategory('exterior')" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#e5dfd3] text-[#084c3c] hover:bg-[#084c3c] hover:text-white transition">Exteriores</button>
-          <button onclick="filterCategory('suculentas')" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#e5dfd3] text-[#084c3c] hover:bg-[#084c3c] hover:text-white transition">Suculentas & Cactos</button>
-        </div>
-      </div>
-
-      <div id="plantGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div class="plant-card bg-[#f2ebd9] rounded-2xl border border-[#dcd3bf] overflow-hidden shadow-sm group" data-category="exterior" data-name="rosa do deserto adenium obesum">
-          <div class="h-56 overflow-hidden relative">
-            <img src="https://images.unsplash.com/photo-1598880940371-c756e015fea1?auto=format&fit=crop&w=800&q=80" alt="Rosa do Deserto" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-            <div class="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-[#084c3c]/90 text-[11px] font-bold text-amber-300">Sol Pleno</div>
-          </div>
-          <div class="p-5 space-y-2">
-            <h3 class="text-lg font-bold text-[#084c3c]">Rosa do Deserto</h3>
-            <p class="text-xs text-slate-700">Tronco avantajado (caudex) e floração exuberante. Requer solo drenante.</p>
-          </div>
-        </div>
-
-        <div class="plant-card bg-[#f2ebd9] rounded-2xl border border-[#dcd3bf] overflow-hidden shadow-sm group" data-category="interior" data-name="lirio da paz spathiphyllum">
-          <div class="h-56 overflow-hidden relative">
-            <img src="https://images.unsplash.com/photo-1593691509543-c55fb32e7355?auto=format&fit=crop&w=800&q=80" alt="Lírio da Paz" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-            <div class="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-[#084c3c]/90 text-[11px] font-bold text-emerald-200">Luz Indireta</div>
-          </div>
-          <div class="p-5 space-y-2">
-            <h3 class="text-lg font-bold text-[#084c3c]">Lírio da Paz</h3>
-            <p class="text-xs text-slate-700">Ótima para ambientes internos. Purifica o ar e gosta de umidade constante.</p>
-          </div>
-        </div>
-
-        <div class="plant-card bg-[#f2ebd9] rounded-2xl border border-[#dcd3bf] overflow-hidden shadow-sm group" data-category="interior" data-name="costela de adao monstera deliciosa">
-          <div class="h-56 overflow-hidden relative">
-            <img src="https://images.unsplash.com/photo-1614594975525-e45190c55d0b?auto=format&fit=crop&w=800&q=80" alt="Costela de Adão" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-            <div class="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-[#084c3c]/90 text-[11px] font-bold text-emerald-200">Tendência</div>
-          </div>
-          <div class="p-5 space-y-2">
-            <h3 class="text-lg font-bold text-[#084c3c]">Costela de Adão</h3>
-            <p class="text-xs text-slate-700">Folhas gigantes vazadas cheias de estilo tropical. Ideal para salas.</p>
-          </div>
-        </div>
-      </div>
+      <h1 class="text-2xl font-bold text-[#084c3c]">Catálogo</h1>
     </section>
 
     <section id="sec-blog" class="space-y-6 hidden">
-      <div class="bg-[#084c3c] p-6 sm:p-8 rounded-3xl text-white shadow-xl">
-        <h1 class="text-2xl sm:text-3xl font-extrabold mb-2">Blog & Dicas de Cultivo</h1>
-        <p class="text-emerald-100 text-sm">Aprenda segredos de adubação e manutenção das plantas.</p>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <article class="bg-[#f2ebd9] rounded-2xl border border-[#dcd3bf] p-6 space-y-2 shadow-sm">
-          <span class="text-[11px] font-bold text-[#084c3c] uppercase">Substrato Especial</span>
-          <h2 class="text-lg font-bold text-[#084c3c]">Segredo do Substrato Drenante para Rosas do Deserto</h2>
-          <p class="text-xs text-slate-700">Aprenda a misturar areia de rio, carvão e matéria orgânica na medida perfeita.</p>
-        </article>
-
-        <article class="bg-[#f2ebd9] rounded-2xl border border-[#dcd3bf] p-6 space-y-2 shadow-sm">
-          <span class="text-[11px] font-bold text-[#084c3c] uppercase">Manejo Orgânico</span>
-          <h2 class="text-lg font-bold text-[#084c3c]">Como Eliminar Cochonilhas com Óleo de Neem</h2>
-          <p class="text-xs text-slate-700">Receita rápida e natural sem danificar as folhas nem prejudicar animais domésticos.</p>
-        </article>
-      </div>
+      <h1 class="text-2xl font-bold text-[#084c3c]">Blog</h1>
     </section>
 
     <section id="sec-identificar" class="space-y-6 hidden">
       <div class="max-w-xl mx-auto bg-[#f2ebd9] border border-[#dcd3bf] rounded-3xl p-6 sm:p-8 text-center space-y-5 shadow-sm">
-        <div class="w-14 h-14 bg-[#084c3c] text-white rounded-2xl flex items-center justify-center mx-auto shadow-md">
-          <i data-lucide="scan-line" class="w-7 h-7"></i>
-        </div>
-        <div>
-          <h1 class="text-2xl font-bold text-[#084c3c]">Identificar Espécie por Foto</h1>
-          <p class="text-xs text-slate-700 mt-1">Carregue uma imagem clara para análise em tempo real com Inteligência Artificial.</p>
-        </div>
+        <h1 class="text-2xl font-bold text-[#084c3c]">Identificar Espécie por Foto</h1>
 
         <div class="border-2 border-dashed border-[#084c3c]/40 bg-[#fdfbf7] rounded-2xl p-8 cursor-pointer hover:border-[#084c3c] transition" onclick="document.getElementById('fileUpload').click()">
-          <i data-lucide="upload-cloud" class="w-10 h-10 mx-auto text-[#084c3c] mb-2"></i>
           <p class="text-xs font-bold text-[#084c3c]">Toque para selecionar da galeria ou tirar foto</p>
-          <p class="text-[11px] text-slate-500 mt-1">PNG, JPG ou WEBP até 10MB</p>
           <input type="file" id="fileUpload" class="hidden" accept="image/*" onchange="handleImageUpload(event)">
         </div>
 
-        <div id="plantWateringLoader" class="hidden flex-col items-center justify-center py-4 space-y-2">
-          <p class="text-xs font-bold text-[#084c3c] animate-pulse">A explorar planta...</p>
+        <div id="plantWateringLoader" class="hidden py-4">
+          <p class="text-xs font-bold text-[#084c3c] animate-pulse">A analisar espécie botânica...</p>
         </div>
 
         <div id="imagePreviewContainer" class="hidden my-3">
@@ -230,123 +72,39 @@
         </div>
 
         <div id="aiResultCard" class="hidden bg-[#fdfbf7] border border-[#dcd3bf] p-5 rounded-2xl text-left space-y-3 shadow-sm">
-          <div class="flex items-center justify-between border-b border-[#dcd3bf] pb-2">
-            <div>
-              <span class="text-[10px] font-bold text-[#084c3c] uppercase bg-[#084c3c]/10 px-2 py-0.5 rounded-full">Espécie Identificada</span>
-              <h2 id="aiPlantName" class="text-lg font-extrabold text-[#084c3c] mt-1">-</h2>
-              <p id="aiScientificName" class="text-xs italic text-slate-500">-</p>
-            </div>
-            <i data-lucide="check-circle-2" class="w-6 h-6 text-[#084c3c]"></i>
+          <div>
+            <h2 id="aiPlantName" class="text-lg font-extrabold text-[#084c3c]"></h2>
+            <p id="aiScientificName" class="text-xs italic text-slate-500"></p>
           </div>
-
           <div class="space-y-2 text-xs">
             <div class="bg-[#f2ebd9] p-3 rounded-xl border border-[#dcd3bf]">
-              <span class="font-bold text-[#084c3c] block mb-0.5">💧 Rega recomendada:</span>
-              <p id="aiWaterInfo" class="text-slate-700 leading-relaxed">-</p>
+              <span class="font-bold text-[#084c3c] block">💧 Rega:</span>
+              <p id="aiWaterInfo" class="text-slate-700"></p>
             </div>
             <div class="bg-[#f2ebd9] p-3 rounded-xl border border-[#dcd3bf]">
-              <span class="font-bold text-[#084c3c] block mb-0.5">☀️ Iluminação ideal:</span>
-              <p id="aiSunInfo" class="text-slate-700 leading-relaxed">-</p>
+              <span class="font-bold text-[#084c3c] block">☀️ Iluminação:</span>
+              <p id="aiSunInfo" class="text-slate-700"></p>
             </div>
             <div class="bg-[#084c3c]/5 p-3 rounded-xl border border-[#084c3c]/20">
-              <span class="font-bold text-[#084c3c] block mb-0.5">💡 Dica de Cultivo:</span>
-              <p id="aiTipInfo" class="text-slate-700 leading-relaxed">-</p>
+              <span class="font-bold text-[#084c3c] block">💡 Dica de Cultivo:</span>
+              <p id="aiTipInfo" class="text-slate-700"></p>
             </div>
           </div>
         </div>
-
       </div>
     </section>
-
   </main>
 
-  <footer class="bg-[#084c3c] text-emerald-100 py-6 text-center text-xs mt-auto">
-    <p>© 2026 @ExplorarPlantas — Guia Botânico, Dicas & Identificação de Espécies.</p>
-  </footer>
-
   <script>
-    if (window.lucide) lucide.createIcons();
-
     const WORKER_URL = "https://explorar-plantasia.explicaplantas.workers.dev";
 
-    let dailyFacts = [];
-    let currentFactIndex = 0;
-
-    async function loadDailyFacts() {
-      const cacheKey = "explorar_facts_" + new Date().toLocaleDateString("pt-BR", { timeZone: "America/Sao_Paulo" });
-      const cached = localStorage.getItem(cacheKey);
-
-      if (cached) {
-        dailyFacts = JSON.parse(cached);
-        displayCurrentFact();
-        return;
-      }
-
-      try {
-        const response = await fetch(WORKER_URL);
-        if (response.ok) {
-          dailyFacts = await response.json();
-          localStorage.setItem(cacheKey, JSON.stringify(dailyFacts));
-        } else {
-          throw new Error("Erro fatos");
-        }
-      } catch (err) {
-        dailyFacts = [
-          "O gel da babosa é excelente para cicatrizar pequenas feridas.",
-          "As orquídeas possuem mais de 25.000 espécies espalhadas pelo planeta.",
-          "A fotossíntese converte luz solar e gás carbônico em oxigênio puro.",
-          "Bambus podem crescer quase 1 metro por dia sob luz ideal.",
-          "As folhas da Vitória-régia aguentam até 45kg sobre a água."
-        ];
-      }
-      displayCurrentFact();
-    }
-
-    function displayCurrentFact() {
-      const factTextEl = document.getElementById('factText');
-      const factCounterEl = document.getElementById('factCounter');
-      if (factTextEl && dailyFacts.length > 0) factTextEl.textContent = dailyFacts[currentFactIndex];
-      if (factCounterEl) factCounterEl.textContent = `${currentFactIndex + 1} de 5`;
-    }
-
-    function nextFact() {
-      if (dailyFacts.length === 0) return;
-      currentFactIndex = (currentFactIndex + 1) % dailyFacts.length;
-      displayCurrentFact();
-    }
-
     function showTab(tabName) {
-      document.getElementById('sec-home').classList.add('hidden');
-      document.getElementById('sec-catalogo').classList.add('hidden');
-      document.getElementById('sec-blog').classList.add('hidden');
-      document.getElementById('sec-identificar').classList.add('hidden');
-
       ['home', 'catalogo', 'blog', 'identificar'].forEach(t => {
-        const btn = document.getElementById('nav-' + t);
-        if (btn) btn.className = "px-3.5 py-2 rounded-xl text-[#084c3c] hover:bg-[#eae3d2] transition";
+        document.getElementById('sec-' + t).classList.add('hidden');
+        document.getElementById('nav-' + t).className = "px-3.5 py-2 rounded-xl text-[#084c3c] hover:bg-[#eae3d2] transition";
       });
-
-      const target = document.getElementById('sec-' + tabName);
-      if (target) target.classList.remove('hidden');
-
-      const activeBtn = document.getElementById('nav-' + tabName);
-      if (activeBtn) activeBtn.className = "px-3.5 py-2 rounded-xl bg-[#084c3c] text-white shadow-md transition";
-
-      if (window.lucide) lucide.createIcons();
-    }
-
-    function filterPlants() {
-      const query = document.getElementById('searchInput').value.toLowerCase();
-      document.querySelectorAll('.plant-card').forEach(card => {
-        const name = card.getAttribute('data-name') || "";
-        card.style.display = name.includes(query) ? 'block' : 'none';
-      });
-    }
-
-    function filterCategory(cat) {
-      document.querySelectorAll('.plant-card').forEach(card => {
-        card.style.display = (cat === 'todas' || card.getAttribute('data-category') === cat) ? 'block' : 'none';
-      });
+      document.getElementById('sec-' + tabName).classList.remove('hidden');
+      document.getElementById('nav-' + tabName).className = "px-3.5 py-2 rounded-xl bg-[#084c3c] text-white shadow-md transition";
     }
 
     async function handleImageUpload(e) {
@@ -367,7 +125,6 @@
 
       resultCard.classList.add('hidden');
       loader.classList.remove('hidden');
-      loader.classList.add('flex');
 
       try {
         const base64Image = await fileToBase64(file);
@@ -378,32 +135,24 @@
           body: JSON.stringify({ imageBase64: base64Image, mimeType: file.type })
         });
 
-        const responseText = await response.text();
-        let plantInfo;
-        try {
-          plantInfo = JSON.parse(responseText);
-        } catch (jsonErr) {
-          throw new Error("Resposta inválida do Worker: " + responseText.substring(0, 100));
-        }
+        const plantInfo = await response.json();
 
-        document.getElementById('aiPlantName').textContent = plantInfo.nomePopular || "Planta Identificada";
+        // Insere diretamente os dados reais retornados pela IA
+        document.getElementById('aiPlantName').textContent = plantInfo.nomePopular || "Espécie Identificada";
         document.getElementById('aiScientificName').textContent = plantInfo.nomeCientifico || "";
-        document.getElementById('aiWaterInfo').textContent = plantInfo.rega || "Rega moderada conforme a secagem do substrato.";
-        document.getElementById('aiSunInfo').textContent = plantInfo.iluminacao || "Luz natural adequada ao desenvolvimento.";
-        document.getElementById('aiTipInfo').textContent = plantInfo.dicaEspecial || "Mantenha a adubação e a drenagem equilibradas.";
+        document.getElementById('aiWaterInfo').textContent = plantInfo.rega || "";
+        document.getElementById('aiSunInfo').textContent = plantInfo.iluminacao || "";
+        document.getElementById('aiTipInfo').textContent = plantInfo.dicaEspecial || "";
 
       } catch (error) {
-        console.error("Erro detalhado:", error);
         document.getElementById('aiPlantName').textContent = "Erro na Análise";
-        document.getElementById('aiScientificName').textContent = "Detalhe do erro:";
+        document.getElementById('aiScientificName').textContent = "";
         document.getElementById('aiWaterInfo').textContent = error.message;
-        document.getElementById('aiSunInfo').textContent = "-";
-        document.getElementById('aiTipInfo').textContent = "Tente enviar outra foto ou verifique o Worker.";
+        document.getElementById('aiSunInfo').textContent = "";
+        document.getElementById('aiTipInfo').textContent = "";
       } finally {
         loader.classList.add('hidden');
-        loader.classList.remove('flex');
         resultCard.classList.remove('hidden');
-        if (window.lucide) lucide.createIcons();
       }
     }
 
@@ -415,8 +164,6 @@
         reader.onerror = error => reject(error);
       });
     }
-
-    document.addEventListener('DOMContentLoaded', () => loadDailyFacts());
   </script>
 </body>
 </html>
