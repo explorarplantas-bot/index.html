@@ -4,9 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Explorar Plantas — Guia, Blog & Identificação IA</title>
-  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
@@ -15,7 +13,6 @@
       background-color: #f9f6f0;
       color: #1e293b;
     }
-    /* Animação do Regador Despejando Água */
     @keyframes tiltCan {
       0%, 100% { transform: rotate(-8deg); }
       50% { transform: rotate(-25deg); }
@@ -36,7 +33,6 @@
 </head>
 <body class="antialiased min-h-screen flex flex-col">
 
-  <!-- Header / Navegação -->
   <header class="bg-[#f9f6f0] border-b border-[#e5dfd3] sticky top-0 z-50 shadow-sm">
     <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-4">
       <div class="flex items-center gap-3 cursor-pointer" onclick="showTab('home')">
@@ -73,7 +69,6 @@
 
   <main class="max-w-6xl mx-auto px-4 py-8 flex-1 w-full space-y-8">
 
-    <!-- HOME -->
     <section id="sec-home" class="space-y-8">
       <div class="bg-[#084c3c] text-white rounded-3xl p-6 sm:p-10 shadow-xl relative overflow-hidden">
         <div class="max-w-2xl space-y-3 z-10 relative">
@@ -89,7 +84,6 @@
         </div>
       </div>
 
-      <!-- Curiosidade do dia -->
       <div class="bg-[#f2ebd9] border border-[#dcd3bf] p-6 rounded-3xl shadow-sm space-y-4 relative overflow-hidden">
         <div class="flex items-center justify-between border-b border-[#dcd3bf] pb-3">
           <div class="flex items-center gap-2 text-[#084c3c] font-bold text-sm">
@@ -117,7 +111,6 @@
         </div>
       </div>
 
-      <!-- Atalhos -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div onclick="showTab('catalogo')" class="bg-[#f2ebd9] border border-[#dcd3bf] p-6 rounded-2xl shadow-sm hover:shadow-md hover:border-[#084c3c] transition cursor-pointer group space-y-4">
           <div class="w-12 h-12 bg-[#084c3c] text-white rounded-xl flex items-center justify-center shadow-md group-hover:scale-110 transition">
@@ -151,7 +144,6 @@
       </div>
     </section>
 
-    <!-- CATÁLOGO -->
     <section id="sec-catalogo" class="space-y-6 hidden">
       <div class="relative rounded-3xl overflow-hidden bg-[#084c3c] p-6 sm:p-10 shadow-xl text-white">
         <h1 class="text-3xl sm:text-5xl font-black leading-tight">Guia & Enciclopédia de Plantas</h1>
@@ -207,7 +199,6 @@
       </div>
     </section>
 
-    <!-- BLOG -->
     <section id="sec-blog" class="space-y-6 hidden">
       <div class="bg-[#084c3c] p-6 sm:p-8 rounded-3xl text-white shadow-xl">
         <h1 class="text-2xl sm:text-3xl font-extrabold mb-2">Blog & Dicas de Cultivo</h1>
@@ -229,7 +220,6 @@
       </div>
     </section>
 
-    <!-- IDENTIFICAR -->
     <section id="sec-identificar" class="space-y-6 hidden">
       <div class="max-w-xl mx-auto bg-[#f2ebd9] border border-[#dcd3bf] rounded-3xl p-6 sm:p-8 text-center space-y-5 shadow-sm">
         <div class="w-14 h-14 bg-[#084c3c] text-white rounded-2xl flex items-center justify-center mx-auto shadow-md">
@@ -247,7 +237,6 @@
           <input type="file" id="fileUpload" class="hidden" accept="image/*" onchange="handleImageUpload(event)">
         </div>
 
-        <!-- Animação do Regador ACIMA da Foto/Loading com o texto "A explorar planta..." -->
         <div id="plantWateringLoader" class="hidden flex-col items-center justify-center py-4 space-y-2">
           <div class="relative w-20 h-20 flex items-center justify-center">
             <svg class="w-14 h-14 text-[#084c3c] watering-can-anim" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
@@ -265,12 +254,10 @@
           <p class="text-xs font-bold text-[#084c3c] animate-pulse">A explorar planta...</p>
         </div>
 
-        <!-- Preview da Foto Enviada -->
         <div id="imagePreviewContainer" class="hidden my-3">
           <img id="userImagePreview" src="" alt="Sua planta" class="w-48 h-48 object-cover rounded-2xl mx-auto border-2 border-[#084c3c] shadow-md">
         </div>
 
-        <!-- Card de Resultado da IA -->
         <div id="aiResultCard" class="hidden bg-[#fdfbf7] border border-[#dcd3bf] p-5 rounded-2xl text-left space-y-3 shadow-sm">
           <div class="flex items-center justify-between border-b border-[#dcd3bf] pb-2">
             <div>
@@ -309,17 +296,40 @@
   <script>
     if (window.lucide) lucide.createIcons();
 
-    // Chave de API preenchida diretamente
-    const GEMINI_API_KEY = "AQ.Ab8RN6IEJOJY2M5GPQseIy48qeC8vCZLEbisWIuorqLhKWa8CA";
+    const WORKER_URL = "https://explorar-plantasia.explicaplantas.workers.dev";
 
-    let dailyFacts = [
-      "O gel da babosa é excelente para cicatrizar pequenas feridas.",
-      "As orquídeas possuem mais de 25.000 espécies espalhadas pelo planeta.",
-      "A fotossíntese converte luz solar e gás carbônico em oxigênio puro.",
-      "Bambus podem crescer quase 1 metro por dia sob luz ideal.",
-      "As folhas da Vitória-régia aguentam até 45kg sobre a água."
-    ];
+    let dailyFacts = [];
     let currentFactIndex = 0;
+
+    async function loadDailyFacts() {
+      const cacheKey = "explorar_facts_" + new Date().toLocaleDateString("pt-BR", { timeZone: "America/Sao_Paulo" });
+      const cached = localStorage.getItem(cacheKey);
+
+      if (cached) {
+        dailyFacts = JSON.parse(cached);
+        displayCurrentFact();
+        return;
+      }
+
+      try {
+        const response = await fetch(WORKER_URL);
+        if (response.ok) {
+          dailyFacts = await response.json();
+          localStorage.setItem(cacheKey, JSON.stringify(dailyFacts));
+        } else {
+          throw new Error("Erro fatos");
+        }
+      } catch (err) {
+        dailyFacts = [
+          "O gel da babosa é excelente para cicatrizar pequenas feridas.",
+          "As orquídeas possuem mais de 25.000 espécies espalhadas pelo planeta.",
+          "A fotossíntese converte luz solar e gás carbônico em oxigênio puro.",
+          "Bambus podem crescer quase 1 metro por dia sob luz ideal.",
+          "As folhas da Vitória-régia aguentam até 45kg sobre a água."
+        ];
+      }
+      displayCurrentFact();
+    }
 
     function displayCurrentFact() {
       const factTextEl = document.getElementById('factText');
@@ -391,27 +401,15 @@
       try {
         const base64Image = await fileToBase64(file);
 
-        const promptText = "Aja como um botânico especialista do portal @ExplorarPlantas. Analise detalhadamente esta imagem de planta e retorne ESTRITAMENTE em formato JSON puro (sem markdown ```json, sem crases) contendo exatamente estas chaves: \"nomePopular\" (string com o nome comum), \"nomeCientifico\" (string com o nome científico exato), \"rega\" (instruções detalhadas de rega específicas para esta espécie), \"iluminacao\" (luz ideal detalhada), \"dicaEspecial\" (dica profissional de cultivo exclusiva para esta planta).";
-
-        const response = await fetch(`[https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$](https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$){GEMINI_API_KEY}`, {
+        const response = await fetch(WORKER_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{
-              parts: [
-                { text: promptText },
-                { inline_data: { mime_type: file.type, data: base64Image } }
-              ]
-            }],
-            generationConfig: { response_mime_type: "application/json" }
-          })
+          body: JSON.stringify({ imageBase64: base64Image, mimeType: file.type })
         });
 
-        if (!response.ok) throw new Error("Erro ao comunicar com a API do Gemini.");
+        if (!response.ok) throw new Error("Erro na resposta do Worker");
 
-        const data = await response.json();
-        const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-        const plantInfo = JSON.parse(rawText);
+        const plantInfo = await response.json();
 
         document.getElementById('aiPlantName').textContent = plantInfo.nomePopular || "Planta Identificada";
         document.getElementById('aiScientificName').textContent = plantInfo.nomeCientifico || "";
@@ -420,7 +418,7 @@
         document.getElementById('aiTipInfo').textContent = plantInfo.dicaEspecial || "Mantenha a adubação e a drenagem equilibradas.";
 
       } catch (error) {
-        console.error("Erro:", error);
+        console.error("Erro na leitura:", error);
         document.getElementById('aiPlantName').textContent = "Erro na Análise";
         document.getElementById('aiScientificName').textContent = "Tente enviar outra foto";
         document.getElementById('aiWaterInfo').textContent = "Não foi possível carregar os dados específicos desta espécie.";
@@ -443,7 +441,7 @@
       });
     }
 
-    document.addEventListener('DOMContentLoaded', () => displayCurrentFact());
+    document.addEventListener('DOMContentLoaded', () => loadDailyFacts());
   </script>
 </body>
 </html>
