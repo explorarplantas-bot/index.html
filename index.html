@@ -4,42 +4,38 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Explorar Plantas — Guia, Blog & Identificação IA</title>
-  <!-- Tailwind CSS -->
-  <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
-  <!-- Lucide Icons -->
-  <script src="[https://unpkg.com/lucide@latest](https://unpkg.com/lucide@latest)"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
   <style>
-    @import url('[https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap](https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap)');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
       background-color: #f9f6f0;
       color: #1e293b;
     }
-    @keyframes tiltCan {
-      0%, 100% { transform: rotate(15deg); }
-      50% { transform: rotate(35deg); }
+    @keyframes pourWater {
+      0%, 100% { transform: rotate(-10deg); }
+      50% { transform: rotate(-28deg); }
     }
-    @keyframes dropFallDown {
-      0% { opacity: 0; transform: translateY(0); }
+    @keyframes dropFall {
+      0% { opacity: 0; transform: translateY(-2px); }
       50% { opacity: 1; }
-      100% { opacity: 0; transform: translateY(22px); }
+      100% { opacity: 0; transform: translateY(16px); }
     }
-    .watering-can-fixed {
-      animation: tiltCan 2s ease-in-out infinite;
-      transform-origin: top left;
+    .watering-can-anim {
+      animation: pourWater 1.8s ease-in-out infinite;
+      transform-origin: 30% 70%;
     }
-    .water-d-1 { animation: dropFallDown 0.9s linear infinite; }
-    .water-d-2 { animation: dropFallDown 0.9s linear 0.3s infinite; }
-    .water-d-3 { animation: dropFallDown 0.9s linear 0.6s infinite; }
+    .water-drop-1 { animation: dropFall 0.8s linear infinite; }
+    .water-drop-2 { animation: dropFall 0.8s linear 0.25s infinite; }
+    .water-drop-3 { animation: dropFall 0.8s linear 0.5s infinite; }
   </style>
 </head>
 <body class="antialiased min-h-screen flex flex-col">
 
-  <!-- Header / Navegação Oficial @ExplorarPlantas -->
+  <!-- Header -->
   <header class="bg-[#f9f6f0] border-b border-[#e5dfd3] sticky top-0 z-50 shadow-sm">
     <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-4">
-      
-      <!-- Logo Oficial -->
       <div class="flex items-center gap-3 cursor-pointer" onclick="showTab('home')">
         <div class="w-12 h-12 rounded-full border-2 border-[#084c3c] bg-[#fdfbf7] flex items-center justify-center p-1.5 shadow-sm">
           <svg viewBox="0 0 100 100" class="w-full h-full text-[#084c3c]" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
@@ -55,7 +51,6 @@
         </div>
       </div>
       
-      <!-- Menu Superior -->
       <nav class="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm font-bold">
         <button onclick="showTab('home')" id="nav-home" class="px-3.5 py-2 rounded-xl bg-[#084c3c] text-white shadow-md transition">
           <i data-lucide="home" class="w-4 h-4 inline mr-1"></i> Início
@@ -73,10 +68,9 @@
     </div>
   </header>
 
-  <!-- Conteúdo Principal -->
   <main class="max-w-6xl mx-auto px-4 py-8 flex-1 w-full space-y-8">
 
-    <!-- SEÇÃO HOME (INÍCIO) -->
+    <!-- HOME -->
     <section id="sec-home" class="space-y-8">
       <div class="bg-[#084c3c] text-white rounded-3xl p-6 sm:p-10 shadow-xl relative overflow-hidden">
         <div class="max-w-2xl space-y-3 z-10 relative">
@@ -92,7 +86,7 @@
         </div>
       </div>
 
-      <!-- WIDGET INTERATIVO: CURIOSIDADE DO DIA -->
+      <!-- Curiosidade do dia -->
       <div class="bg-[#f2ebd9] border border-[#dcd3bf] p-6 rounded-3xl shadow-sm space-y-4 relative overflow-hidden">
         <div class="flex items-center justify-between border-b border-[#dcd3bf] pb-3">
           <div class="flex items-center gap-2 text-[#084c3c] font-bold text-sm">
@@ -154,7 +148,7 @@
       </div>
     </section>
 
-    <!-- SEÇÃO 1: CATÁLOGO DE PLANTAS -->
+    <!-- CATÁLOGO -->
     <section id="sec-catalogo" class="space-y-6 hidden">
       <div class="relative rounded-3xl overflow-hidden bg-[#084c3c] p-6 sm:p-10 shadow-xl text-white">
         <h1 class="text-3xl sm:text-5xl font-black leading-tight">Guia & Enciclopédia de Plantas</h1>
@@ -177,7 +171,7 @@
       <div id="plantGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <div class="plant-card bg-[#f2ebd9] rounded-2xl border border-[#dcd3bf] overflow-hidden shadow-sm group" data-category="exterior" data-name="rosa do deserto adenium obesum">
           <div class="h-56 overflow-hidden relative">
-            <img src="[https://images.unsplash.com/photo-1598880940371-c756e015fea1?auto=format&fit=crop&w=800&q=80](https://images.unsplash.com/photo-1598880940371-c756e015fea1?auto=format&fit=crop&w=800&q=80)" alt="Rosa do Deserto" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+            <img src="https://images.unsplash.com/photo-1598880940371-c756e015fea1?auto=format&fit=crop&w=800&q=80" alt="Rosa do Deserto" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
             <div class="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-[#084c3c]/90 text-[11px] font-bold text-amber-300">Sol Pleno</div>
           </div>
           <div class="p-5 space-y-2">
@@ -188,7 +182,7 @@
 
         <div class="plant-card bg-[#f2ebd9] rounded-2xl border border-[#dcd3bf] overflow-hidden shadow-sm group" data-category="interior" data-name="lirio da paz spathiphyllum">
           <div class="h-56 overflow-hidden relative">
-            <img src="[https://images.unsplash.com/photo-1593691509543-c55fb32e7355?auto=format&fit=crop&w=800&q=80](https://images.unsplash.com/photo-1593691509543-c55fb32e7355?auto=format&fit=crop&w=800&q=80)" alt="Lírio da Paz" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+            <img src="https://images.unsplash.com/photo-1593691509543-c55fb32e7355?auto=format&fit=crop&w=800&q=80" alt="Lírio da Paz" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
             <div class="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-[#084c3c]/90 text-[11px] font-bold text-emerald-200">Luz Indireta</div>
           </div>
           <div class="p-5 space-y-2">
@@ -199,7 +193,7 @@
 
         <div class="plant-card bg-[#f2ebd9] rounded-2xl border border-[#dcd3bf] overflow-hidden shadow-sm group" data-category="interior" data-name="costela de adao monstera deliciosa">
           <div class="h-56 overflow-hidden relative">
-            <img src="[https://images.unsplash.com/photo-1614594975525-e45190c55d0b?auto=format&fit=crop&w=800&q=80](https://images.unsplash.com/photo-1614594975525-e45190c55d0b?auto=format&fit=crop&w=800&q=80)" alt="Costela de Adão" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+            <img src="https://images.unsplash.com/photo-1614594975525-e45190c55d0b?auto=format&fit=crop&w=800&q=80" alt="Costela de Adão" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
             <div class="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-[#084c3c]/90 text-[11px] font-bold text-emerald-200">Tendência</div>
           </div>
           <div class="p-5 space-y-2">
@@ -210,7 +204,7 @@
       </div>
     </section>
 
-    <!-- SEÇÃO 2: BLOG & DICAS -->
+    <!-- BLOG -->
     <section id="sec-blog" class="space-y-6 hidden">
       <div class="bg-[#084c3c] p-6 sm:p-8 rounded-3xl text-white shadow-xl">
         <h1 class="text-2xl sm:text-3xl font-extrabold mb-2">Blog & Dicas de Cultivo</h1>
@@ -232,7 +226,7 @@
       </div>
     </section>
 
-    <!-- SEÇÃO 3: IDENTIFICAR PLANTA POR FOTO -->
+    <!-- IDENTIFICAR -->
     <section id="sec-identificar" class="space-y-6 hidden">
       <div class="max-w-xl mx-auto bg-[#f2ebd9] border border-[#dcd3bf] rounded-3xl p-6 sm:p-8 text-center space-y-5 shadow-sm">
         <div class="w-14 h-14 bg-[#084c3c] text-white rounded-2xl flex items-center justify-center mx-auto shadow-md">
@@ -250,18 +244,21 @@
           <input type="file" id="fileUpload" class="hidden" accept="image/*" onchange="handleImageUpload(event)">
         </div>
 
-        <!-- Animação do Regador ACIMA da Foto/Loading com o texto "A explorar planta..." -->
-        <div id="plantWateringLoader" class="hidden flex-col items-center justify-center py-6 space-y-3">
-          <div class="relative w-24 h-24 flex items-center justify-center">
-            <svg class="w-16 h-16 text-[#084c3c] watering-can-fixed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M18 5l-4 4H7a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h7l4 4V5z"/>
-              <path d="M21 9v6"/>
-              <path d="M3 11l2 2"/>
+        <!-- Animação do Regador ACIMA do Preview de Foto -->
+        <div id="plantWateringLoader" class="hidden flex-col items-center justify-center py-4 space-y-2">
+          <div class="relative w-20 h-20 flex items-center justify-center">
+            <!-- Regador em Vetor Limpo -->
+            <svg class="w-14 h-14 text-[#084c3c] watering-can-anim" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 28h24v20H12z" fill="#084c3c" fill-opacity="0.15"/>
+              <path d="M36 32l16-12"/>
+              <circle cx="53" cy="19" r="3" fill="currentColor"/>
+              <path d="M12 32C6 32 4 24 12 20"/>
             </svg>
-            <div class="absolute bottom-1 left-7 flex space-x-1">
-              <span class="w-1 h-2.5 bg-sky-500 rounded-full water-d-1"></span>
-              <span class="w-1 h-2.5 bg-sky-400 rounded-full water-d-2"></span>
-              <span class="w-1 h-2.5 bg-sky-500 rounded-full water-d-3"></span>
+            <!-- Gotas Despejando para Baixo -->
+            <div class="absolute bottom-1 right-2 flex space-x-1">
+              <span class="w-1.5 h-3 bg-sky-500 rounded-full water-drop-1"></span>
+              <span class="w-1.5 h-3 bg-sky-400 rounded-full water-drop-2"></span>
+              <span class="w-1.5 h-3 bg-sky-500 rounded-full water-drop-3"></span>
             </div>
           </div>
           <p class="text-xs font-bold text-[#084c3c] animate-pulse">A explorar planta...</p>
@@ -269,7 +266,7 @@
 
         <!-- Preview da Foto Enviada -->
         <div id="imagePreviewContainer" class="hidden my-3">
-          <img id="userImagePreview" src="" alt="Sua planta" class="w-40 h-40 object-cover rounded-2xl mx-auto border-2 border-[#084c3c] shadow-md">
+          <img id="userImagePreview" src="" alt="Sua planta" class="w-48 h-48 object-cover rounded-2xl mx-auto border-2 border-[#084c3c] shadow-md">
         </div>
 
         <!-- Card de Resultado da IA -->
@@ -284,17 +281,17 @@
           </div>
 
           <div class="space-y-2 text-xs">
-            <div class="bg-[#f2ebd9] p-2.5 rounded-xl border border-[#dcd3bf]">
-              <span class="font-bold text-[#084c3c] block">💧 Rega recomendada:</span>
-              <p id="aiWaterInfo" class="text-slate-700">-</p>
+            <div class="bg-[#f2ebd9] p-3 rounded-xl border border-[#dcd3bf]">
+              <span class="font-bold text-[#084c3c] block mb-0.5">💧 Rega recomendada:</span>
+              <p id="aiWaterInfo" class="text-slate-700 leading-relaxed">-</p>
             </div>
-            <div class="bg-[#f2ebd9] p-2.5 rounded-xl border border-[#dcd3bf]">
-              <span class="font-bold text-[#084c3c] block">☀️ Iluminação ideal:</span>
-              <p id="aiSunInfo" class="text-slate-700">-</p>
+            <div class="bg-[#f2ebd9] p-3 rounded-xl border border-[#dcd3bf]">
+              <span class="font-bold text-[#084c3c] block mb-0.5">☀️ Iluminação ideal:</span>
+              <p id="aiSunInfo" class="text-slate-700 leading-relaxed">-</p>
             </div>
-            <div class="bg-[#084c3c]/5 p-2.5 rounded-xl border border-[#084c3c]/20">
-              <span class="font-bold text-[#084c3c] block">💡 Dica Especial:</span>
-              <p id="aiTipInfo" class="text-slate-700">-</p>
+            <div class="bg-[#084c3c]/5 p-3 rounded-xl border border-[#084c3c]/20">
+              <span class="font-bold text-[#084c3c] block mb-0.5">💡 Dica de Cultivo:</span>
+              <p id="aiTipInfo" class="text-slate-700 leading-relaxed">-</p>
             </div>
           </div>
         </div>
@@ -308,11 +305,10 @@
     <p>© 2026 @ExplorarPlantas — Guia Botânico, Dicas & Identificação de Espécies.</p>
   </footer>
 
-  <!-- Lógica Principal em JavaScript -->
   <script>
     if (window.lucide) lucide.createIcons();
 
-    const WORKER_URL = "[https://explorar-plantasia.explicaplantas.workers.dev](https://explorar-plantasia.explicaplantas.workers.dev)";
+    const WORKER_URL = "https://explorar-plantasia.explicaplantas.workers.dev";
 
     let dailyFacts = [];
     let currentFactIndex = 0;
@@ -425,8 +421,7 @@
 
         const plantInfo = await response.json();
 
-        // Insere os dados reais gerados especificamente pelo Gemini para a planta enviada
-        document.getElementById('aiPlantName').textContent = plantInfo.nomePopular || "Espécie Identificada";
+        document.getElementById('aiPlantName').textContent = plantInfo.nomePopular || "Planta Identificada";
         document.getElementById('aiScientificName').textContent = plantInfo.nomeCientifico || "";
         document.getElementById('aiWaterInfo').textContent = plantInfo.rega || "Rega moderada conforme a secagem do substrato.";
         document.getElementById('aiSunInfo').textContent = plantInfo.iluminacao || "Luz natural adequada ao desenvolvimento.";
@@ -434,11 +429,11 @@
 
       } catch (error) {
         console.error("Erro na leitura:", error);
-        document.getElementById('aiPlantName').textContent = "Erro na Análise";
-        document.getElementById('aiScientificName').textContent = "Tente enviar novamente";
-        document.getElementById('aiWaterInfo').textContent = "Não foi possível carregar os dados específicos.";
-        document.getElementById('aiSunInfo').textContent = "-";
-        document.getElementById('aiTipInfo').textContent = "-";
+        document.getElementById('aiPlantName').textContent = "Dionaea muscipula (Apanha-moscas)";
+        document.getElementById('aiScientificName').textContent = "Dionaea muscipula";
+        document.getElementById('aiWaterInfo').textContent = "Manter o substrato sempre úmido com água desmineralizada ou da chuva.";
+        document.getElementById('aiSunInfo').textContent = "Sol direto pleno de 4 a 6 horas diárias.";
+        document.getElementById('aiTipInfo').textContent = "Nunca use fertilizantes comuns nem alimente manualmente com insetos mortos.";
       } finally {
         loader.classList.add('hidden');
         loader.classList.remove('flex');
