@@ -5,11 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Explorar Plantas — Guia, Blog & Identificação IA</title>
   <!-- Tailwind CSS -->
-  <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
   <!-- Lucide Icons -->
-  <script src="[https://unpkg.com/lucide@latest](https://unpkg.com/lucide@latest)"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
   <style>
-    @import url('[https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap](https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap)');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
       background-color: #f9f6f0;
@@ -76,7 +76,7 @@
         </div>
       </div>
 
-      <!-- WIDGET INTERATIVO: CURIOSIDADE DO DIA (Conectado ao Gemini via Worker) -->
+      <!-- WIDGET INTERATIVO: CURIOSIDADE DO DIA -->
       <div class="bg-[#f2ebd9] border border-[#dcd3bf] p-6 rounded-3xl shadow-sm space-y-4 relative overflow-hidden">
         <div class="flex items-center justify-between border-b border-[#dcd3bf] pb-3">
           <div class="flex items-center gap-2 text-[#084c3c] font-bold text-sm">
@@ -92,7 +92,7 @@
 
         <div class="min-h-[60px] flex items-center">
           <p id="factText" class="text-sm sm:text-base font-semibold text-slate-800 leading-relaxed transition-all duration-300">
-            A carregar curiosidade do dia via Gemini...
+            A carregar curiosidade do dia...
           </p>
         </div>
 
@@ -161,7 +161,7 @@
       <div id="plantGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <div class="plant-card bg-[#f2ebd9] rounded-2xl border border-[#dcd3bf] overflow-hidden shadow-sm group" data-category="exterior" data-name="rosa do deserto adenium obesum">
           <div class="h-56 overflow-hidden relative">
-            <img src="[https://images.unsplash.com/photo-1598880940371-c756e015fea1?auto=format&fit=crop&w=800&q=80](https://images.unsplash.com/photo-1598880940371-c756e015fea1?auto=format&fit=crop&w=800&q=80)" alt="Rosa do Deserto" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+            <img src="https://images.unsplash.com/photo-1598880940371-c756e015fea1?auto=format&fit=crop&w=800&q=80" alt="Rosa do Deserto" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
             <div class="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-[#084c3c]/90 text-[11px] font-bold text-amber-300">Sol Pleno</div>
           </div>
           <div class="p-5 space-y-2">
@@ -172,7 +172,7 @@
 
         <div class="plant-card bg-[#f2ebd9] rounded-2xl border border-[#dcd3bf] overflow-hidden shadow-sm group" data-category="interior" data-name="lirio da paz spathiphyllum">
           <div class="h-56 overflow-hidden relative">
-            <img src="[https://images.unsplash.com/photo-1593691509543-c55fb32e7355?auto=format&fit=crop&w=800&q=80](https://images.unsplash.com/photo-1593691509543-c55fb32e7355?auto=format&fit=crop&w=800&q=80)" alt="Lírio da Paz" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+            <img src="https://images.unsplash.com/photo-1593691509543-c55fb32e7355?auto=format&fit=crop&w=800&q=80" alt="Lírio da Paz" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
             <div class="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-[#084c3c]/90 text-[11px] font-bold text-emerald-200">Luz Indireta</div>
           </div>
           <div class="p-5 space-y-2">
@@ -183,7 +183,7 @@
 
         <div class="plant-card bg-[#f2ebd9] rounded-2xl border border-[#dcd3bf] overflow-hidden shadow-sm group" data-category="interior" data-name="costela de adao monstera deliciosa">
           <div class="h-56 overflow-hidden relative">
-            <img src="[https://images.unsplash.com/photo-1614594975525-e45190c55d0b?auto=format&fit=crop&w=800&q=80](https://images.unsplash.com/photo-1614594975525-e45190c55d0b?auto=format&fit=crop&w=800&q=80)" alt="Costela de Adão" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+            <img src="https://images.unsplash.com/photo-1614594975525-e45190c55d0b?auto=format&fit=crop&w=800&q=80" alt="Costela de Adão" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
             <div class="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-[#084c3c]/90 text-[11px] font-bold text-emerald-200">Tendência</div>
           </div>
           <div class="p-5 space-y-2">
@@ -216,7 +216,7 @@
       </div>
     </section>
 
-    <!-- SEÇÃO 3: IDENTIFICAR PLANTA POR FOTO (IA GEMINI VIA WORKER) -->
+    <!-- SEÇÃO 3: IDENTIFICAR PLANTA POR FOTO -->
     <section id="sec-identificar" class="space-y-6 hidden">
       <div class="max-w-xl mx-auto bg-[#f2ebd9] border border-[#dcd3bf] rounded-3xl p-6 sm:p-8 text-center space-y-5 shadow-sm">
         <div class="w-14 h-14 bg-[#084c3c] text-white rounded-2xl flex items-center justify-center mx-auto shadow-md">
@@ -289,13 +289,11 @@
   <script>
     if (window.lucide) lucide.createIcons();
 
-    // URL do seu Cloudflare Worker
-    const WORKER_URL = "[https://explorar-plantasia.explicaplantas.workers.dev](https://explorar-plantasia.explicaplantas.workers.dev)";
+    const WORKER_URL = "https://explorar-plantasia.explicaplantas.workers.dev";
 
     let dailyFacts = [];
     let currentFactIndex = 0;
 
-    // Busca as curiosidades dinâmicas direto do Cloudflare Worker (Gemini)
     async function loadDailyFacts() {
       const cacheKey = "explorar_facts_" + new Date().toLocaleDateString("pt-BR", { timeZone: "America/Sao_Paulo" });
       const cached = localStorage.getItem(cacheKey);
@@ -312,7 +310,7 @@
           dailyFacts = await response.json();
           localStorage.setItem(cacheKey, JSON.stringify(dailyFacts));
         } else {
-          throw new Error("Erro na busca de fatos");
+          throw new Error("Erro ao buscar fatos");
         }
       } catch (err) {
         dailyFacts = [
@@ -350,7 +348,9 @@
         if (btn) btn.className = "px-3.5 py-2 rounded-xl text-[#084c3c] hover:bg-[#eae3d2] transition";
       });
 
-      document.getElementById('sec-' + tabName).classList.remove('hidden');
+      const target = document.getElementById('sec-' + tabName);
+      if (target) target.classList.remove('hidden');
+
       const activeBtn = document.getElementById('nav-' + tabName);
       if (activeBtn) activeBtn.className = "px-3.5 py-2 rounded-xl bg-[#084c3c] text-white shadow-md transition";
 
@@ -404,11 +404,11 @@
 
         const plantInfo = await response.json();
 
-        document.getElementById('aiPlantName').textContent = plantInfo.nomePopular || "Espécie Identificada";
+        document.getElementById('aiPlantName').textContent = plantInfo.nomePopular || "Planta Identificada";
         document.getElementById('aiScientificName').textContent = plantInfo.nomeCientifico || "";
-        document.getElementById('aiWaterInfo').textContent = plantInfo.rega || "Rega conforme o solo secar.";
-        document.getElementById('aiSunInfo').textContent = plantInfo.iluminacao || "Luz natural abundante.";
-        document.getElementById('aiTipInfo').textContent = plantInfo.dicaEspecial || "Mantenha adubação em dia.";
+        document.getElementById('aiWaterInfo').textContent = plantInfo.rega || "Rega moderada conforme secagem.";
+        document.getElementById('aiSunInfo').textContent = plantInfo.iluminacao || "Luz natural adequada.";
+        document.getElementById('aiTipInfo').textContent = plantInfo.dicaEspecial || "Mantenha o solo drenado.";
 
       } catch (error) {
         console.error("Erro:", error);
