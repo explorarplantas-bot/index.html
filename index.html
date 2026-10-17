@@ -70,7 +70,7 @@
   <!-- Conteúdo Principal -->
   <main class="max-w-6xl mx-auto px-4 py-8 flex-1 w-full space-y-8">
 
-    <!-- SEÇÃO HOME (NOVA ÁREA INÍCIO) -->
+    <!-- SEÇÃO HOME (ÁREA INÍCIO) -->
     <section id="sec-home" class="space-y-8">
       
       <!-- Banner de Boas-Vindas da Marca -->
@@ -85,6 +85,36 @@
           <p class="text-emerald-100 text-sm sm:text-base leading-relaxed">
             Escolha uma das seções abaixo para acessar o nosso catálogo com fotos reais, ler dicas de cultivo no blog ou identificar uma espécie por foto.
           </p>
+        </div>
+      </div>
+
+      <!-- WIDGET INTERATIVO: CURIOSIDADE DO DIA -->
+      <div class="bg-[#f2ebd9] border border-[#dcd3bf] p-6 rounded-3xl shadow-sm space-y-4 relative overflow-hidden">
+        <div class="flex items-center justify-between border-b border-[#dcd3bf] pb-3">
+          <div class="flex items-center gap-2 text-[#084c3c] font-bold text-sm">
+            <div class="w-8 h-8 rounded-full bg-[#084c3c] text-white flex items-center justify-center">
+              <i data-lucide="sparkles" class="w-4 h-4"></i>
+            </div>
+            <span>Curiosidade do Dia</span>
+          </div>
+          <span id="factCounter" class="text-[11px] font-bold text-[#084c3c]/80 bg-[#e5dfd3] px-3 py-1 rounded-full">
+            1 de 5
+          </span>
+        </div>
+
+        <!-- Texto da Curiosidade -->
+        <div class="min-h-[60px] flex items-center">
+          <p id="factText" class="text-sm sm:text-base font-semibold text-slate-800 leading-relaxed transition-all duration-300">
+            Carregando curiosidade do dia...
+          </p>
+        </div>
+
+        <!-- Botão para Próxima Curiosidade -->
+        <div class="flex justify-end pt-2">
+          <button onclick="nextFact()" class="px-4 py-2.5 rounded-xl bg-[#084c3c] text-white text-xs font-bold hover:bg-[#06382c] transition flex items-center gap-2 shadow-md">
+            <span>Próxima curiosidade</span>
+            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+          </button>
         </div>
       </div>
 
@@ -144,8 +174,6 @@
 
     <!-- SEÇÃO 1: CATÁLOGO DE PLANTAS -->
     <section id="sec-catalogo" class="space-y-6 hidden">
-      
-      <!-- Hero Banner Catálogo -->
       <div class="relative rounded-3xl overflow-hidden bg-[#084c3c] p-6 sm:p-10 shadow-xl text-white">
         <div class="relative z-10 max-w-2xl space-y-3">
           <span class="px-3 py-1 rounded-full text-xs font-bold tracking-wide bg-white/10 text-emerald-200 border border-white/20">
@@ -160,7 +188,6 @@
         </div>
       </div>
 
-      <!-- Barra de Pesquisa e Filtros -->
       <div class="flex flex-col md:flex-row gap-4 justify-between items-center bg-[#f2ebd9] p-3.5 rounded-2xl border border-[#dcd3bf]">
         <div class="relative w-full md:w-80">
           <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"></i>
@@ -174,7 +201,6 @@
         </div>
       </div>
 
-      <!-- Grid de Cards com Imagens Reais -->
       <div id="plantGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         
         <!-- Planta 1: Rosa do Deserto -->
@@ -328,9 +354,80 @@
     <p>© 2026 @ExplorarPlantas — Guia Botânico, Dicas & Identificação de Espécies.</p>
   </footer>
 
-  <!-- Lógica de Alternância das Abas -->
+  <!-- Lógica do Site e do Widget da Curiosidade do Dia -->
   <script>
     lucide.createIcons();
+
+    // Base de Curiosidades Curtas de Botânica, Jardinagem e Meio Ambiente
+    const curiosidadesPool = [
+      "Sabia que o gel da babosa é utilizado para passar na pele, melhorando o aspecto e auxiliando na regeneração?",
+      "Sabia que no ano de 2026 as taxas de desmatamento apresentaram uma redução expressiva devido ao reforço no monitoramento por satélite?",
+      "Sabia que a casca de ovo, lavada, seca e triturada, é uma ótima fonte de cálcio natural para fortalecer as plantas?",
+      "Sabia que a borra de café misturada ao substrato ajuda a melhorar a retenção de humidade e atrai minhocas benéficas ao solo?",
+      "Sabia que a canela em pó funciona como um fungicida e cicatrizante natural incrível ao podar os galhos da Rosa do Deserto?",
+      "Sabia que regar as plantas sob o sol forte do meio-dia pode queimar as folhas devido ao efeito de lupa das gotas de água?",
+      "Sabia que o Lírio da Paz é uma das plantas mais eficientes para purificar o ar de ambientes fechados, filtrando impurezas?",
+      "Sabia que a água utilizada para cozer ovos ou legumes (sem sal) é riquíssima em minerais para regar o seu jardim?",
+      "Sabia que as suculentas guardam água dentro das próprias folhas e por isso precisam de solo com muita areia e pouca rega?",
+      "Sabia que conversar ou colocar música suave perto das plantas pode estimular a sua transpiração e desenvolvimento saudável?"
+    ];
+
+    let dailyFacts = [];
+    let currentFactIndex = 0;
+
+    // Retorna a data atual formatada com base no Fuso Horário de Brasília (UTC-3 / America/Sao_Paulo)
+    function getBrasiliaDateString() {
+      const now = new Date();
+      const brasiliaDate = new Date(now.toLocaleString("en-US", { timeZone: "America/Sao_Paulo" }));
+      const yyyy = brasiliaDate.getFullYear();
+      const mm = String(brasiliaDate.getMonth() + 1).padStart(2, '0');
+      const dd = String(brasiliaDate.getDate()).padStart(2, '0');
+      return `${yyyy}-${mm}-${dd}`;
+    }
+
+    // Calcula de forma determinística 5 curiosidades únicas para cada dia (virando às 00h de Brasília)
+    function loadDailyFacts() {
+      const dateStr = getBrasiliaDateString();
+      
+      let seed = 0;
+      for (let i = 0; i < dateStr.length; i++) {
+        seed += dateStr.charCodeAt(i) * (i + 1);
+      }
+
+      // Ordena o array com base no número gerado pela data de Brasília
+      const shuffled = [...curiosidadesPool].sort((a, b) => {
+        const hashA = (a.length * seed) % 100;
+        const hashB = (b.length * seed) % 100;
+        return hashA - hashB;
+      });
+
+      dailyFacts = shuffled.slice(0, 5);
+      currentFactIndex = 0;
+      displayCurrentFact();
+    }
+
+    function displayCurrentFact() {
+      const factTextEl = document.getElementById('factText');
+      const factCounterEl = document.getElementById('factCounter');
+
+      if (factTextEl && dailyFacts.length > 0) {
+        factTextEl.style.opacity = '0';
+        setTimeout(() => {
+          factTextEl.textContent = dailyFacts[currentFactIndex];
+          factTextEl.style.opacity = '1';
+        }, 150);
+      }
+
+      if (factCounterEl) {
+        factCounterEl.textContent = `${currentFactIndex + 1} de 5`;
+      }
+    }
+
+    function nextFact() {
+      if (dailyFacts.length === 0) return;
+      currentFactIndex = (currentFactIndex + 1) % dailyFacts.length;
+      displayCurrentFact();
+    }
 
     function showTab(tabName) {
       document.getElementById('sec-home').classList.add('hidden');
@@ -378,6 +475,11 @@
         document.getElementById('uploadResult').classList.remove('hidden');
       }
     }
+
+    // Carregar curiosidades diárias assim que a página abrir
+    document.addEventListener('DOMContentLoaded', () => {
+      loadDailyFacts();
+    });
   </script>
 </body>
 </html>
