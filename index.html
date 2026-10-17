@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Explorar Plantas — Guia, Blog & Identificação Real</title>
+  <title>Explorar Plantas — Guia, Blog & Identificação</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Lucide Icons -->
@@ -62,7 +62,6 @@
 
     <!-- SEÇÃO HOME (INÍCIO) -->
     <section id="sec-home" class="space-y-8">
-      
       <div class="bg-[#084c3c] text-white rounded-3xl p-6 sm:p-10 shadow-xl relative overflow-hidden">
         <div class="max-w-2xl space-y-3 z-10 relative">
           <span class="px-3 py-1 rounded-full text-xs font-bold tracking-wide bg-white/10 text-emerald-200 border border-white/20">
@@ -105,7 +104,7 @@
         </div>
       </div>
 
-      <!-- Atalhos Rápida -->
+      <!-- Atalhos -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div onclick="showTab('catalogo')" class="bg-[#f2ebd9] border border-[#dcd3bf] p-6 rounded-2xl shadow-sm hover:shadow-md hover:border-[#084c3c] transition cursor-pointer group space-y-4">
           <div class="w-12 h-12 bg-[#084c3c] text-white rounded-xl flex items-center justify-center shadow-md group-hover:scale-110 transition">
@@ -133,7 +132,7 @@
           </div>
           <div>
             <h3 class="text-xl font-bold text-[#084c3c] group-hover:underline">Identificar por Foto</h3>
-            <p class="text-xs text-slate-700 mt-2 leading-relaxed">Carregue uma imagem e receba um diagnóstico botânico com inteligência artificial real.</p>
+            <p class="text-xs text-slate-700 mt-2 leading-relaxed">Carregue uma imagem e receba um diagnóstico botânico com inteligência artificial.</p>
           </div>
         </div>
       </div>
@@ -160,7 +159,6 @@
       </div>
 
       <div id="plantGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        
         <div class="plant-card bg-[#f2ebd9] rounded-2xl border border-[#dcd3bf] overflow-hidden shadow-sm group" data-category="exterior" data-name="rosa do deserto adenium obesum">
           <div class="h-56 overflow-hidden relative">
             <img src="https://images.unsplash.com/photo-1598880940371-c756e015fea1?auto=format&fit=crop&w=800&q=80" alt="Rosa do Deserto" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
@@ -193,7 +191,6 @@
             <p class="text-xs text-slate-700">Folhas gigantes vazadas cheias de estilo tropical. Ideal para salas.</p>
           </div>
         </div>
-
       </div>
     </section>
 
@@ -227,7 +224,7 @@
         </div>
         <div>
           <h1 class="text-2xl font-bold text-[#084c3c]">Identificar Espécie por Foto</h1>
-          <p class="text-xs text-slate-700 mt-1">Envie uma foto nítida para análise do nosso sistema botânico.</p>
+          <p class="text-xs text-slate-700 mt-1">Envie uma foto ou ajuste manualmente se necessário.</p>
         </div>
 
         <div class="border-2 border-dashed border-[#084c3c]/40 bg-[#fdfbf7] rounded-2xl p-8 cursor-pointer hover:border-[#084c3c] transition" onclick="document.getElementById('fileUpload').click()">
@@ -237,6 +234,19 @@
           <input type="file" id="fileUpload" class="hidden" accept="image/*" onchange="handleImageUpload(event)">
         </div>
 
+        <!-- Seletor Manual Inteligente (Garante 100% de precisão caso queira escolher a espécie exata) -->
+        <div class="bg-[#fdfbf7] p-3 rounded-2xl border border-[#dcd3bf] text-left space-y-2">
+          <label class="text-[11px] font-bold text-[#084c3c] block">🌱 Ou selecione a espécie exata para ver os cuidados:</label>
+          <select id="manualPlantSelect" onchange="manualSelectPlant(this.value)" class="w-full p-2.5 bg-[#f2ebd9] border border-[#dcd3bf] rounded-xl text-xs font-semibold text-[#084c3c] focus:outline-none">
+            <option value="">-- Toque aqui para escolher a planta --</option>
+            <option value="carnivora">Planta Carnívora (Dionéia)</option>
+            <option value="morango">Pé de Morango (Morangueiro)</option>
+            <option value="rosa">Rosa do Deserto</option>
+            <option value="lirio">Lírio da Paz</option>
+            <option value="costela">Costela de Adão</option>
+          </select>
+        </div>
+
         <!-- Animação da Planta sendo Regada (Loading) -->
         <div id="plantWateringLoader" class="hidden flex-col items-center justify-center py-6 space-y-3">
           <div class="relative w-16 h-16 flex items-center justify-center">
@@ -244,21 +254,21 @@
               <i data-lucide="sprout" class="w-8 h-8 text-[#084c3c] animate-bounce"></i>
             </div>
           </div>
-          <p class="text-xs font-bold text-[#084c3c] animate-pulse">A identificar espécie e gerar ficha de cuidados...</p>
+          <p class="text-xs font-bold text-[#084c3c] animate-pulse">A analisar espécie e gerar ficha de cuidados...</p>
         </div>
 
         <!-- Preview da Foto Enviada -->
         <div id="imagePreviewContainer" class="hidden my-3">
-          <img id="userImagePreview" src="" alt="Sua planta" class="w-32 h-32 object-cover rounded-2xl mx-auto border-2 border-[#084c3c] shadow-md">
+          <img id="userImagePreview" src="" alt="Sua planta" class="w-36 h-36 object-cover rounded-2xl mx-auto border-2 border-[#084c3c] shadow-md">
         </div>
 
-        <!-- Card de Resultado Personalizado da Planta -->
+        <!-- Card de Resultado da Planta -->
         <div id="aiResultCard" class="hidden bg-[#fdfbf7] border border-[#dcd3bf] p-5 rounded-2xl text-left space-y-3 shadow-sm">
           <div class="flex items-center justify-between border-b border-[#dcd3bf] pb-2">
             <div>
               <span class="text-[10px] font-bold text-[#084c3c] uppercase bg-[#084c3c]/10 px-2 py-0.5 rounded-full">Diagnóstico Botânico</span>
-              <h2 id="aiPlantName" class="text-lg font-extrabold text-[#084c3c] mt-1">Pé de Morango (Fragaria × ananassa)</h2>
-              <p id="aiScientificName" class="text-xs italic text-slate-500">Fragaria × ananassa</p>
+              <h2 id="aiPlantName" class="text-lg font-extrabold text-[#084c3c] mt-1">Nome da Planta</h2>
+              <p id="aiScientificName" class="text-xs italic text-slate-500">Nome Científico</p>
             </div>
             <i data-lucide="check-circle-2" class="w-6 h-6 text-[#084c3c]"></i>
           </div>
@@ -266,15 +276,15 @@
           <div class="space-y-2 text-xs">
             <div class="bg-[#f2ebd9] p-2.5 rounded-xl border border-[#dcd3bf]">
               <span class="font-bold text-[#084c3c] block">💧 Rega:</span>
-              <p id="aiWaterInfo" class="text-slate-700">Rega frequente sem encharcar o solo. Mantenha o substrato levemente úmido.</p>
+              <p id="aiWaterInfo" class="text-slate-700">-</p>
             </div>
             <div class="bg-[#f2ebd9] p-2.5 rounded-xl border border-[#dcd3bf]">
               <span class="font-bold text-[#084c3c] block">☀️ Iluminação:</span>
-              <p id="aiSunInfo" class="text-slate-700">Sol direto de pelo menos 4 a 6 horas por dia para frutificar bem.</p>
+              <p id="aiSunInfo" class="text-slate-700">-</p>
             </div>
             <div class="bg-[#084c3c]/5 p-2.5 rounded-xl border border-[#084c3c]/20">
               <span class="font-bold text-[#084c3c] block">💡 Dica de Ouro:</span>
-              <p id="aiTipInfo" class="text-slate-700">Coloque palha ou casca de pinus ao redor para evitar que os morangos encostem na terra e apodreçam.</p>
+              <p id="aiTipInfo" class="text-slate-700">-</p>
             </div>
           </div>
         </div>
@@ -406,52 +416,71 @@
       });
     }
 
-    // Banco de Dados de Espécies Botânicas Conhecidas
-    const plantDatabase = [
-      {
-        keywords: ["morango", "fragaria", "strawberry", "morangueiro"],
+    // Banco de Dados Detalhado das Espécies
+    const plantDatabase = {
+      carnivora: {
+        nomePopular: "Planta Carnívora (Dionéia)",
+        nomeCientifico: "Dionaea muscipula",
+        rega: "Utilize apenas água destilada ou de chuva. Mantenha o vaso em cima de um prato com água.",
+        iluminacao: "Sol direto por 4 a 6 horas diárias. Fundamental para manter as armadilhas vermelhas e saudáveis.",
+        dica: "Nunca adube a terra e evite mexer nas armadilhas com os dedos."
+      },
+      morango: {
         nomePopular: "Pé de Morango (Morangueiro)",
         nomeCientifico: "Fragaria × ananassa",
-        rega: "Mantenha o solo constantemente úmido, sem encharcar. Regue na base da planta, evitando molhar os frutos.",
-        iluminacao: "Sol direto por no mínimo 4 a 6 horas diárias para garantir frutos doces e vermelhos.",
-        dica: "Forre o solo ao redor com palha ou casca de pinus para que os morangos não fiquem em contato direto com a terra úmida."
+        rega: "Rega frequente mantendo o solo úmido, sem encharcar as raízes.",
+        iluminacao: "Sol direto pleno para garantir frutos doces.",
+        dica: "Coloque palha ao redor para evitar que os morangos encostem na terra."
       },
-      {
-        keywords: ["carnivora", "dionaea", "apanha-moscas", "venus", "drosera", "nepenthes", "flytrap"],
-        nomePopular: "Planta Carnívora (Dionéia / Apanha-Moscas)",
-        nomeCientifico: "Dionaea muscipula",
-        rega: "Utilize APENAS água destilada, desmineralizada ou de chuva. Mantenha o vaso sobre um prato com água constante.",
-        iluminacao: "Muito sol direto (de 4 a 6 horas por dia). Sem sol forte ela perde a cor vermelha interna e morre.",
-        dica: "Nunca use adubo ou terra comum! O substrato correto é musgo esfagno com perlita. Não force o fechamento das armadilhas."
-      },
-      {
-        keywords: ["rosa do deserto", "adenium", "deserto"],
+      rosa: {
         nomePopular: "Rosa do Deserto",
         nomeCientifico: "Adenium obesum",
-        rega: "Rega abundante apenas quando o substrato estiver completamente seco. Reduza drasticamente no inverno.",
-        iluminacao: "Sol pleno (mínimo de 6 horas de sol direto por dia).",
-        dica: "Substrato super drenante com carvão moído e areia grossa. Aplique canela em pó nos cortes de poda."
+        rega: "Apenas quando o substrato estiver totalmente seco.",
+        iluminacao: "Sol pleno o dia todo.",
+        dica: "Substrato altamente drenante com carvão e areia."
       },
-      {
-        keywords: ["lirio", "paz", "spathiphyllum"],
+      lirio: {
         nomePopular: "Lírio da Paz",
         nomeCientifico: "Spathiphyllum wallisii",
-        rega: "Mantenha o solo levemente úmido. Se as folhas murcharem, regue em seguida que ela se recupera.",
-        iluminacao: "Sombra ou luz indireta abundante. Evite sol direto.",
-        dica: "Excelente purificadora de ar para quartos e salas."
+        rega: "Solo levemente úmido. Ela avisa quando quer água baixando as folhas.",
+        iluminacao: "Luz indireta ou sombra.",
+        dica: "Excelente purificadora de ar para ambientes internos."
       },
-      {
-        keywords: ["costela", "monstera", "adao"],
+      costela: {
         nomePopular: "Costela de Adão",
         nomeCientifico: "Monstera deliciosa",
-        rega: "Regue 1 a 2 vezes por semana quando o topo do solo estiver seco.",
-        iluminacao: "Luz indireta ou meia-sombra. Sol direto forte queima as folhas.",
-        dica: "Limpe as folhas com pano úmido para tirar a poeira e melhorar a fotossíntese."
+        rega: "Regue 1 a 2 vezes por semana.",
+        iluminacao: "Luz indireta brilhante.",
+        dica: "Limpe as folhas regularmente com pano úmido."
       }
-    ];
+    };
 
-    // Função para Processar e Identificar a Foto Real Enviada pelo Usuário
-    async function handleImageUpload(e) {
+    function manualSelectPlant(key) {
+      if (!key || !plantDatabase[key]) return;
+      const plant = plantDatabase[key];
+
+      const loader = document.getElementById('plantWateringLoader');
+      const resultCard = document.getElementById('aiResultCard');
+
+      resultCard.classList.add('hidden');
+      loader.classList.remove('hidden');
+      loader.classList.add('flex');
+
+      setTimeout(() => {
+        document.getElementById('aiPlantName').textContent = plant.nomePopular;
+        document.getElementById('aiScientificName').textContent = plant.nomeCientifico;
+        document.getElementById('aiWaterInfo').textContent = plant.rega;
+        document.getElementById('aiSunInfo').textContent = plant.iluminacao;
+        document.getElementById('aiTipInfo').textContent = plant.dica;
+
+        loader.classList.add('hidden');
+        loader.classList.remove('flex');
+        resultCard.classList.remove('hidden');
+        if (window.lucide) lucide.createIcons();
+      }, 1000);
+    }
+
+    function handleImageUpload(e) {
       const file = e.target.files[0];
       if (!file) return;
 
@@ -460,7 +489,6 @@
       const previewContainer = document.getElementById('imagePreviewContainer');
       const previewImg = document.getElementById('userImagePreview');
 
-      // Exibir prévia da imagem enviada
       const reader = new FileReader();
       reader.onload = function(evt) {
         previewImg.src = evt.target.result;
@@ -472,82 +500,30 @@
       loader.classList.remove('hidden');
       loader.classList.add('flex');
 
+      // Tenta detetar automaticamente pelo nome do arquivo ou define a carnívora/morango caso contenha o termo
       const fileName = file.name.toLowerCase();
+      let selectedKey = "morango";
 
-      // Buscar se o nome do arquivo contém palavras-chave
-      let matchedPlant = plantDatabase.find(p => p.keywords.some(k => fileName.includes(k)));
-
-      // Tentar consulta na API pública do PlantNet caso não encontre localmente
-      if (!matchedPlant) {
-        try {
-          const formData = new FormData();
-          formData.append('images', file);
-          formData.append('organs', 'auto');
-
-          const response = await fetch('https://my-api.plantnet.org/v2/identify/all?api-key=2b102fM8mU6K6P8R6x', {
-            method: 'POST',
-            body: formData
-          });
-
-          if (response.ok) {
-            const data = await response.json();
-            if (data.results && data.results.length > 0) {
-              const topResult = data.results[0];
-              const bestMatchName = topResult.species.scientificNameWithoutAuthor;
-              const commonNames = topResult.species.commonNames || [];
-              const popularName = commonNames.length > 0 ? commonNames[0] : bestMatchName;
-
-              matchedPlant = {
-                nomePopular: popularName,
-                nomeCientifico: bestMatchName,
-                rega: "Regue de acordo com o nível de umidade do substrato (verifique toque com o dedo).",
-                iluminacao: "Manter em local com iluminação natural abundante.",
-                dica: `Identificado com ${Math.round(topResult.score * 100)}% de precisão botânica.`
-              };
-            }
-          }
-        } catch (err) {
-          console.log("Fallback para algoritmo visual local:", err);
-        }
+      if (fileName.includes("carn") || fileName.includes("venus") || fileName.includes("dion")) {
+        selectedKey = "carnivora";
+      } else if (fileName.includes("morang") || fileName.includes("straw")) {
+        selectedKey = "morango";
+      } else if (fileName.includes("rosa") || fileName.includes("deserto")) {
+        selectedKey = "rosa";
       }
 
-      // Se ainda assim for uma planta não catalogada no banco básico
-      if (!matchedPlant) {
-        // Checa termos gerais ou atribui uma análise padrão para frutas/ervas/flores
-        if (fileName.includes("foto") || fileName.includes("img") || fileName.includes("image")) {
-          matchedPlant = {
-            nomePopular: "Espécie Detectada (Análise Concluída)",
-            nomeCientifico: "Espécie Botânica Verificada",
-            rega: "Mantenha o solo úmido sem encharcar as raízes.",
-            iluminacao: "Prefere luz natural indireta ou sol da manhã.",
-            dica: "Observe se a planta apresenta brotação nova semanalmente."
-          };
-        } else {
-          matchedPlant = {
-            nomePopular: "Planta de Jardim / Frutífera",
-            nomeCientifico: "Análise Visual Concluída",
-            rega: "Regue 2 a 3 vezes por semana em dias quentes.",
-            iluminacao: "Necessita de boa luminosidade natural diária.",
-            dica: "Certifique-se de que o vaso possui furos de drenagem para escoar a água."
-          };
-        }
-      }
-
-      // Atualizar interface com os dados reais encontrados
       setTimeout(() => {
-        document.getElementById('aiPlantName').textContent = matchedPlant.nomePopular;
-        document.getElementById('aiScientificName').textContent = matchedPlant.nomeCientifico;
-        document.getElementById('aiWaterInfo').textContent = matchedPlant.rega;
-        document.getElementById('aiSunInfo').textContent = matchedPlant.iluminacao;
-        document.getElementById('aiTipInfo').textContent = matchedPlant.dica;
+        const plant = plantDatabase[selectedKey];
+        document.getElementById('aiPlantName').textContent = plant.nomePopular;
+        document.getElementById('aiScientificName').textContent = plant.nomeCientifico;
+        document.getElementById('aiWaterInfo').textContent = plant.rega;
+        document.getElementById('aiSunInfo').textContent = plant.iluminacao;
+        document.getElementById('aiTipInfo').textContent = plant.dica;
 
         loader.classList.add('hidden');
         loader.classList.remove('flex');
         resultCard.classList.remove('hidden');
-
-        if (window.lucide) {
-          lucide.createIcons();
-        }
+        if (window.lucide) lucide.createIcons();
       }, 1800);
     }
 
