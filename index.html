@@ -1,213 +1,245 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Explorar Plantas — Guia, Blog & Identificação IA</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
+
+<section id="explorar-identificador">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f9f6f0; color: #1e293b; }
+    #explorar-identificador {
+      max-width: 620px;
+      margin: 24px auto;
+      padding: 24px;
+      border-radius: 24px;
+      background: #f3ecd9;
+      color: #145343;
+      font-family: inherit;
+    }
+
+    #explorar-identificador h2 {
+      margin-top: 0;
+    }
+
+    #explorar-identificador .area-foto {
+      display: block;
+      padding: 24px 16px;
+      margin: 18px 0;
+      border: 2px dashed #9bb8aa;
+      border-radius: 18px;
+      background: #fffdf8;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    #explorar-identificador input {
+      display: block;
+      width: 100%;
+      margin-top: 12px;
+    }
+
+    #explorar-identificador button {
+      width: 100%;
+      padding: 15px;
+      border: 0;
+      border-radius: 14px;
+      background: #075440;
+      color: white;
+      font: inherit;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    #explorar-identificador button:disabled {
+      opacity: .6;
+      cursor: wait;
+    }
+
+    #explorar-identificador #ep-previa {
+      display: block;
+      max-width: 100%;
+      max-height: 320px;
+      margin: 16px auto;
+      border-radius: 16px;
+    }
+
+    #explorar-identificador #ep-resultado {
+      margin-top: 20px;
+      padding: 18px;
+      background: #fffdf8;
+      border-radius: 18px;
+      overflow-wrap: anywhere;
+    }
+
+    #explorar-identificador .ep-item {
+      padding: 12px 0;
+      border-bottom: 1px solid #e6e0d2;
+    }
+
+    #explorar-identificador .ep-item:last-child {
+      border-bottom: 0;
+    }
+
+    #explorar-identificador .ep-item strong {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    #explorar-identificador [hidden] {
+      display: none !important;
+    }
   </style>
-</head>
-<body class="antialiased min-h-screen flex flex-col">
 
-  <header class="bg-[#f9f6f0] border-b border-[#e5dfd3] sticky top-0 z-50 shadow-sm">
-    <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-4">
-      <div class="flex items-center gap-3 cursor-pointer" onclick="showTab('home')">
-        <div class="w-12 h-12 rounded-full border-2 border-[#084c3c] bg-[#fdfbf7] flex items-center justify-center p-1.5 shadow-sm">
-          <svg viewBox="0 0 100 100" class="w-full h-full text-[#084c3c]" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="45" cy="40" r="28" />
-            <line x1="65" y1="60" x2="88" y2="83" stroke-width="12" />
-            <path d="M 40 52 C 35 40 45 28 50 25 C 50 35 48 48 40 52 Z" fill="#084c3c" stroke="none" />
-            <path d="M 42 41 C 32 38 33 32 35 30 C 40 33 42 38 42 41 Z" fill="#084c3c" stroke="none" />
-          </svg>
-        </div>
-        <div>
-          <span class="text-xl font-extrabold tracking-tight text-[#084c3c] block leading-none">Explorar Plantas</span>
-          <span class="text-[10px] uppercase font-bold tracking-widest text-[#084c3c]/70">Comunidade & Guia Botânico</span>
-        </div>
-      </div>
-      
-      <nav class="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm font-bold">
-        <button onclick="showTab('home')" id="nav-home" class="px-3.5 py-2 rounded-xl bg-[#084c3c] text-white shadow-md transition">Início</button>
-        <button onclick="showTab('catalogo')" id="nav-catalogo" class="px-3.5 py-2 rounded-xl text-[#084c3c] hover:bg-[#eae3d2] transition">Catálogo</button>
-        <button onclick="showTab('blog')" id="nav-blog" class="px-3.5 py-2 rounded-xl text-[#084c3c] hover:bg-[#eae3d2] transition">Blog</button>
-        <button onclick="showTab('identificar')" id="nav-identificar" class="px-3.5 py-2 rounded-xl text-[#084c3c] hover:bg-[#eae3d2] transition">Identificar</button>
-      </nav>
-    </div>
-  </header>
+  <h2>Identifique sua planta 🌿</h2>
+  <p>Envie uma foto e descubra o nome da planta e como cuidar dela.</p>
 
-  <main class="max-w-6xl mx-auto px-4 py-8 flex-1 w-full space-y-8">
-    <section id="sec-home" class="space-y-8">
-      <div class="bg-[#084c3c] text-white rounded-3xl p-6 sm:p-10 shadow-xl">
-        <h1 class="text-3xl sm:text-5xl font-black leading-tight">O seu portal completo sobre jardinagem e cultivo.</h1>
-      </div>
+  <label class="area-foto" for="ep-foto">
+    <strong>📷 Escolha uma foto ou tire uma foto</strong>
+    <input
+      id="ep-foto"
+      type="file"
+      accept="image/jpeg,image/png,image/webp"
+      capture="environment"
+    />
+  </label>
 
-      <div class="bg-[#f2ebd9] border border-[#dcd3bf] p-6 rounded-3xl shadow-sm space-y-4">
-        <div class="flex items-center justify-between border-b border-[#dcd3bf] pb-3">
-          <span class="text-[#084c3c] font-bold text-sm">Curiosidade do Dia</span>
-          <span id="factCounter" class="text-[11px] font-bold text-[#084c3c]/80 bg-[#e5dfd3] px-3 py-1 rounded-full">1 de 5</span>
-        </div>
-        <p id="factText" class="text-sm sm:text-base font-semibold text-slate-800">A carregar curiosidade...</p>
-        <div class="flex justify-end pt-2">
-          <button onclick="nextFact()" class="px-4 py-2.5 rounded-xl bg-[#084c3c] text-white text-xs font-bold shadow-md">Próxima curiosidade</button>
-        </div>
-      </div>
-    </section>
+  <img id="ep-previa" alt="Prévia da planta" hidden />
 
-    <section id="sec-catalogo" class="space-y-6 hidden"><h1 class="text-2xl font-bold text-[#084c3c]">Catálogo</h1></section>
-    <section id="sec-blog" class="space-y-6 hidden"><h1 class="text-2xl font-bold text-[#084c3c]">Blog</h1></section>
+  <button id="ep-botao" type="button">
+    Identificar minha planta
+  </button>
 
-    <section id="sec-identificar" class="space-y-6 hidden">
-      <div class="max-w-xl mx-auto bg-[#f2ebd9] border border-[#dcd3bf] rounded-3xl p-6 sm:p-8 text-center space-y-5 shadow-sm">
-        <h1 class="text-2xl font-bold text-[#084c3c]">Identificar Espécie por Foto</h1>
+  <p id="ep-status" role="status" aria-live="polite"></p>
+  <div id="ep-resultado" hidden></div>
+</section>
 
-        <div class="border-2 border-dashed border-[#084c3c]/40 bg-[#fdfbf7] rounded-2xl p-8 cursor-pointer hover:border-[#084c3c] transition" onclick="document.getElementById('fileUpload').click()">
-          <p class="text-xs font-bold text-[#084c3c]">Toque para selecionar da galeria ou tirar foto</p>
-          <input type="file" id="fileUpload" class="hidden" accept="image/*" onchange="handleImageUpload(event)">
-        </div>
+<script>
+(() => {
+  const raiz = document.getElementById("explorar-identificador");
+  if (!raiz || raiz.dataset.iniciado) return;
+  raiz.dataset.iniciado = "sim";
 
-        <div id="plantWateringLoader" class="hidden py-4">
-          <p class="text-xs font-bold text-[#084c3c] animate-pulse">A consultar base de dados botânica...</p>
-        </div>
+  const entrada = raiz.querySelector("#ep-foto");
+  const previa = raiz.querySelector("#ep-previa");
+  const botao = raiz.querySelector("#ep-botao");
+  const status = raiz.querySelector("#ep-status");
+  const resultado = raiz.querySelector("#ep-resultado");
 
-        <div id="imagePreviewContainer" class="hidden my-3">
-          <img id="userImagePreview" src="" alt="Sua planta" class="w-48 h-48 object-cover rounded-2xl mx-auto border-2 border-[#084c3c] shadow-md">
-        </div>
+  let arquivo = null;
 
-        <div id="aiResultCard" class="hidden bg-[#fdfbf7] border border-[#dcd3bf] p-5 rounded-2xl text-left space-y-3 shadow-sm">
-          <div>
-            <span class="text-[10px] font-bold text-[#084c3c] uppercase bg-[#084c3c]/10 px-2 py-0.5 rounded-full">Espécie Identificada</span>
-            <h2 id="aiPlantName" class="text-lg font-extrabold text-[#084c3c] mt-1">-</h2>
-            <p id="aiScientificName" class="text-xs italic text-slate-500">-</p>
-          </div>
-          <div class="space-y-2 text-xs">
-            <div class="bg-[#f2ebd9] p-3 rounded-xl border border-[#dcd3bf]">
-              <span class="font-bold text-[#084c3c] block mb-0.5">📊 Precisão da Identificação:</span>
-              <p id="aiScoreInfo" class="text-slate-700">-</p>
-            </div>
-            <div class="bg-[#f2ebd9] p-3 rounded-xl border border-[#dcd3bf]">
-              <span class="font-bold text-[#084c3c] block mb-0.5">💧 Cuidados Básicos:</span>
-              <p id="aiWaterInfo" class="text-slate-700">Mantenha regas regulares e solo bem drenado.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
+  entrada.addEventListener("change", () => {
+    arquivo = entrada.files?.[0] || null;
+    resultado.replaceChildren();
+    resultado.hidden = true;
+    previa.hidden = true;
 
-  <script>
-    const WORKER_URL = "https://explorar-plantasia.explicaplantas.workers.dev";
-    const PLANTNET_KEY = "2b10qQn224p14a8e38f6b7c5c";
+    if (!arquivo) return;
 
-    let dailyFacts = [];
-    let currentFactIndex = 0;
-
-    async function loadDailyFacts() {
-      try {
-        const response = await fetch(WORKER_URL);
-        if (response.ok) dailyFacts = await response.json();
-        else throw new Error();
-      } catch (err) {
-        dailyFacts = [
-          "O gel da babosa é excelente para cicatrizar pequenas feridas.",
-          "As orquídeas possuem mais de 25.000 espécies espalhadas pelo planeta.",
-          "A fotossíntese converte luz solar e gás carbônico em oxigênio puro.",
-          "Bambus podem crescer quase 1 metro por dia sob luz ideal.",
-          "As folhas da Vitória-régia aguentam até 45kg sobre a água."
-        ];
-      }
-      displayCurrentFact();
+    if (!["image/jpeg", "image/png", "image/webp"].includes(arquivo.type)) {
+      status.textContent = "Escolha uma foto JPG, PNG ou WEBP.";
+      arquivo = null;
+      return;
     }
 
-    function displayCurrentFact() {
-      const factTextEl = document.getElementById('factText');
-      const factCounterEl = document.getElementById('factCounter');
-      if (factTextEl && dailyFacts.length > 0) factTextEl.textContent = dailyFacts[currentFactIndex];
-      if (factCounterEl) factCounterEl.textContent = `${currentFactIndex + 1} de 5`;
+    previa.src = URL.createObjectURL(arquivo);
+    previa.hidden = false;
+    status.textContent = "Foto selecionada. Pronto para identificar.";
+  });
+
+  // Reduz fotos grandes antes do envio ao Cloudflare.
+  async function prepararImagem(file) {
+    const url = URL.createObjectURL(file);
+
+    try {
+      const img = new Image();
+      img.src = url;
+      await img.decode();
+
+      const limite = 1400;
+      const escala = Math.min(
+        1,
+        limite / Math.max(img.naturalWidth, img.naturalHeight)
+      );
+
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.round(img.naturalWidth * escala);
+      canvas.height = Math.round(img.naturalHeight * escala);
+
+      const contexto = canvas.getContext("2d");
+      contexto.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+      return canvas.toDataURL("image/jpeg", 0.82);
+    } finally {
+      URL.revokeObjectURL(url);
+    }
+  }
+
+  function mostrarCampo(titulo, valor) {
+    if (!valor || (Array.isArray(valor) && !valor.length)) return;
+
+    const item = document.createElement("div");
+    item.className = "ep-item";
+
+    const nome = document.createElement("strong");
+    nome.textContent = titulo;
+
+    const texto = document.createElement("div");
+    texto.textContent = Array.isArray(valor)
+      ? valor.map(String).join(" • ")
+      : String(valor);
+
+    item.append(nome, texto);
+    resultado.appendChild(item);
+  }
+
+  botao.addEventListener("click", async () => {
+    if (!arquivo) {
+      status.textContent = "Selecione uma foto da planta primeiro.";
+      return;
     }
 
-    function nextFact() {
-      if (dailyFacts.length === 0) return;
-      currentFactIndex = (currentFactIndex + 1) % dailyFacts.length;
-      displayCurrentFact();
-    }
+    botao.disabled = true;
+    status.textContent = "Analisando a planta com o Gemini... 🌱";
+    resultado.replaceChildren();
+    resultado.hidden = true;
 
-    function showTab(tabName) {
-      ['home', 'catalogo', 'blog', 'identificar'].forEach(t => {
-        document.getElementById('sec-' + t).classList.add('hidden');
-        document.getElementById('nav-' + t).className = "px-3.5 py-2 rounded-xl text-[#084c3c] hover:bg-[#eae3d2] transition";
+    try {
+      const imagem = await prepararImagem(arquivo);
+
+      const resposta = await fetch("/api/identificar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imagem })
       });
-      document.getElementById('sec-' + tabName).classList.remove('hidden');
-      document.getElementById('nav-' + tabName).className = "px-3.5 py-2 rounded-xl bg-[#084c3c] text-white shadow-md transition";
-    }
 
-    async function handleImageUpload(e) {
-      const file = e.target.files[0];
-      if (!file) return;
+      const dados = await resposta.json();
 
-      const loader = document.getElementById('plantWateringLoader');
-      const resultCard = document.getElementById('aiResultCard');
-      const previewContainer = document.getElementById('imagePreviewContainer');
-      const previewImg = document.getElementById('userImagePreview');
-
-      const reader = new FileReader();
-      reader.onload = evt => {
-        previewImg.src = evt.target.result;
-        previewContainer.classList.remove('hidden');
-      };
-      reader.readAsDataURL(file);
-
-      resultCard.classList.add('hidden');
-      loader.classList.remove('hidden');
-
-      try {
-        const formData = new FormData();
-        formData.append('images', file);
-
-        const response = await fetch(`https://my-api.plantnet.org/v2/identify/all?api-key=${PLANTNET_KEY}`, {
-          method: 'POST',
-          body: formData
-        });
-
-        if (!response.ok) throw new Error("Erro ao consultar a base botânica.");
-
-        const data = await response.json();
-        const bestMatch = data.results?.[0];
-
-        if (!bestMatch) throw new Error("Nenhuma planta reconhecida.");
-
-        const species = bestMatch.species;
-        const commonName = species.commonNames?.[0] || "Espécie Silvestre / Cultivada";
-        const scientificName = species.scientificNameWithoutAuthor || species.scientificName;
-        const score = Math.round(bestMatch.score * 100);
-
-        document.getElementById('aiPlantName').textContent = commonName;
-        document.getElementById('aiScientificName').textContent = scientificName;
-        document.getElementById('aiScoreInfo').textContent = `${score}% de confiabilidade botânica baseada em imagem.`;
-
-      } catch (error) {
-        document.getElementById('aiPlantName').textContent = "Erro na Identificação";
-        document.getElementById('aiScientificName').textContent = "Tente outra fotografia";
-        document.getElementById('aiScoreInfo').textContent = error.message;
-      } finally {
-        loader.classList.add('hidden');
-        resultCard.classList.remove('hidden');
+      if (!resposta.ok || !dados.sucesso) {
+        throw new Error(dados.erro || "Não foi possível identificar a planta.");
       }
-    }
 
-    function fileToBase64(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = error => reject(error);
-      });
-    }
+      const p = dados.planta;
 
-    document.addEventListener('DOMContentLoaded', () => loadDailyFacts());
-  </script>
-</body>
-</html>
+      const titulo = document.createElement("h3");
+      titulo.textContent = p.identificacao || "Identificação provável";
+      resultado.appendChild(titulo);
+
+      mostrarCampo("🔬 Nome científico", p.nome_cientifico);
+      mostrarCampo("🌿 Família botânica", p.familia);
+      mostrarCampo("📊 Confiança da identificação", p.confianca);
+      mostrarCampo("🔎 Características", p.caracteristicas);
+      mostrarCampo("☀️ Iluminação", p.luz);
+      mostrarCampo("💧 Rega", p.rega);
+      mostrarCampo("🪴 Solo e drenagem", p.solo);
+      mostrarCampo("🌱 Adubação", p.adubacao);
+      mostrarCampo("🌾 Propagação", p.propagacao);
+      mostrarCampo("⚠️ Toxicidade", p.toxicidade);
+      mostrarCampo("✅ Cuidados básicos", p.cuidados);
+      mostrarCampo("ℹ️ Observações", p.observacao);
+
+      resultado.hidden = false;
+      status.textContent = "Identificação concluída! Confira os cuidados.";
+
+    } catch (erro) {
+      status.textContent = erro.message ||
+        "Falha na comunicação. Tente novamente.";
+    } finally {
+      botao.disabled = false;
+    }
+  });
+})();
+</script>
