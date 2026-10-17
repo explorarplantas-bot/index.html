@@ -70,7 +70,7 @@
         </div>
 
         <div id="plantWateringLoader" class="hidden py-4">
-          <p class="text-xs font-bold text-[#084c3c] animate-pulse">A analisar espécie botânica...</p>
+          <p class="text-xs font-bold text-[#084c3c] animate-pulse">A consultar base de dados botânica...</p>
         </div>
 
         <div id="imagePreviewContainer" class="hidden my-3">
@@ -85,16 +85,12 @@
           </div>
           <div class="space-y-2 text-xs">
             <div class="bg-[#f2ebd9] p-3 rounded-xl border border-[#dcd3bf]">
-              <span class="font-bold text-[#084c3c] block mb-0.5">💧 Rega recomendada:</span>
-              <p id="aiWaterInfo" class="text-slate-700">-</p>
+              <span class="font-bold text-[#084c3c] block mb-0.5">📊 Precisão da Identificação:</span>
+              <p id="aiScoreInfo" class="text-slate-700">-</p>
             </div>
             <div class="bg-[#f2ebd9] p-3 rounded-xl border border-[#dcd3bf]">
-              <span class="font-bold text-[#084c3c] block mb-0.5">☀️ Iluminação ideal:</span>
-              <p id="aiSunInfo" class="text-slate-700">-</p>
-            </div>
-            <div class="bg-[#084c3c]/5 p-3 rounded-xl border border-[#084c3c]/20">
-              <span class="font-bold text-[#084c3c] block mb-0.5">💡 Dica de Cultivo:</span>
-              <p id="aiTipInfo" class="text-slate-700">-</p>
+              <span class="font-bold text-[#084c3c] block mb-0.5">💧 Cuidados Básicos:</span>
+              <p id="aiWaterInfo" class="text-slate-700">Mantenha regas regulares e solo bem drenado.</p>
             </div>
           </div>
         </div>
@@ -104,6 +100,8 @@
 
   <script>
     const WORKER_URL = "https://explorar-plantasia.explicaplantas.workers.dev";
+    const PLANTNET_KEY = "2b10qQn224p14a8e38f6b7c5c";
+
     let dailyFacts = [];
     let currentFactIndex = 0;
 
@@ -166,33 +164,34 @@
       loader.classList.remove('hidden');
 
       try {
-        const base64String = await fileToBase64(file);
+        const formData = new FormData();
+        formData.append('images', file);
 
-        const response = await fetch(WORKER_URL, {
+        const response = await fetch(`https://my-api.plantnet.org/v2/identify/all?api-key=${PLANTNET_KEY}`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ image: base64String })
+          body: formData
         });
 
-        const plant = await response.json();
+        if (!response.ok) throw new Error("Erro ao consultar a base botânica.");
 
-        if (!plant.isPlant) {
-          alert("Não foi detetada nenhuma planta nesta imagem.");
-          return;
-        }
+        const data = await response.json();
+        const bestMatch = data.results?.[0];
 
-        document.getElementById('aiPlantName').textContent = plant.commonName || "Planta Identificada";
-        document.getElementById('aiScientificName').textContent = plant.scientificName || "";
-        document.getElementById('aiWaterInfo').textContent = plant.care?.water || "Rega adequada.";
-        document.getElementById('aiSunInfo').textContent = plant.care?.light || "Luz natural.";
-        document.getElementById('aiTipInfo').textContent = plant.tips?.join(" • ") || "Mantenha o solo equilibrado.";
+        if (!bestMatch) throw new Error("Nenhuma planta reconhecida.");
+
+        const species = bestMatch.species;
+        const commonName = species.commonNames?.[0] || "Espécie Silvestre / Cultivada";
+        const scientificName = species.scientificNameWithoutAuthor || species.scientificName;
+        const score = Math.round(bestMatch.score * 100);
+
+        document.getElementById('aiPlantName').textContent = commonName;
+        document.getElementById('aiScientificName').textContent = scientificName;
+        document.getElementById('aiScoreInfo').textContent = `${score}% de confiabilidade botânica baseada em imagem.`;
 
       } catch (error) {
-        document.getElementById('aiPlantName').textContent = "Erro na Análise";
-        document.getElementById('aiScientificName').textContent = "Tente novamente";
-        document.getElementById('aiWaterInfo').textContent = error.message;
-        document.getElementById('aiSunInfo').textContent = "-";
-        document.getElementById('aiTipInfo').textContent = "-";
+        document.getElementById('aiPlantName').textContent = "Erro na Identificação";
+        document.getElementById('aiScientificName').textContent = "Tente outra fotografia";
+        document.getElementById('aiScoreInfo').textContent = error.message;
       } finally {
         loader.classList.add('hidden');
         resultCard.classList.remove('hidden');
