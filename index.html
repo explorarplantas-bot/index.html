@@ -52,10 +52,15 @@
     .auth-box h3 { font-size: 1.05rem; color: var(--forest); margin: 16px 0 6px; }
     .auth-box p, .auth-box li { font-size: .88rem; color: var(--muted); line-height: 1.5; }
     .auth-box ul { padding-left: 18px; margin: 6px 0; }
+    
+    /* Abas do Modal */
+    .auth-tabs { display: flex; border-bottom: 1px solid var(--line); margin-bottom: 18px; gap: 10px; }
+    .auth-tab { flex: 1; padding: 10px; border: 0; background: none; font-weight: bold; color: var(--muted); border-bottom: 3px solid transparent; text-align: center; cursor: pointer; }
+    .auth-tab.active { color: var(--forest); border-bottom-color: var(--forest); }
+
     .auth-btn { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--line); margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 600; cursor: pointer; background: white; }
     .auth-btn.google { color: #333; }
-    .auth-btn.facebook { background: #1877f2; color: white; border: none; }
-    .auth-divider { text-align: center; margin: 15px 0; color: var(--muted); font-size: .85rem; position: relative; }
+    .auth-divider { text-align: center; margin: 18px 0; color: var(--muted); font-size: .85rem; position: relative; }
     .auth-form input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--line); margin-bottom: 10px; }
     .terms-check { display: flex; align-items: flex-start; gap: 8px; font-size: .85rem; color: var(--muted); margin: 12px 0 16px; text-align: left; background: #f4f8f1; padding: 12px; border-radius: 12px; border: 1px solid var(--line); }
     .terms-check input { margin-top: 3px; cursor: pointer; width: 18px; height: 18px; flex: none; }
@@ -240,7 +245,7 @@
         <div class="admin-card">
           <h3>📊 Métricas Globais</h3>
           <p>• Identificações realizadas no mês: <strong>0</strong></p>
-          <p>• Usuários cadastrados: <strong>1</strong> (Admin)</p>
+          <p>• Usuários cadastrados: <strong id="adminUserCount">1</strong></p>
         </div>
 
         <div class="grid">
@@ -259,12 +264,17 @@
     </div>
   </main>
 
-  <!-- MODAL DE AUTENTICAÇÃO COM LINKS DE LEITURA DOS TERMOS -->
+  <!-- MODAL DE AUTENTICAÇÃO REAL (ENTRAR / CRIAR CONTA + GOOGLE) -->
   <div class="modal-overlay" id="authModal">
     <div class="auth-box">
       <button class="close-modal" id="closeAuthModal">&times;</button>
       <h2>Acessar o portal</h2>
-      
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">Entrar</button>
+        <button class="auth-tab" id="tabRegister" onclick="switchAuthTab('register')">Criar Conta</button>
+      </div>
+
       <div class="terms-check">
         <input type="checkbox" id="acceptTermsCheck" onchange="toggleAuthButtons()" />
         <label for="acceptTermsCheck">
@@ -276,19 +286,27 @@
         <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.259h2.908c1.702-1.567 2.684-3.874 2.684-6.617z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/></svg>
         Entrar com Google
       </button>
-      <button class="auth-btn facebook" id="facebookAuthBtn" onclick="loginFacebook()" disabled style="opacity:0.5; cursor:not-allowed;">
-        Entrar com Facebook
-      </button>
-      <div class="auth-divider">ou use seu e-mail</div>
-      <form class="auth-form" onsubmit="handleDirectAuth(event)">
-        <input type="email" id="authEmail" placeholder="Seu e-mail" required />
-        <input type="password" id="authPassword" placeholder="Sua senha" required />
-        <button type="submit" id="submitAuthBtn" class="primary" style="width:100%; opacity:0.5; cursor:not-allowed;" disabled>Entrar / Cadastrar</button>
+
+      <div class="auth-divider" id="authDividerText">ou entre com e-mail e senha</div>
+
+      <!-- FORMULÁRIO DE LOGIN -->
+      <form class="auth-form" id="loginForm" onsubmit="handleLoginSubmit(event)">
+        <input type="email" id="loginEmail" placeholder="Seu e-mail registrado" required />
+        <input type="password" id="loginPassword" placeholder="Sua senha" required />
+        <button type="submit" id="loginSubmitBtn" class="primary" style="width:100%; opacity:0.5; cursor:not-allowed;" disabled>Entrar na Conta</button>
+      </form>
+
+      <!-- FORMULÁRIO DE CADASTRO -->
+      <form class="auth-form" id="registerForm" style="display:none;" onsubmit="handleRegisterSubmit(event)">
+        <input type="text" id="regName" placeholder="Seu nome completo" required />
+        <input type="email" id="regEmail" placeholder="Seu e-mail" required />
+        <input type="password" id="regPassword" placeholder="Crie uma senha (mínimo 6 caracteres)" minlength="6" required />
+        <button type="submit" id="regSubmitBtn" class="primary" style="width:100%; opacity:0.5; cursor:not-allowed;" disabled>Cadastrar Minha Conta</button>
       </form>
     </div>
   </div>
 
-  <!-- MODAL OBRIGATÓRIO DE REACEITE DE ATUALIZAÇÃO DOS TERMOS (BLOQUEIA O SITE ATÉ ACEITAR) -->
+  <!-- MODAL OBRIGATÓRIO DE REACEITE DE ATUALIZAÇÃO DOS TERMOS -->
   <div class="modal-overlay" id="updateTermsModal" style="z-index:200;">
     <div class="auth-box">
       <h2>Atualização dos Termos 📑</h2>
@@ -380,8 +398,9 @@
 
   <script>
     const pages = ['inicio','catalogo','blog','loja','identificar','jogos','comunidade','clube','perfil','admin'];
-    const CURRENT_TERMS_VERSION = "v1.0"; // Incremente para "v1.1" quando atualizar os termos no futuro!
+    const CURRENT_TERMS_VERSION = "v1.0";
     let currentUser = null;
+    let currentAuthMode = 'login';
 
     function showPage(name){
       if(!pages.includes(name)) name='inicio';
@@ -410,10 +429,38 @@
 
     document.getElementById('closeAuthModal').onclick = () => authModal.classList.remove('active');
 
+    // Alternar entre abas "Entrar" e "Criar Conta"
+    function switchAuthTab(mode) {
+      currentAuthMode = mode;
+      document.getElementById('tabLogin').classList.toggle('active', mode === 'login');
+      document.getElementById('tabRegister').classList.toggle('active', mode === 'register');
+      document.getElementById('loginForm').style.display = mode === 'login' ? 'block' : 'none';
+      document.getElementById('registerForm').style.display = mode === 'register' ? 'block' : 'none';
+      document.getElementById('authDividerText').textContent = mode === 'login' ? 'ou entre com e-mail e senha' : 'ou crie sua conta com e-mail e senha';
+    }
+
+    // Gerenciador do Banco de Dados de Usuários Local (localStorage)
+    function getUsersDB() {
+      try {
+        return JSON.parse(localStorage.getItem('ep_users_db')) || [];
+      } catch (_) {
+        return [];
+      }
+    }
+
+    function saveUsersDB(db) {
+      localStorage.setItem('ep_users_db', JSON.stringify(db));
+      document.getElementById('adminUserCount').textContent = db.length + 1; // Contando admin
+    }
+
     // Habilitar botões apenas com aceite dos termos no cadastro
     function toggleAuthButtons() {
       const accepted = document.getElementById('acceptTermsCheck').checked;
-      const btns = [document.getElementById('googleAuthBtn'), document.getElementById('facebookAuthBtn'), document.getElementById('submitAuthBtn')];
+      const btns = [
+        document.getElementById('googleAuthBtn'), 
+        document.getElementById('loginSubmitBtn'),
+        document.getElementById('regSubmitBtn')
+      ];
       btns.forEach(btn => {
         btn.disabled = !accepted;
         btn.style.opacity = accepted ? '1' : '0.5';
@@ -434,6 +481,15 @@
       if (!currentUser) return;
       currentUser.termsAcceptedVersion = CURRENT_TERMS_VERSION;
       localStorage.setItem('ep_user', JSON.stringify(currentUser));
+      
+      // Atualiza também no banco de contas salvas
+      const db = getUsersDB();
+      const idx = db.findIndex(u => u.email.toLowerCase() === currentUser.email.toLowerCase());
+      if (idx !== -1) {
+        db[idx].termsAcceptedVersion = CURRENT_TERMS_VERSION;
+        saveUsersDB(db);
+      }
+
       document.getElementById('updateTermsModal').classList.remove('active');
       showToast('Obrigado! Suas preferências foram atualizadas.');
     }
@@ -490,13 +546,72 @@
       showPage('inicio');
     }
 
-    function handleDirectAuth(e) {
+    // CADASTRAR NOVO USUÁRIO
+    function handleRegisterSubmit(e) {
       e.preventDefault();
-      const email = document.getElementById('authEmail').value;
-      const user = { email, name: email.split('@')[0], termsAcceptedVersion: CURRENT_TERMS_VERSION };
-      renderUserSession(user);
+      const name = document.getElementById('regName').value.trim();
+      const email = document.getElementById('regEmail').value.trim().toLowerCase();
+      const password = document.getElementById('regPassword').value;
+
+      const db = getUsersDB();
+      const exists = db.some(u => u.email.toLowerCase() === email);
+
+      if (exists) {
+        showToast("Este e-mail já está cadastrado. Alterne para a aba 'Entrar'.");
+        switchAuthTab('login');
+        document.getElementById('loginEmail').value = email;
+        return;
+      }
+
+      const newUser = {
+        name,
+        email,
+        password, // Em produção real de servidor backend, as senhas usariam hash de criptografia
+        termsAcceptedVersion: CURRENT_TERMS_VERSION,
+        createdAt: new Date().toISOString()
+      };
+
+      db.push(newUser);
+      saveUsersDB(db);
+
+      renderUserSession(newUser);
       authModal.classList.remove('active');
-      showToast(`Bem-vindo!`);
+      showToast(`Conta criada com sucesso! Bem-vindo, ${name}.`);
+      showPage('perfil');
+    }
+
+    // ENTRAR COM USUÁRIO CADASTRADO
+    function handleLoginSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+      const password = document.getElementById('loginPassword').value;
+
+      // Conta Administradora Master
+      if (email === 'explicaplantas@gmail.com') {
+        const adminUser = { email, name: 'Administrador Explorar Plantas', termsAcceptedVersion: CURRENT_TERMS_VERSION };
+        renderUserSession(adminUser);
+        authModal.classList.remove('active');
+        showToast('Login de Administrador efetuado!');
+        showPage('admin');
+        return;
+      }
+
+      const db = getUsersDB();
+      const foundUser = db.find(u => u.email.toLowerCase() === email);
+
+      if (!foundUser) {
+        showToast("E-mail não encontrado. Crie uma conta na aba 'Criar Conta'.");
+        return;
+      }
+
+      if (foundUser.password !== password) {
+        showToast("Senha incorreta. Tente novamente.");
+        return;
+      }
+
+      renderUserSession(foundUser);
+      authModal.classList.remove('active');
+      showToast(`Bem-vindo de volta, ${foundUser.name}!`);
       showPage('perfil');
     }
 
@@ -506,10 +621,6 @@
       const REDIRECT_URI = window.location.origin;
       const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=email%20profile`;
       window.location.href = googleAuthUrl;
-    }
-
-    function loginFacebook() {
-      showToast("Conexão com o Facebook sendo configurada.");
     }
 
     document.getElementById('menuToggle').addEventListener('click',()=>{
@@ -526,6 +637,9 @@
 
     // Verificação de sessão existente ou de retorno do Google OAuth
     window.addEventListener('DOMContentLoaded', () => {
+      const db = getUsersDB();
+      document.getElementById('adminUserCount').textContent = db.length + 1;
+
       // 1. Verifica se retornou do Google
       const hash = window.location.hash;
       if (hash && hash.includes('access_token')) {
