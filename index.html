@@ -380,4 +380,839 @@
         <input type="text" id="regName" placeholder="Seu nome completo" required />
         <input type="email" id="regEmail" placeholder="Seu e-mail" required />
         <input type="password" id="regPassword" placeholder="Crie uma senha (mínimo 6 caracteres)" minlength="6" required />
-        <button type
+        <button type="submit" id="regSubmitBtn" class="primary" style="width:100%; opacity:0.5; cursor:not-allowed;" disabled>Cadastrar Minha Conta</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL DE NOTIFICAÇÕES -->
+  <div class="modal-overlay" id="notifModal">
+    <div class="auth-box">
+      <button class="close-modal" type="button" onclick="closeNotifModal()">&times;</button>
+      <h2>Notificações ♧</h2>
+      <div id="notifList">
+        <p style="text-align:center; color:var(--muted);">Nenhuma notificação no momento.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE TERMOS DE USO -->
+  <div class="modal-overlay" id="termsModal">
+    <div class="auth-box">
+      <button class="close-modal" type="button" onclick="closeLegalModals()">&times;</button>
+      <h2>Termos de Uso</h2>
+      <p><em>Versão 1.1 — Outubro de 2026</em></p>
+      <h3>1. Aceitação dos Termos</h3>
+      <p>Ao utilizar o portal <strong>Explorar Plantas</strong>, você concorda expressamente com os presentes Termos de Uso.</p>
+    </div>
+  </div>
+
+  <!-- MODAL DE POLÍTICA DE PRIVACIDADE -->
+  <div class="modal-overlay" id="privacyModal">
+    <div class="auth-box">
+      <button class="close-modal" type="button" onclick="closeLegalModals()">&times;</button>
+      <h2>Política de Privacidade (LGPD)</h2>
+      <p><em>Versão 1.1 — Em conformidade com a Lei nº 13.709/2018 (LGPD)</em></p>
+      <h3>1. Coleta de Dados Pessoais</h3>
+      <p>Coletamos informações pessoais apenas com o seu consentimento explícito.</p>
+    </div>
+  </div>
+
+  <footer>
+    <div class="wrap">
+      <div class="footer-grid">
+        <div><div class="footer-brand">🌱 Explorar Plantas</div><p class="footer-copy">Descubra, aprenda e cultive o universo das plantas.</p></div>
+        <div class="footer-col"><h3>Explore</h3><a href="#catalogo" data-page="catalogo">Catálogo</a><a href="#blog" data-page="blog">Blog</a><a href="#identificar" data-page="identificar">Identificar</a><a href="#jogos" data-page="jogos">Jogos</a></div>
+        <div class="footer-col">
+          <h3>Contato & Legal</h3>
+          <a href="mailto:explicaplantas@gmail.com">E-mail</a>
+          <a href="https://www.instagram.com/explorarplantas/" target="_blank" rel="noopener noreferrer">Instagram @explorarplantas ↗</a>
+          <a href="https://www.tiktok.com/@explorar.plantas" target="_blank" rel="noopener noreferrer">TikTok @explorar.plantas ↗</a>
+          <button type="button" onclick="openTermsModal()">Termos de Uso</button>
+          <button type="button" onclick="openPrivacyModal()">Política de Privacidade</button>
+        </div>
+      </div>
+      <div class="copyright"><span>© <span id="year"></span> Explorar Plantas. Todos os direitos reservados.</span><span>Feito com carinho 🌿</span></div>
+    </div>
+  </footer>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const pages = ['inicio','catalogo','blog','loja','identificar','jogos','comunidade','clube','perfil','admin'];
+    const CURRENT_TERMS_VERSION = "v1.1";
+    let currentUser = null;
+    let currentAuthMode = 'login';
+    let currentActiveNeighbor = null;
+
+    // API oficial do Explorar Plantas
+    const EP_API = "https://explorarplantasia.explicaplantas.workers.dev";
+    const EP_TOKEN_KEY = "ep_auth_token";
+
+    // Comunicação com o Cloudflare Worker
+    async function epApi(caminho, dados = null, token = null) {
+      const opcoes = {
+        method: dados ? "POST" : "GET",
+        headers: {
+          "Content-Type": "application/json"
+        }
+      };
+
+      if (token) {
+        opcoes.headers.Authorization = `Bearer ${token}`;
+      }
+
+      if (dados) {
+        opcoes.body = JSON.stringify(dados);
+      }
+
+      const resposta = await fetch(EP_API + caminho, opcoes);
+
+      let resultado;
+      try {
+        resultado = await resposta.json();
+      } catch {
+        throw new Error("O servidor retornou uma resposta inválida.");
+      }
+
+      if (
+        !resposta.ok ||
+        resultado.sucesso === false ||
+        resultado.success === false
+      ) {
+        throw new Error(
+          resultado.erro ||
+          resultado.error ||
+          resultado.mensagem ||
+          "Não foi possível concluir a operação."
+        );
+      }
+
+      return resultado;
+    }
+
+    // Converte os dados do servidor para o formato usado pelo site.
+    function epNormalizarUsuario(resposta) {
+      const u = resposta.usuario || resposta.user || resposta;
+
+      if (!u.email) {
+        throw new Error("O servidor não retornou os dados da conta.");
+      }
+
+      return {
+        id: u.id,
+        name: u.nome || u.name || u.email.split("@")[0],
+        email: u.email,
+        picture: u.foto_perfil || u.picture || "",
+        garden: Array.isArray(u.garden) ? u.garden : [],
+        neighbors: Array.isArray(u.neighbors) ? u.neighbors : []
+      };
+    }
+
+    // Guarda a sessão retornada pelo servidor.
+    function epSalvarSessao(resposta) {
+      const token = resposta.token || resposta.sessionToken;
+
+      // Se o worker não retornar token explícito mas autenticar com sucesso, criamos um token de sessão padrão
+      const usuario = epNormalizarUsuario(resposta);
+      const tokenSalvar = token || "session_" + Date.now();
+
+      localStorage.setItem(EP_TOKEN_KEY, tokenSalvar);
+      renderUserSession(usuario);
+
+      return usuario;
+    }
+
+    let notifications = [];
+    let communityMessages = [
+      { id: 1, author: "Mariana Silva", text: "Alguém tem dicas de adubação orgânica para Rosas do Deserto no verão?", time: "14:20" }
+    ];
+
+    function showPage(name){
+      if(!pages.includes(name)) name='inicio';
+      document.querySelectorAll('.page').forEach(el=>el.classList.toggle('active',el.id==='page-'+name));
+      document.querySelectorAll('[data-page]').forEach(el=>el.classList.toggle('active',el.dataset.page===name && el.tagName==='BUTTON'));
+      document.getElementById('mainNav').classList.remove('open');
+      document.getElementById('menuToggle').setAttribute('aria-expanded','false');
+      window.scrollTo({top:0,behavior:'smooth'});
+      if(location.hash !== '#'+name) history.replaceState(null,'','#'+name);
+      if(name === 'comunidade') renderCommunityChat();
+    }
+
+    document.querySelectorAll('[data-page]').forEach(el=>el.addEventListener('click',e=>{e.preventDefault();showPage(el.dataset.page)}));
+    document.querySelectorAll('[data-go]').forEach(el=>el.addEventListener('click',()=>showPage(el.dataset.go)));
+    
+    // Autenticação
+    const authModal = document.getElementById('authModal');
+    const openAuthBtn = document.getElementById('openAuthModal');
+    
+    openAuthBtn.onclick = () => {
+      if (currentUser) {
+        showPage('perfil');
+      } else {
+        authModal.classList.add('active');
+      }
+    };
+
+    document.getElementById('closeAuthModal').onclick = () => authModal.classList.remove('active');
+
+    function switchAuthTab(mode) {
+      currentAuthMode = mode;
+      document.getElementById('tabLogin').classList.toggle('active', mode === 'login');
+      document.getElementById('tabRegister').classList.toggle('active', mode === 'register');
+      document.getElementById('loginForm').style.display = mode === 'login' ? 'block' : 'none';
+      document.getElementById('registerForm').style.display = mode === 'register' ? 'block' : 'none';
+      document.getElementById('authDividerText').textContent = mode === 'login' ? 'ou entre com e-mail e senha' : 'ou crie sua conta com e-mail e senha';
+    }
+
+    function getUsersDB() {
+      try { return JSON.parse(localStorage.getItem('ep_users_db')) || []; } catch (_) { return []; }
+    }
+
+    function saveUsersDB(db) {
+      localStorage.setItem('ep_users_db', JSON.stringify(db));
+      const el = document.getElementById('adminUserCount');
+      if (el) el.textContent = db.length + 1;
+    }
+
+    function toggleAuthButtons() {
+      const accepted = document.getElementById('acceptTermsCheck').checked;
+      const btns = [document.getElementById('googleAuthBtn'), document.getElementById('loginSubmitBtn'), document.getElementById('regSubmitBtn')];
+      btns.forEach(btn => {
+        if(btn) {
+          btn.disabled = !accepted;
+          btn.style.opacity = accepted ? '1' : '0.5';
+          btn.style.cursor = accepted ? 'pointer' : 'not-allowed';
+        }
+      });
+    }
+
+    function renderUserSession(user) {
+      user.termsAcceptedVersion = CURRENT_TERMS_VERSION;
+      user.garden = user.garden || [];
+      user.neighbors = user.neighbors || [];
+      currentUser = user;
+      localStorage.setItem('ep_user', JSON.stringify(user));
+
+      openAuthBtn.textContent = 'Perfil';
+      document.getElementById('profileName').textContent = user.name || user.email.split('@')[0];
+      document.getElementById('profileEmail').textContent = user.email;
+
+      renderAvatarDisplay(user);
+      renderGardenGrid();
+      renderNeighborsList();
+
+      if (user.email && user.email.toLowerCase() === 'explicaplantas@gmail.com') {
+        document.getElementById('adminTab').style.display = 'block';
+      } else {
+        document.getElementById('adminTab').style.display = 'none';
+      }
+    }
+
+    function renderAvatarDisplay(user) {
+      const avatarEl = document.getElementById('profileAvatar');
+      if (user.picture) {
+        avatarEl.innerHTML = `<img src="${user.picture}" alt="Avatar">`;
+      } else {
+        avatarEl.textContent = (user.name || user.email)[0].toUpperCase();
+      }
+    }
+
+    function openEditProfileModal() {
+      if (!currentUser) return;
+      document.getElementById('editNameInput').value = currentUser.name || '';
+      document.getElementById('editProfileModal').classList.add('active');
+    }
+
+    function closeEditProfileModal() { document.getElementById('editProfileModal').classList.remove('active'); }
+
+    function saveProfileChanges(e) {
+      e.preventDefault();
+      currentUser.name = document.getElementById('editNameInput').value.trim();
+
+      renderUserSession(currentUser);
+      
+      const db = getUsersDB();
+      const idx = db.findIndex(u => u.email.toLowerCase() === currentUser.email.toLowerCase());
+      if (idx !== -1) {
+        db[idx] = currentUser;
+        saveUsersDB(db);
+      }
+
+      closeEditProfileModal();
+      showToast('Nome atualizado com sucesso!');
+    }
+
+    function openAvatarModal() { document.getElementById('avatarModal').classList.add('active'); }
+    function closeAvatarModal() { document.getElementById('avatarModal').classList.remove('active'); }
+
+    function handleAvatarUpload(e) {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const size = 200;
+          canvas.width = size;
+          canvas.height = size;
+          const ctx = canvas.getContext('2d');
+
+          const minDim = Math.min(img.width, img.height);
+          const sx = (img.width - minDim) / 2;
+          const sy = (img.height - minDim) / 2;
+
+          ctx.drawImage(img, sx, sy, minDim, minDim, 0, 0, size, size);
+          const croppedBase64 = canvas.toDataURL('image/jpeg', 0.85);
+
+          currentUser.picture = croppedBase64;
+          renderUserSession(currentUser);
+          closeAvatarModal();
+          showToast('Sua foto de perfil foi atualizada!');
+        };
+        img.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function removeAvatar() {
+      delete currentUser.picture;
+      renderUserSession(currentUser);
+      closeAvatarModal();
+      showToast('Foto de perfil removida.');
+    }
+
+    function addToGarden(plantData) {
+      if (!currentUser) {
+        showToast('Faça login para salvar plantas no seu Jardim Digital!');
+        authModal.classList.add('active');
+        return;
+      }
+
+      const exists = currentUser.garden.some(p => p.nomePopular === plantData.nomePopular);
+      if (exists) {
+        showToast('Esta planta já está no seu Jardim!');
+        return;
+      }
+
+      currentUser.garden.push({
+        id: Date.now(),
+        nomePopular: plantData.nomePopular || plantData.identificacao,
+        nomeCientifico: plantData.nomeCientifico || plantData.nome_cientifico,
+        iluminacao: plantData.luz || plantData.iluminacao,
+        rega: plantData.rega,
+        solo: plantData.solo,
+        addedAt: new Date().toLocaleDateString('pt-BR')
+      });
+
+      renderUserSession(currentUser);
+      showToast('🌱 Planta adicionada ao seu Jardim Digital!');
+    }
+
+    function renderGardenGrid() {
+      const grid = document.getElementById('myGardenGrid');
+      const garden = currentUser ? (currentUser.garden || []) : [];
+      document.getElementById('gardenCount').textContent = garden.length;
+
+      if (garden.length === 0) {
+        grid.innerHTML = '<p style="grid-column:1/-1; color:var(--muted); text-align:center; padding:30px;">Seu Jardim ainda está vazio. Use a ferramenta "Identificar" para descobrir espécies e adicioná-las aqui!</p>';
+        return;
+      }
+
+      grid.innerHTML = garden.map(p => `
+        <article class="plant-card">
+          <div class="plant-photo">🪴</div>
+          <div class="plant-body">
+            <span class="pill">No seu Jardim</span>
+            <h3>${p.nomePopular}</h3>
+            <div class="latin">${p.nomeCientifico || ''}</div>
+            <p style="margin-top:8px;">☀️ ${p.iluminacao || 'Luz adequada'}<br>💧 ${p.rega || 'Rega moderada'}</p>
+            <button class="text-link" type="button" onclick="sharePlantToCommunity('${p.nomePopular}')">Compartilhar na Comunidade ↗</button>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    function renderCommunityChat() {
+      const container = document.getElementById('communityChatMessages');
+      if(!container) return;
+      container.innerHTML = communityMessages.map(m => `
+        <div class="msg-item ${currentUser && currentUser.name === m.author ? 'own' : ''}">
+          <div class="msg-avatar">${m.author[0]}</div>
+          <div class="msg-bubble">
+            <div class="msg-author">${m.author}</div>
+            <div>${m.text}</div>
+            ${m.plant ? `<div class="msg-plant-attach">🪴 <strong>${m.plant}</strong> (Compartilhado do Jardim)</div>` : ''}
+          </div>
+        </div>
+      `).join('');
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function sendCommunityMessage() {
+      const input = document.getElementById('communityMsgInput');
+      const text = input.value.trim();
+      if (!text) return;
+
+      if (!currentUser) {
+        showToast('Entre na sua conta para conversar na Comunidade.');
+        authModal.classList.add('active');
+        return;
+      }
+
+      communityMessages.push({
+        id: Date.now(),
+        author: currentUser.name || currentUser.email.split('@')[0],
+        text: text,
+        time: new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})
+      });
+
+      input.value = '';
+      renderCommunityChat();
+    }
+
+    function sharePlantToCommunity(plantName) {
+      if (!currentUser) return;
+      communityMessages.push({
+        id: Date.now(),
+        author: currentUser.name,
+        text: `Galera, acabei de adicionar esta espécie ao meu Jardim Digital!`,
+        plant: plantName,
+        time: new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})
+      });
+      showToast('Compartilhado no chat da comunidade!');
+      showPage('comunidade');
+    }
+
+    function renderNeighborsList() {
+      const container = document.getElementById('neighborsList');
+      if(!container) return;
+      const db = getUsersDB();
+      const available = db.filter(u => u.email !== (currentUser ? currentUser.email : ''));
+
+      if (available.length === 0) {
+        container.innerHTML = '<p style="font-size:.8rem; color:var(--muted);">Nenhum vizinho encontrado ainda.</p>';
+        return;
+      }
+
+      container.innerHTML = available.map(u => `
+        <div class="neighbor-item">
+          <div>
+            <strong style="font-size:.85rem; display:block;">${u.name}</strong>
+          </div>
+          <button class="primary" type="button" style="padding:4px 8px; font-size:.75rem;" onclick="addNeighbor('${u.name}')">Add Vizinho</button>
+        </div>
+      `).join('');
+    }
+
+    function addNeighbor(neighborName) {
+      if (!currentUser) return;
+      showToast(`Solicitação enviada para ${neighborName}!`);
+      addNotification(`Seu vizinho ${neighborName} aceitou seu convite! Agora vocês podem conversar no privado.`);
+      openPrivateChat(neighborName);
+    }
+
+    function openPrivateChat(neighborName) {
+      currentActiveNeighbor = neighborName;
+      document.getElementById('privateChatTitle').textContent = `Chat Privado com ${neighborName} 🔒`;
+      document.getElementById('privateChatModal').classList.add('active');
+    }
+
+    function closePrivateChatModal() { document.getElementById('privateChatModal').classList.remove('active'); }
+
+    function sendPrivateMessage() {
+      const input = document.getElementById('privateMsgInput');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const container = document.getElementById('privateChatMessages');
+      container.innerHTML += `
+        <div class="msg-item own">
+          <div class="msg-bubble" style="background:var(--forest); color:white;">${text}</div>
+        </div>
+      `;
+      input.value = '';
+      container.scrollTop = container.scrollHeight;
+
+      setTimeout(() => {
+        addNotification(`Seu vizinho ${currentActiveNeighbor} respondeu sua mensagem privada!`);
+      }, 3000);
+    }
+
+    function addNotification(msg) {
+      notifications.unshift({ id: Date.now(), text: msg, read: false });
+      const badge = document.getElementById('notifBadge');
+      if(badge) badge.style.display = 'block';
+    }
+
+    function openNotifModal() {
+      const list = document.getElementById('notifList');
+      if (notifications.length === 0) {
+        list.innerHTML = '<p style="text-align:center; color:var(--muted);">Nenhuma notificação no momento.</p>';
+      } else {
+        list.innerHTML = notifications.map(n => `
+          <div class="notif-item ${n.read ? '' : 'unread'}">
+            <p style="margin:0;">🔔 ${n.text}</p>
+          </div>
+        `).join('');
+      }
+      notifications.forEach(n => n.read = true);
+      const badge = document.getElementById('notifBadge');
+      if(badge) badge.style.display = 'none';
+      document.getElementById('notifModal').classList.add('active');
+    }
+
+    function closeNotifModal() { document.getElementById('notifModal').classList.remove('active'); }
+    function openTermsModal() { document.getElementById('termsModal').classList.add('active'); }
+    function openPrivacyModal() { document.getElementById('privacyModal').classList.add('active'); }
+    function closeLegalModals() {
+      document.getElementById('termsModal').classList.remove('active');
+      document.getElementById('privacyModal').classList.remove('active');
+    }
+
+    function logout() {
+      currentUser = null;
+      localStorage.removeItem('ep_user');
+      localStorage.removeItem(EP_TOKEN_KEY);
+      openAuthBtn.textContent = 'Entrar';
+      document.getElementById('adminTab').style.display = 'none';
+      showToast('Você saiu da sua conta.');
+      showPage('inicio');
+    }
+
+    // CADASTRO CONECTADO AO WORKER
+    async function handleRegisterSubmit(e) {
+      e.preventDefault();
+
+      if (!document.getElementById("acceptTermsCheck").checked) {
+        showToast("Aceite os Termos de Uso para continuar.");
+        return;
+      }
+
+      const name = document.getElementById("regName").value.trim();
+      const email = document.getElementById("regEmail").value.trim().toLowerCase();
+      const password = document.getElementById("regPassword").value;
+      const btn = document.getElementById("regSubmitBtn");
+
+      if (password.length < 6) {
+        showToast("A senha precisa ter pelo menos 6 caracteres.");
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = "Criando conta...";
+
+      try {
+        const resposta = await epApi("/api/auth/register", {
+          nome: name,
+          email: email,
+          senha: password
+        });
+
+        const usuario = epSalvarSessao(resposta);
+
+        document.getElementById("authModal").classList.remove("active");
+        showToast(`Bem-vindo, ${usuario.name}!`);
+        showPage("perfil");
+        document.getElementById("registerForm").reset();
+
+      } catch (erro) {
+        showToast(erro.message || "Não foi possível criar sua conta.");
+      } finally {
+        btn.textContent = "Cadastrar Minha Conta";
+        toggleAuthButtons();
+      }
+    }
+
+    // LOGIN POR E-MAIL E SENHA CONECTADO AO WORKER
+    async function handleLoginSubmit(e) {
+      e.preventDefault();
+
+      if (!document.getElementById("acceptTermsCheck").checked) {
+        showToast("Aceite os Termos de Uso para continuar.");
+        return;
+      }
+
+      const email = document.getElementById("loginEmail").value.trim().toLowerCase();
+      const password = document.getElementById("loginPassword").value;
+      const btn = document.getElementById("loginSubmitBtn");
+
+      btn.disabled = true;
+      btn.textContent = "Verificando...";
+
+      try {
+        const resposta = await epApi("/api/auth/login", {
+          email: email,
+          senha: password
+        });
+
+        const usuario = epSalvarSessao(resposta);
+
+        document.getElementById("authModal").classList.remove("active");
+        document.getElementById("loginForm").reset();
+
+        showToast(`Bem-vindo de volta, ${usuario.name}!`);
+        showPage(email === 'explicaplantas@gmail.com' ? 'admin' : 'perfil');
+
+      } catch (erro) {
+        showToast(erro.message || "E-mail ou senha incorretos.");
+      } finally {
+        btn.textContent = "Entrar na Conta";
+        toggleAuthButtons();
+      }
+    }
+
+    // LOGIN GOOGLE (MANTIDO TEMPORARIAMENTE ATÉ A PRÓXIMA ETAPA)
+    let googleTokenClient = null;
+    let googleLoginBusy = false;
+
+    function loginGoogle() {
+      if (!document.getElementById('acceptTermsCheck').checked) {
+        showToast('Aceite os Termos de Uso para continuar.');
+        return;
+      }
+
+      if (googleLoginBusy) return;
+
+      if (!window.google?.accounts?.oauth2) {
+        let script = document.getElementById('googleIdentityScript');
+
+        if (script) {
+          showToast('Conectando ao Google. Tente novamente em instantes.');
+          script.addEventListener('load', () => loginGoogle(), { once: true });
+          return;
+        }
+
+        script = document.createElement('script');
+        script.id = 'googleIdentityScript';
+        script.src = 'https://accounts.google.com/gsi/client';
+        script.async = true;
+
+        script.onload = () => loginGoogle();
+
+        script.onerror = () => {
+          showToast('Não foi possível carregar o Google. Verifique sua conexão.');
+        };
+
+        document.head.appendChild(script);
+        return;
+      }
+
+      const CLIENT_ID =
+        '571216171328-j9vulkvmerrl3qmrnfnlkn201o5bdo6g.apps.googleusercontent.com';
+
+      googleLoginBusy = true;
+      showToast('Aguardando autenticação do Google...');
+
+      try {
+        googleTokenClient = google.accounts.oauth2.initTokenClient({
+          client_id: CLIENT_ID,
+          scope: 'openid email profile',
+
+          callback: async (resposta) => {
+            try {
+              if (resposta.error || !resposta.access_token) {
+                throw new Error('O Google não autorizou o acesso.');
+              }
+
+              const respostaPerfil = await fetch(
+                'https://www.googleapis.com/oauth2/v3/userinfo',
+                {
+                  headers: {
+                    Authorization: `Bearer ${resposta.access_token}`
+                  }
+                }
+              );
+
+              if (!respostaPerfil.ok) {
+                throw new Error('Não foi possível obter os dados da conta Google.');
+              }
+
+              const perfilGoogle = await respostaPerfil.json();
+
+              if (!perfilGoogle.email || perfilGoogle.email_verified !== true) {
+                throw new Error('O Google não confirmou o e-mail dessa conta.');
+              }
+
+              const email = perfilGoogle.email.trim().toLowerCase();
+              const db = getUsersDB();
+
+              let usuario = db.find(
+                u => u.email && u.email.toLowerCase() === email
+              );
+
+              if (usuario) {
+                usuario.name = perfilGoogle.name || usuario.name || email.split('@')[0];
+                usuario.picture = perfilGoogle.picture || usuario.picture;
+                usuario.googleSub = perfilGoogle.sub || usuario.googleSub;
+              } else {
+                usuario = {
+                  name: perfilGoogle.name || email.split('@')[0],
+                  email: email,
+                  picture: perfilGoogle.picture || '',
+                  googleSub: perfilGoogle.sub || '',
+                  garden: [],
+                  neighbors: [],
+                  termsAcceptedVersion: CURRENT_TERMS_VERSION
+                };
+
+                db.push(usuario);
+              }
+
+              saveUsersDB(db);
+
+              renderUserSession(usuario);
+
+              document.getElementById('authModal').classList.remove('active');
+
+              showPage(email === 'explicaplantas@gmail.com' ? 'admin' : 'perfil');
+              showToast(`Bem-vindo, ${usuario.name}!`);
+
+            } catch (erro) {
+              console.error('Erro no login Google:', erro);
+              showToast(erro.message || 'Não foi possível concluir o login.');
+            } finally {
+              googleLoginBusy = false;
+            }
+          },
+
+          error_callback: (erro) => {
+            console.error('Erro na janela do Google:', erro);
+            googleLoginBusy = false;
+
+            showToast(
+              erro.type === 'popup_closed'
+                ? 'A janela de login foi fechada antes da conclusão.'
+                : 'Não foi possível abrir o login do Google. Tente novamente.'
+            );
+          }
+        });
+
+        googleTokenClient.requestAccessToken({
+          prompt: 'select_account'
+        });
+
+      } catch (erro) {
+        console.error('Erro ao iniciar login Google:', erro);
+        googleLoginBusy = false;
+        showToast('Erro ao iniciar o login. Tente novamente.');
+      }
+    }
+
+    document.getElementById('menuToggle').addEventListener('click',()=>{
+      const nav=document.getElementById('mainNav');const open=nav.classList.toggle('open');
+      document.getElementById('menuToggle').setAttribute('aria-expanded',String(open));
+    });
+
+    let toastTimer;
+    function showToast(message){
+      const toast=document.getElementById('toast');toast.textContent=message;toast.style.display='block';
+      clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.style.display='none',3200);
+    }
+    document.getElementById('year').textContent=new Date().getFullYear();
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedUser = localStorage.getItem('ep_user');
+      if (savedUser) {
+        try { renderUserSession(JSON.parse(savedUser)); } catch (_) {}
+      }
+    });
+
+    // SCRIPT DO IDENTIFICADOR (INTEGRADO COM WORKER)
+    (() => {  
+      const raiz = document.getElementById("explorar-identificador");  
+      if (!raiz || raiz.dataset.iniciado) return;  
+      raiz.dataset.iniciado = "sim";  
+      
+      const camera = raiz.querySelector("#ep-camera");  
+      const arquivos = raiz.querySelector("#ep-arquivo");  
+      const previa = raiz.querySelector("#ep-previa");  
+      const nomeArquivo = raiz.querySelector("#ep-arquivo-nome");  
+      const botao = raiz.querySelector("#ep-botao");  
+      const status = raiz.querySelector("#ep-status");  
+      const resultado = raiz.querySelector("#ep-resultado");  
+      
+      let arquivo = null;  
+      let urlPrevia = null;  
+      let ultimaPlantaIdentificada = null;
+      
+      function selecionarArquivo(file) {  
+        if (urlPrevia) URL.revokeObjectURL(urlPrevia);  
+        previa.hidden = !file;  
+        if (!file) return;  
+        arquivo = file;  
+        urlPrevia = URL.createObjectURL(file);  
+        previa.src = urlPrevia;  
+        nomeArquivo.textContent = "Arquivo selecionado: " + file.name;
+        status.textContent = "Imagem pronta para identificar.";  
+      }  
+  
+      camera.addEventListener("change", () => selecionarArquivo(camera.files?.[0]));  
+      arquivos.addEventListener("change", () => selecionarArquivo(arquivos.files?.[0]));  
+  
+      botao.addEventListener("click", () => {  
+        if (!arquivo) { status.textContent = "Escolha uma imagem primeiro."; return; }  
+        botao.disabled = true;  
+        status.innerHTML = '<span class="lupa-animada">🔍</span> Explorando imagem...';  
+        resultado.replaceChildren();  
+        resultado.hidden = true;  
+
+        const leitor = new FileReader();
+        leitor.onload = async () => {
+          try {
+            const resposta = await fetch("/api/identificar", {  
+              method: "POST",  
+              headers: { "Content-Type": "application/json" },  
+              body: JSON.stringify({ imagem: leitor.result })  
+            });  
+            
+            const dados = await resposta.json();  
+            if (!resposta.ok || !dados.sucesso) throw new Error(dados.erro || "Falha ao identificar a planta.");  
+
+            const p = dados.planta || {};  
+            ultimaPlantaIdentificada = p;
+
+            const titulo = document.createElement("h3");  
+            titulo.textContent = p.nomePopular || p.identificacao || "Identificação provável";  
+            resultado.appendChild(titulo);  
+
+            const addBtn = document.createElement("button");
+            addBtn.className = "primary";
+            addBtn.style.margin = "10px 0 15px";
+            addBtn.textContent = "🌱 Adicionar ao Meu Jardim Digital";
+            addBtn.onclick = () => addToGarden(ultimaPlantaIdentificada);
+            resultado.appendChild(addBtn);
+
+            const divInfo = document.createElement("div");
+            divInfo.innerHTML = `
+              <p><strong>🔬 Nome científico:</strong> ${p.nomeCientifico || p.nome_cientifico || 'Não informado'}</p>
+              <p><strong>☀️ Luz:</strong> ${p.luz || p.iluminacao || 'Não informado'}</p>
+              <p><strong>💧 Rega:</strong> ${p.rega || 'Não informado'}</p>
+              <p><strong>🪴 Solo:</strong> ${p.solo || 'Não informado'}</p>
+            `;
+            resultado.appendChild(divInfo);
+
+            resultado.hidden = false;  
+            status.textContent = "Identificação concluída!";  
+          } catch (erro) {
+            status.textContent = erro.message || "Erro de conexão com o servidor de IA.";  
+          } finally {
+            botao.disabled = false;  
+          }
+        };
+
+        leitor.onerror = () => {
+          status.textContent = "Erro ao carregar a imagem selecionada.";
+          botao.disabled = false;
+        };
+
+        leitor.readAsDataURL(arquivo);
+      });  
+    })();
+
+    const initial = location.hash.replace('#','');
+    if(pages.includes(initial)) showPage(initial);
+  </script>
+</body>
+</html>
