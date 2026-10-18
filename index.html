@@ -62,8 +62,8 @@
     .page-intro{padding:40px 0 20px}.page-intro p{color:var(--muted);max-width:680px}.construction{background:var(--paper);border:1px solid var(--line);border-radius:24px;padding:clamp(26px,5vw,52px);margin:10px 0 60px;text-align:center;box-shadow:var(--shadow)}.construction .big-icon{font-size:3rem}.construction h2{font-family:Georgia,serif;font-size:2rem;color:var(--forest);margin:12px 0}.construction p{max-width:590px;margin:0 auto 20px;color:var(--muted)}
     footer{background:#102f22;color:#edf1e7;padding:42px 0 20px}.footer-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:30px}.footer-brand{font-family:Georgia,serif;font-size:1.3rem;margin-bottom:10px}.footer-copy{color:#c1cebf;font-size:.9rem;max-width:380px}.footer-col h3{font-size:.92rem;color:#fff;margin-bottom:12px}.footer-col a,.footer-col button{display:block;color:#c1cebf;font-size:.88rem;margin:7px 0;background:none;border:0;padding:0;text-align:left}.footer-col a:hover,.footer-col button:hover{color:white}.copyright{border-top:1px solid #ffffff24;margin-top:30px;padding-top:17px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:#b7c6b5;font-size:.78rem}
     .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--forest);color:white;padding:12px 18px;border-radius:12px;display:none;z-index:99;box-shadow:var(--shadow)}
-    @media(max-width:1000px){.brand{min-width:auto}.head{gap:10px}nav button{padding:8px 7px;font-size:.82rem}.login-btn{padding:10px 12px}}
-    @media(max-width:780px){.head{min-height:72px;flex-wrap:wrap}.brand{flex:1}.brand-name{font-size:1.12rem}.logo{width:46px;height:46px}.head-actions{margin-left:auto}.menu-toggle{display:grid}nav{display:none;order:3;width:100%;flex-basis:100%;padding:0 0 12px;grid-template-columns:repeat(2,1fr);gap:4px}nav.open{display:grid}nav button{text-align:left;padding:11px 12px}.head{padding:9px 0}.login-btn{display:none}.hero{padding:28px 0 10px}.grid,.plant-grid{grid-template-columns:repeat(2,1fr)}.footer-grid{grid-template-columns:1fr 1fr}.footer-grid>div:first-child{grid-column:1/-1}}
+    @media(max-width:1000px){.brand{min-width:auto}.head{gap:10px}nav button{padding:8px 7px;font-size:.82rem}}
+    @media(max-width:780px){.head{min-height:72px;flex-wrap:wrap}.brand{flex:1}.brand-name{font-size:1.12rem}.logo{width:46px;height:46px}.head-actions{margin-left:auto}.menu-toggle{display:grid}nav{display:none;order:3;width:100%;flex-basis:100%;padding:0 0 12px;grid-template-columns:repeat(2,1fr);gap:4px}nav.open{display:grid}nav button{text-align:left;padding:11px 12px}.head{padding:9px 0}.login-btn{padding:8px 12px;font-size:.82rem}.hero{padding:28px 0 10px}.grid,.plant-grid{grid-template-columns:repeat(2,1fr)}.footer-grid{grid-template-columns:1fr 1fr}.footer-grid>div:first-child{grid-column:1/-1}}
     @media(max-width:520px){.wrap{width:min(100% - 26px,1160px)}.grid,.plant-grid{grid-template-columns:1fr}.feature-card{min-height:175px}.section{padding:24px 0}.section-head{align-items:flex-start;flex-direction:column;gap:6px}.footer-grid{grid-template-columns:1fr}.footer-grid>div:first-child{grid-column:auto}.copyright{flex-direction:column}#explorar-identificador .ep-opcoes{grid-template-columns:1fr}}
   </style>
 </head>
@@ -90,6 +90,7 @@
         <button data-page="jogos">Jogos</button>
         <button data-page="comunidade">Comunidade</button>
         <button data-page="clube">Clube</button>
+        <button id="navAuthBtn" style="font-weight: bold; color: var(--green);">Entrar / Conta</button>
         <button id="adminTab" data-page="admin" style="display:none; color: var(--green); font-weight: bold;">Painel Admin ⚙️</button>
       </nav>
       <div class="head-actions">
@@ -139,7 +140,7 @@
       </section>
     </div>
 
-    <!-- PÁGINAS EXISTENTES -->
+    <!-- PÁGINAS -->
     <div class="page" id="page-catalogo"><div class="wrap"><section class="page-intro"><div class="eyebrow">Espécies</div><h1 class="page-title">Catálogo de plantas</h1><p>Consulte espécies, nomes científicos e orientações de luz, rega e solo.</p></section><div class="construction"><div class="big-icon">🌱</div><h2>Catálogo completo em breve</h2></div></div></div>
     <div class="page" id="page-blog"><div class="wrap"><section class="page-intro"><div class="eyebrow">Artigos</div><h1 class="page-title">Blog e dicas</h1></section><div class="construction"><div class="big-icon">📚</div><h2>Conteúdos em breve</h2></div></div></div>
     <div class="page" id="page-loja"><div class="wrap"><section class="page-intro"><div class="eyebrow">Loja</div><h1 class="page-title">Loja Explorar Plantas</h1></section><div class="construction"><div class="big-icon">🛍️</div><h2>Loja em construção</h2></div></div></div>
@@ -181,7 +182,7 @@
     <div class="page" id="page-comunidade"><div class="wrap"><section class="page-intro"><div class="eyebrow">Comunidade</div><h1 class="page-title">Comunidade</h1></section><div class="construction"><div class="big-icon">🌎</div><h2>Comunidade em breve</h2></div></div></div>
     <div class="page" id="page-clube"><div class="wrap"><section class="page-intro"><div class="eyebrow">Clube</div><h1 class="page-title">Clube Explorar Plantas</h1></section><div class="construction"><div class="big-icon">👑</div><h2>Clube em breve</h2></div></div></div>
 
-    <!-- PÁGINA DO PAINEL DE ADMINISTRADOR -->
+    <!-- PAINEL ADMIN -->
     <div class="page" id="page-admin">
       <div class="wrap">
         <section class="page-intro">
@@ -212,7 +213,7 @@
     </div>
   </main>
 
-  <!-- MODAL DE ENTRADA / CADASTRO -->
+  <!-- MODAL DE AUTENTICAÇÃO -->
   <div class="modal-overlay" id="authModal">
     <div class="auth-box">
       <button class="close-modal" id="closeAuthModal">&times;</button>
@@ -268,15 +269,18 @@
     document.querySelectorAll('[data-page]').forEach(el=>el.addEventListener('click',e=>{e.preventDefault();showPage(el.dataset.page)}));
     document.querySelectorAll('[data-go]').forEach(el=>el.addEventListener('click',()=>showPage(el.dataset.go)));
     
-    // Gestão do Modal
+    // Abrir Modal de Autenticação
     const authModal = document.getElementById('authModal');
-    document.getElementById('openAuthModal').onclick = () => authModal.classList.add('active');
+    const openModal = () => authModal.classList.add('active');
+    
+    document.getElementById('openAuthModal').onclick = openModal;
+    document.getElementById('navAuthBtn').onclick = openModal;
     document.getElementById('closeAuthModal').onclick = () => authModal.classList.remove('active');
 
     function checkAdminAccess(email) {
-      if (email === 'explicaplantas@gmail.com') {
+      if (email.toLowerCase() === 'explicaplantas@gmail.com') {
         document.getElementById('adminTab').style.display = 'block';
-        showToast('Acesso de Administrador Concedido ⚙️');
+        showToast('Acesso de Administrador Liberado ⚙️');
       }
     }
 
@@ -286,22 +290,23 @@
       currentUser = { email };
       authModal.classList.remove('active');
       document.getElementById('openAuthModal').textContent = 'Perfil';
+      document.getElementById('navAuthBtn').textContent = 'Perfil';
       checkAdminAccess(email);
     }
 
     function loginGoogle() {
-      // Integração backend futura com OAuth
-      const email = prompt("Simulação de login com Google. Digite o e-mail:");
+      const email = prompt("Simulação de login via Google. Digite seu e-mail:");
       if(email) {
         currentUser = { email };
         authModal.classList.remove('active');
         document.getElementById('openAuthModal').textContent = 'Perfil';
+        document.getElementById('navAuthBtn').textContent = 'Perfil';
         checkAdminAccess(email);
       }
     }
 
     function loginFacebook() {
-      showToast("Integração com Facebook em configuração.");
+      showToast("Conexão com o Facebook sendo configurada.");
     }
 
     document.getElementById('menuToggle').addEventListener('click',()=>{
