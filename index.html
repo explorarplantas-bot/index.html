@@ -13,7 +13,7 @@
     header{background:var(--paper);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}
     .head{display:flex;align-items:center;gap:18px;min-height:82px}.brand{display:flex;align-items:center;gap:11px;min-width:230px}.logo{width:52px;height:52px;flex:none}.brand-name{font-family:Georgia,serif;font-size:1.35rem;font-weight:700;color:var(--forest);line-height:1}
     nav{display:flex;align-items:center;justify-content:center;gap:4px;flex:1;flex-wrap:wrap}nav button,.nav-mobile button{border:0;background:transparent;color:#3e5144;padding:9px 10px;border-radius:10px;font-size:.88rem}nav button:hover,nav button.active,.nav-mobile button:hover{background:#eaf0e5;color:var(--forest)}
-    .head-actions{display:flex;gap:7px;align-items:center}.icon-btn{border:1px solid var(--line);background:white;color:var(--forest);width:40px;height:40px;border-radius:12px;display:grid;place-items:center}.login-btn,.primary{border:0;border-radius:12px;background:var(--forest);color:white;padding:11px 16px;font-weight:650}.login-btn:hover,.primary:hover{background:#245a3e}.menu-toggle{display:none}
+    .head-actions{display:flex;gap:7px;align-items:center}.icon-btn{border:1px solid var(--line);background:white;color:var(--forest);width:40px;height:40px;border-radius:12px;display:grid;place-items:center;position:relative;cursor:pointer;}.login-btn,.primary{border:0;border-radius:12px;background:var(--forest);color:white;padding:11px 16px;font-weight:650}.login-btn:hover,.primary:hover{background:#245a3e}.menu-toggle{display:none}
     main{min-height:60vh}.page{display:none}.page.active{display:block}.hero{padding:40px 0 10px}.hero-grid{display:block;max-width:800px;margin:0 auto}.eyebrow{color:var(--green);font-size:.76rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;display:flex;align-items:center;gap:9px}.eyebrow:before{content:"";height:2px;width:25px;background:var(--leaf)}h1,h2,h3,p{margin-top:0}h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(2.5rem,5vw,4rem);line-height:1.05;letter-spacing:-.04em;color:var(--forest);margin:14px 0 18px;font-weight:600}h1 em{color:var(--green);font-weight:500}.hero-copy{font-size:1.05rem;color:#536458;max-width:620px}
     
     .section{padding:36px 0}.section-head{display:flex;align-items:end;justify-content:space-between;gap:20px;margin-bottom:22px}.section-head h2,.page-title{font-family:Georgia,serif;font-size:clamp(1.8rem,3vw,2.6rem);line-height:1.12;color:var(--forest);margin:8px 0 0;font-weight:600}.section-head p{color:var(--muted);margin:8px 0 0;max-width:600px}.text-link{color:var(--green);font-weight:750;border:0;background:none;padding:8px 0}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:17px}.feature-card,.plant-card,.article-card{background:var(--paper);border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:var(--shadow)}.feature-card{padding:22px;min-height:210px;display:flex;flex-direction:column;align-items:flex-start}.card-icon{width:48px;height:48px;border-radius:15px;background:#e8efe2;display:grid;place-items:center;font-size:1.45rem;margin-bottom:17px}.feature-card h3,.plant-card h3,.article-card h3{font-size:1.12rem;color:var(--forest);margin:0 0 7px}.feature-card p,.plant-card p,.article-card p{color:var(--muted);font-size:.9rem;margin-bottom:14px}.feature-card .text-link{margin-top:auto}.plant-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:17px}.plant-photo{height:170px;background:#e0e8d8;display:grid;place-items:center;font-size:3rem;overflow:hidden}.plant-photo img{width:100%;height:100%;object-fit:cover}.plant-body{padding:17px}.latin{font-style:italic;color:var(--muted);font-size:.82rem}.pill{display:inline-block;background:#e9f0e3;color:var(--green);font-size:.74rem;font-weight:750;padding:5px 9px;border-radius:99px;margin-bottom:10px}
@@ -45,7 +45,7 @@
     #explorar-identificador [hidden] { display: none !important; }
 
     /* Modais (Login e Legais) */
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; place-items: center; z-index: 100; backdrop-filter: blur(4px); }
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; place-items: center; z-index: 100; backdrop-filter: blur(4px); }
     .modal-overlay.active { display: grid; }
     .auth-box { background: var(--paper); border-radius: 24px; padding: 30px; width: min(500px, 90%); max-height: 85vh; overflow-y: auto; box-shadow: var(--shadow); position: relative; }
     .auth-box h2 { font-family: Georgia, serif; color: var(--forest); margin-bottom: 16px; text-align: center; }
@@ -57,6 +57,9 @@
     .auth-btn.facebook { background: #1877f2; color: white; border: none; }
     .auth-divider { text-align: center; margin: 15px 0; color: var(--muted); font-size: .85rem; position: relative; }
     .auth-form input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--line); margin-bottom: 10px; }
+    .terms-check { display: flex; align-items: flex-start; gap: 8px; font-size: .85rem; color: var(--muted); margin: 12px 0 16px; text-align: left; background: #f4f8f1; padding: 12px; border-radius: 12px; border: 1px solid var(--line); }
+    .terms-check input { margin-top: 3px; cursor: pointer; width: 18px; height: 18px; flex: none; }
+    .terms-check a { color: var(--green); text-decoration: underline; font-weight: 700; cursor: pointer; }
     .close-modal { position: absolute; top: 15px; right: 20px; border: 0; background: transparent; font-size: 1.5rem; cursor: pointer; color: var(--muted); }
 
     /* Estilos do Perfil e Admin */
@@ -256,24 +259,57 @@
     </div>
   </main>
 
-  <!-- MODAL DE AUTENTICAÇÃO -->
+  <!-- MODAL DE AUTENTICAÇÃO COM LINKS DE LEITURA DOS TERMOS -->
   <div class="modal-overlay" id="authModal">
     <div class="auth-box">
       <button class="close-modal" id="closeAuthModal">&times;</button>
       <h2>Acessar o portal</h2>
-      <button class="auth-btn google" onclick="loginGoogle()">
+      
+      <div class="terms-check">
+        <input type="checkbox" id="acceptTermsCheck" onchange="toggleAuthButtons()" />
+        <label for="acceptTermsCheck">
+          Li e concordo com os <a onclick="openTermsModal()">Termos de Uso ↗</a> e a <a onclick="openPrivacyModal()">Política de Privacidade ↗</a>.
+        </label>
+      </div>
+
+      <button class="auth-btn google" id="googleAuthBtn" onclick="loginGoogle()" disabled style="opacity:0.5; cursor:not-allowed;">
         <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.259h2.908c1.702-1.567 2.684-3.874 2.684-6.617z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/></svg>
         Entrar com Google
       </button>
-      <button class="auth-btn facebook" onclick="loginFacebook()">
+      <button class="auth-btn facebook" id="facebookAuthBtn" onclick="loginFacebook()" disabled style="opacity:0.5; cursor:not-allowed;">
         Entrar com Facebook
       </button>
       <div class="auth-divider">ou use seu e-mail</div>
       <form class="auth-form" onsubmit="handleDirectAuth(event)">
         <input type="email" id="authEmail" placeholder="Seu e-mail" required />
         <input type="password" id="authPassword" placeholder="Sua senha" required />
-        <button type="submit" class="primary" style="width:100%">Entrar / Cadastrar</button>
+        <button type="submit" id="submitAuthBtn" class="primary" style="width:100%; opacity:0.5; cursor:not-allowed;" disabled>Entrar / Cadastrar</button>
       </form>
+    </div>
+  </div>
+
+  <!-- MODAL OBRIGATÓRIO DE REACEITE DE ATUALIZAÇÃO DOS TERMOS (BLOQUEIA O SITE ATÉ ACEITAR) -->
+  <div class="modal-overlay" id="updateTermsModal" style="z-index:200;">
+    <div class="auth-box">
+      <h2>Atualização dos Termos 📑</h2>
+      <p>Atualizamos nossos <strong>Termos de Uso</strong> e <strong>Política de Privacidade</strong> para garantir ainda mais segurança aos seus dados.</p>
+      
+      <p style="margin: 14px 0;">Por favor, leia as versões atualizadas antes de continuar navegando:</p>
+      <ul>
+        <li><a onclick="openTermsModal()" style="color:var(--green); font-weight:bold; cursor:pointer;">Ler Termos de Uso ↗</a></li>
+        <li><a onclick="openPrivacyModal()" style="color:var(--green); font-weight:bold; cursor:pointer;">Ler Política de Privacidade ↗</a></li>
+      </ul>
+
+      <div class="terms-check" style="margin-top:20px;">
+        <input type="checkbox" id="acceptUpdateTermsCheck" onchange="toggleUpdateBtn()" />
+        <label for="acceptUpdateTermsCheck">
+          Declaro que li e concordo com os novos Termos de Uso e Política de Privacidade.
+        </label>
+      </div>
+
+      <button id="confirmUpdateTermsBtn" class="primary" style="width:100%; opacity:0.5; cursor:not-allowed;" disabled onclick="confirmTermsUpdate()">
+        Concordar e Continuar
+      </button>
     </div>
   </div>
 
@@ -282,7 +318,7 @@
     <div class="auth-box">
       <button class="close-modal" onclick="closeLegalModals()">&times;</button>
       <h2>Termos de Uso</h2>
-      <p><em>Última atualização: Outubro de 2026</em></p>
+      <p><em>Versão 1.0 — Outubro de 2026</em></p>
       
       <h3>1. Aceitação dos Termos</h3>
       <p>Ao utilizar o portal <strong>Explorar Plantas</strong>, você concorda expressamente com os presentes Termos de Uso. Caso não concorde com qualquer disposição, recomendamos que não utilize nossos serviços.</p>
@@ -303,7 +339,7 @@
     <div class="auth-box">
       <button class="close-modal" onclick="closeLegalModals()">&times;</button>
       <h2>Política de Privacidade (LGPD)</h2>
-      <p><em>Em conformidade com a Lei nº 13.709/2018 (LGPD)</em></p>
+      <p><em>Versão 1.0 — Em conformidade com a Lei nº 13.709/2018 (LGPD)</em></p>
       
       <h3>1. Coleta de Dados Pessoais</h3>
       <p>Coletamos informações pessoais apenas com o seu consentimento explícito:</p>
@@ -344,6 +380,7 @@
 
   <script>
     const pages = ['inicio','catalogo','blog','loja','identificar','jogos','comunidade','clube','perfil','admin'];
+    const CURRENT_TERMS_VERSION = "v1.0"; // Incremente para "v1.1" quando atualizar os termos no futuro!
     let currentUser = null;
 
     function showPage(name){
@@ -373,7 +410,35 @@
 
     document.getElementById('closeAuthModal').onclick = () => authModal.classList.remove('active');
 
-    // Modais Legais (Termos e Privacidade)
+    // Habilitar botões apenas com aceite dos termos no cadastro
+    function toggleAuthButtons() {
+      const accepted = document.getElementById('acceptTermsCheck').checked;
+      const btns = [document.getElementById('googleAuthBtn'), document.getElementById('facebookAuthBtn'), document.getElementById('submitAuthBtn')];
+      btns.forEach(btn => {
+        btn.disabled = !accepted;
+        btn.style.opacity = accepted ? '1' : '0.5';
+        btn.style.cursor = accepted ? 'pointer' : 'not-allowed';
+      });
+    }
+
+    // Habilitar botão no Reaceite de Atualização dos Termos
+    function toggleUpdateBtn() {
+      const accepted = document.getElementById('acceptUpdateTermsCheck').checked;
+      const btn = document.getElementById('confirmUpdateTermsBtn');
+      btn.disabled = !accepted;
+      btn.style.opacity = accepted ? '1' : '0.5';
+      btn.style.cursor = accepted ? 'pointer' : 'not-allowed';
+    }
+
+    function confirmTermsUpdate() {
+      if (!currentUser) return;
+      currentUser.termsAcceptedVersion = CURRENT_TERMS_VERSION;
+      localStorage.setItem('ep_user', JSON.stringify(currentUser));
+      document.getElementById('updateTermsModal').classList.remove('active');
+      showToast('Obrigado! Suas preferências foram atualizadas.');
+    }
+
+    // Modais Legais
     const termsModal = document.getElementById('termsModal');
     const privacyModal = document.getElementById('privacyModal');
 
@@ -393,13 +458,11 @@
     }
 
     function renderUserSession(user) {
+      user.termsAcceptedVersion = user.termsAcceptedVersion || CURRENT_TERMS_VERSION;
       currentUser = user;
       localStorage.setItem('ep_user', JSON.stringify(user));
 
-      // Atualiza o botão do cabeçalho
       openAuthBtn.textContent = 'Perfil';
-
-      // Atualiza a página de Perfil
       document.getElementById('profileName').textContent = user.name || user.email.split('@')[0];
       document.getElementById('profileEmail').textContent = user.email;
 
@@ -411,6 +474,11 @@
       }
 
       checkAdminAccess(user.email);
+
+      // Se a versão aceita pelo usuário for antiga, bloqueia a tela com a caixa de atualização
+      if (user.termsAcceptedVersion !== CURRENT_TERMS_VERSION) {
+        document.getElementById('updateTermsModal').classList.add('active');
+      }
     }
 
     function logout() {
@@ -425,7 +493,7 @@
     function handleDirectAuth(e) {
       e.preventDefault();
       const email = document.getElementById('authEmail').value;
-      const user = { email, name: email.split('@')[0] };
+      const user = { email, name: email.split('@')[0], termsAcceptedVersion: CURRENT_TERMS_VERSION };
       renderUserSession(user);
       authModal.classList.remove('active');
       showToast(`Bem-vindo!`);
@@ -433,11 +501,10 @@
     }
 
     function loginGoogle() {
+      if (!document.getElementById('acceptTermsCheck').checked) return;
       const CLIENT_ID = "571216171328-j9vulkvmerrl3qmrnfnlkn201o5bdo6g.apps.googleusercontent.com";
       const REDIRECT_URI = window.location.origin;
-      
       const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=email%20profile`;
-      
       window.location.href = googleAuthUrl;
     }
 
@@ -472,7 +539,7 @@
           .then(res => res.json())
           .then(data => {
             if (data && data.email) {
-              const user = { email: data.email, name: data.name, picture: data.picture };
+              const user = { email: data.email, name: data.name, picture: data.picture, termsAcceptedVersion: CURRENT_TERMS_VERSION };
               renderUserSession(user);
               showToast(`Bem-vindo, ${data.name || data.email}!`);
               history.replaceState(null, '', window.location.pathname);
@@ -488,7 +555,8 @@
       const savedUser = localStorage.getItem('ep_user');
       if (savedUser) {
         try {
-          renderUserSession(JSON.parse(savedUser));
+          const user = JSON.parse(savedUser);
+          renderUserSession(user);
         } catch (_) {}
       }
     });
