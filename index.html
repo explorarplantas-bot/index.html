@@ -9,30 +9,65 @@
       background: #f3ecd9;
       color: #145343;
       font-family: inherit;
+      box-sizing: border-box;
+    }
+
+    #explorar-identificador * {
+      box-sizing: border-box;
     }
 
     #explorar-identificador h2 {
       margin-top: 0;
     }
 
-    #explorar-identificador .area-foto {
-      display: block;
-      padding: 24px 16px;
-      margin: 18px 0;
+    #explorar-identificador .ep-opcoes {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 20px 0;
+    }
+
+    #explorar-identificador .ep-escolha {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100px;
+      padding: 16px 10px;
       border: 2px dashed #9bb8aa;
       border-radius: 18px;
       background: #fffdf8;
       text-align: center;
       cursor: pointer;
+      font-weight: bold;
     }
 
-    #explorar-identificador input {
+    #explorar-identificador .ep-escolha span {
       display: block;
-      width: 100%;
-      margin-top: 12px;
+      font-size: 26px;
+      margin-bottom: 8px;
     }
 
-    #explorar-identificador button {
+    #explorar-identificador input[type="file"] {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      overflow: hidden;
+    }
+
+    #explorar-identificador .ep-escolha:focus-within {
+      outline: 3px solid #247d61;
+    }
+
+    #explorar-identificador #ep-previa {
+      display: block;
+      max-width: 100%;
+      max-height: 340px;
+      margin: 16px auto;
+      border-radius: 16px;
+    }
+
+    #explorar-identificador #ep-botao {
       width: 100%;
       padding: 15px;
       border: 0;
@@ -44,17 +79,13 @@
       cursor: pointer;
     }
 
-    #explorar-identificador button:disabled {
+    #explorar-identificador #ep-botao:disabled {
       opacity: .6;
       cursor: wait;
     }
 
-    #explorar-identificador #ep-previa {
-      display: block;
-      max-width: 100%;
-      max-height: 320px;
-      margin: 16px auto;
-      border-radius: 16px;
+    #explorar-identificador #ep-status {
+      overflow-wrap: anywhere;
     }
 
     #explorar-identificador #ep-resultado {
@@ -82,22 +113,55 @@
     #explorar-identificador [hidden] {
       display: none !important;
     }
+
+    @media (max-width: 380px) {
+      #explorar-identificador {
+        padding: 16px;
+      }
+
+      #explorar-identificador .ep-opcoes {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 
   <h2>Identifique sua planta 🌿</h2>
-  <p>Envie uma foto e descubra o nome da planta e como cuidar dela.</p>
+  <p>
+    Tire uma foto ou escolha uma imagem dos arquivos do seu
+    celular ou computador para descobrir qual é a planta
+    e como cuidar dela.
+  </p>
 
-  <label class="area-foto" for="ep-foto">
-    <strong>📷 Escolha uma foto ou tire uma foto</strong>
-    <input
-      id="ep-foto"
-      type="file"
-      accept="image/jpeg,image/png,image/webp"
-      capture="environment"
-    />
-  </label>
+  <div class="ep-opcoes">
+    <label class="ep-escolha" for="ep-camera">
+      <span>📷</span>
+      Tirar uma foto
+      <input
+        id="ep-camera"
+        type="file"
+        accept="image/*"
+        capture="environment"
+      />
+    </label>
 
-  <img id="ep-previa" alt="Prévia da planta" hidden />
+    <label class="ep-escolha" for="ep-arquivo">
+      <span>🖼️</span>
+      Escolher dos arquivos
+      <input
+        id="ep-arquivo"
+        type="file"
+        accept="image/*"
+      />
+    </label>
+  </div>
+
+  <p id="ep-arquivo-nome">Nenhuma imagem selecionada.</p>
+
+  <img
+    id="ep-previa"
+    alt="Prévia da planta selecionada"
+    hidden
+  />
 
   <button id="ep-botao" type="button">
     Identificar minha planta
@@ -113,63 +177,193 @@
   if (!raiz || raiz.dataset.iniciado) return;
   raiz.dataset.iniciado = "sim";
 
-  const entrada = raiz.querySelector("#ep-foto");
+  const camera = raiz.querySelector("#ep-camera");
+  const arquivos = raiz.querySelector("#ep-arquivo");
   const previa = raiz.querySelector("#ep-previa");
+  const nomeArquivo = raiz.querySelector("#ep-arquivo-nome");
   const botao = raiz.querySelector("#ep-botao");
   const status = raiz.querySelector("#ep-status");
   const resultado = raiz.querySelector("#ep-resultado");
 
   let arquivo = null;
+  let urlPrevia = null;
 
-  entrada.addEventListener("change", () => {
-    arquivo = entrada.files?.[0] || null;
+  function limparResultado() {
     resultado.replaceChildren();
     resultado.hidden = true;
+    status.textContent = "";
+  }
+
+  function selecionarArquivo(file) {
+    limparResultado();
+    arquivo = null;
+
+    if (urlPrevia) {
+      URL.revokeObjectURL(urlPrevia);
+      urlPrevia = null;
+    }
+
+    previa.removeAttribute("src");
     previa.hidden = true;
 
-    if (!arquivo) return;
-
-    if (!["image/jpeg", "image/png", "image/webp"].includes(arquivo.type)) {
-      status.textContent = "Escolha uma foto JPG, PNG ou WEBP.";
-      arquivo = null;
+    if (!file) {
+      nomeArquivo.textContent = "Nenhuma imagem selecionada.";
       return;
     }
 
-    previa.src = URL.createObjectURL(arquivo);
+    if (!file.type.startsWith("image/")) {
+      nomeArquivo.textContent = "Arquivo inválido.";
+      status.textContent = "Escolha um arquivo de imagem.";
+      return;
+    }
+
+    if (file.size > 20 * 1024 * 1024) {
+      nomeArquivo.textContent = "Imagem muito grande.";
+      status.textContent =
+        "Escolha uma imagem de até 20 MB.";
+      return;
+    }
+
+    arquivo = file;
+    nomeArquivo.textContent =
+      "Arquivo selecionado: " + file.name;
+
+    urlPrevia = URL.createObjectURL(file);
+    previa.src = urlPrevia;
     previa.hidden = false;
-    status.textContent = "Foto selecionada. Pronto para identificar.";
+
+    previa.onerror = () => {
+      previa.hidden = true;
+      status.textContent =
+        "Seu navegador não consegue mostrar esta imagem. " +
+        "Tente convertê-la para JPG ou PNG.";
+    };
+
+    status.textContent =
+      "Imagem selecionada. Pronto para identificar.";
+  }
+
+  camera.addEventListener("change", () => {
+    const file = camera.files?.[0];
+    if (file) {
+      arquivos.value = "";
+      selecionarArquivo(file);
+    }
   });
 
-  // Reduz fotos grandes antes do envio ao Cloudflare.
+  arquivos.addEventListener("change", () => {
+    const file = arquivos.files?.[0];
+    if (file) {
+      camera.value = "";
+      selecionarArquivo(file);
+    }
+  });
+
+  // Converte a imagem para JPEG e reduz seu tamanho.
+  // Isso permite enviar formatos diferentes ao servidor,
+  // desde que o navegador consiga decodificar a imagem.
   async function prepararImagem(file) {
-    const url = URL.createObjectURL(file);
+    let bitmap = null;
+    let url = null;
 
     try {
-      const img = new Image();
-      img.src = url;
-      await img.decode();
+      let largura;
+      let altura;
+      let desenhar;
+
+      if ("createImageBitmap" in window) {
+        try {
+          bitmap = await createImageBitmap(file);
+          largura = bitmap.width;
+          altura = bitmap.height;
+          desenhar = (ctx, w, h) =>
+            ctx.drawImage(bitmap, 0, 0, w, h);
+        } catch (_) {
+          bitmap = null;
+        }
+      }
+
+      if (!bitmap) {
+        url = URL.createObjectURL(file);
+
+        const img = new Image();
+        img.src = url;
+
+        await new Promise((resolve, reject) => {
+          img.onload = resolve;
+          img.onerror = () =>
+            reject(new Error(
+              "Não foi possível abrir este formato de imagem. " +
+              "Tente salvar a foto como JPG ou PNG."
+            ));
+        });
+
+        largura = img.naturalWidth;
+        altura = img.naturalHeight;
+        desenhar = (ctx, w, h) =>
+          ctx.drawImage(img, 0, 0, w, h);
+      }
+
+      if (!largura || !altura) {
+        throw new Error("A imagem não possui dimensões válidas.");
+      }
 
       const limite = 1400;
       const escala = Math.min(
         1,
-        limite / Math.max(img.naturalWidth, img.naturalHeight)
+        limite / Math.max(largura, altura)
       );
 
       const canvas = document.createElement("canvas");
-      canvas.width = Math.round(img.naturalWidth * escala);
-      canvas.height = Math.round(img.naturalHeight * escala);
+      canvas.width = Math.max(1, Math.round(largura * escala));
+      canvas.height = Math.max(1, Math.round(altura * escala));
 
       const contexto = canvas.getContext("2d");
-      contexto.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-      return canvas.toDataURL("image/jpeg", 0.82);
+      if (!contexto) {
+        throw new Error("Não foi possível processar a imagem.");
+      }
+
+      contexto.fillStyle = "#ffffff";
+      contexto.fillRect(0, 0, canvas.width, canvas.height);
+      desenhar(contexto, canvas.width, canvas.height);
+
+      return await new Promise((resolve, reject) => {
+        canvas.toBlob(
+          blob => {
+            if (!blob) {
+              reject(new Error(
+                "Não foi possível converter a imagem."
+              ));
+              return;
+            }
+
+            const leitor = new FileReader();
+
+            leitor.onload = () => resolve(leitor.result);
+            leitor.onerror = () => reject(
+              new Error("Não foi possível ler a imagem convertida.")
+            );
+
+            leitor.readAsDataURL(blob);
+          },
+          "image/jpeg",
+          0.82
+        );
+      });
     } finally {
-      URL.revokeObjectURL(url);
+      if (bitmap) bitmap.close();
+      if (url) URL.revokeObjectURL(url);
     }
   }
 
   function mostrarCampo(titulo, valor) {
-    if (!valor || (Array.isArray(valor) && !valor.length)) return;
+    if (
+      valor === undefined ||
+      valor === null ||
+      valor === "" ||
+      (Array.isArray(valor) && !valor.length)
+    ) return;
 
     const item = document.createElement("div");
     item.className = "ep-item";
@@ -188,17 +382,20 @@
 
   botao.addEventListener("click", async () => {
     if (!arquivo) {
-      status.textContent = "Selecione uma foto da planta primeiro.";
+      status.textContent =
+        "Tire uma foto ou escolha uma imagem primeiro.";
       return;
     }
 
     botao.disabled = true;
-    status.textContent = "Analisando a planta com o Gemini... 🌱";
+    status.textContent = "Preparando a imagem... 🌱";
     resultado.replaceChildren();
     resultado.hidden = true;
 
     try {
       const imagem = await prepararImagem(arquivo);
+
+      status.textContent = "Analisando a planta com o Gemini...";
 
       const resposta = await fetch("/api/identificar", {
         method: "POST",
@@ -206,23 +403,35 @@
         body: JSON.stringify({ imagem })
       });
 
-      const dados = await resposta.json();
+      const texto = await resposta.text();
+      let dados;
 
-      if (!resposta.ok || !dados.sucesso) {
-        throw new Error(dados.erro || "Não foi possível identificar a planta.");
+      try {
+        dados = JSON.parse(texto);
+      } catch (_) {
+        throw new Error(
+          "O servidor retornou uma resposta inválida. Tente novamente."
+        );
       }
 
-      const p = dados.planta;
+      if (!resposta.ok || !dados.sucesso) {
+        throw new Error(
+          dados.erro || "Não foi possível identificar a planta."
+        );
+      }
+
+      const p = dados.planta || {};
 
       const titulo = document.createElement("h3");
-      titulo.textContent = p.identificacao || "Identificação provável";
+      titulo.textContent =
+        p.nomePopular || p.identificacao || "Identificação provável";
       resultado.appendChild(titulo);
 
-      mostrarCampo("🔬 Nome científico", p.nome_cientifico);
+      mostrarCampo("🔬 Nome científico", p.nomeCientifico || p.nome_cientifico);
       mostrarCampo("🌿 Família botânica", p.familia);
       mostrarCampo("📊 Confiança da identificação", p.confianca);
       mostrarCampo("🔎 Características", p.caracteristicas);
-      mostrarCampo("☀️ Iluminação", p.luz);
+      mostrarCampo("☀️ Iluminação", p.luz || p.iluminacao);
       mostrarCampo("💧 Rega", p.rega);
       mostrarCampo("🪴 Solo e drenagem", p.solo);
       mostrarCampo("🌱 Adubação", p.adubacao);
@@ -230,13 +439,15 @@
       mostrarCampo("⚠️ Toxicidade", p.toxicidade);
       mostrarCampo("✅ Cuidados básicos", p.cuidados);
       mostrarCampo("ℹ️ Observações", p.observacao);
+      mostrarCampo("💡 Dica especial", p.dicaEspecial);
 
       resultado.hidden = false;
-      status.textContent = "Identificação concluída! Confira os cuidados.";
+      status.textContent =
+        "Identificação concluída! Confira os cuidados.";
 
     } catch (erro) {
-      status.textContent = erro.message ||
-        "Falha na comunicação. Tente novamente.";
+      status.textContent =
+        erro.message || "Falha na comunicação. Tente novamente.";
     } finally {
       botao.disabled = false;
     }
