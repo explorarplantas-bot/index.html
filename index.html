@@ -31,7 +31,6 @@
     #explorar-identificador #ep-botao:disabled { opacity: .6; cursor: wait; }
     #explorar-identificador #ep-status { overflow-wrap: anywhere; margin-top: 12px; color: var(--muted); font-size: .95rem; display: flex; align-items: center; gap: 8px; }
     
-    /* Animação da Lupa */
     @keyframes lupaMove {
       0% { transform: translateX(0) rotate(0deg); }
       50% { transform: translateX(12px) rotate(15deg); }
@@ -44,6 +43,21 @@
     #explorar-identificador .ep-item:last-child { border-bottom: 0; }
     #explorar-identificador .ep-item strong { display: block; margin-bottom: 5px; color: var(--forest); }
     #explorar-identificador [hidden] { display: none !important; }
+
+    /* Modal de Autenticação */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; place-items: center; z-index: 100; backdrop-filter: blur(4px); }
+    .modal-overlay.active { display: grid; }
+    .auth-box { background: var(--paper); border-radius: 24px; padding: 30px; width: min(400px, 90%); box-shadow: var(--shadow); position: relative; }
+    .auth-box h2 { font-family: Georgia, serif; color: var(--forest); margin-bottom: 20px; text-align: center; }
+    .auth-btn { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--line); margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 600; cursor: pointer; background: white; }
+    .auth-btn.google { color: #333; }
+    .auth-btn.facebook { background: #1877f2; color: white; border: none; }
+    .auth-divider { text-align: center; margin: 15px 0; color: var(--muted); font-size: .85rem; position: relative; }
+    .auth-form input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--line); margin-bottom: 10px; }
+    .close-modal { position: absolute; top: 15px; right: 20px; border: 0; background: transparent; font-size: 1.5rem; cursor: pointer; color: var(--muted); }
+
+    /* Estilo do Painel Admin */
+    .admin-card { background: #eaf0e5; border: 1px dashed var(--green); border-radius: 18px; padding: 20px; margin-bottom: 20px; }
 
     .page-intro{padding:40px 0 20px}.page-intro p{color:var(--muted);max-width:680px}.construction{background:var(--paper);border:1px solid var(--line);border-radius:24px;padding:clamp(26px,5vw,52px);margin:10px 0 60px;text-align:center;box-shadow:var(--shadow)}.construction .big-icon{font-size:3rem}.construction h2{font-family:Georgia,serif;font-size:2rem;color:var(--forest);margin:12px 0}.construction p{max-width:590px;margin:0 auto 20px;color:var(--muted)}
     footer{background:#102f22;color:#edf1e7;padding:42px 0 20px}.footer-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:30px}.footer-brand{font-family:Georgia,serif;font-size:1.3rem;margin-bottom:10px}.footer-copy{color:#c1cebf;font-size:.9rem;max-width:380px}.footer-col h3{font-size:.92rem;color:#fff;margin-bottom:12px}.footer-col a,.footer-col button{display:block;color:#c1cebf;font-size:.88rem;margin:7px 0;background:none;border:0;padding:0;text-align:left}.footer-col a:hover,.footer-col button:hover{color:white}.copyright{border-top:1px solid #ffffff24;margin-top:30px;padding-top:17px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:#b7c6b5;font-size:.78rem}
@@ -76,11 +90,12 @@
         <button data-page="jogos">Jogos</button>
         <button data-page="comunidade">Comunidade</button>
         <button data-page="clube">Clube</button>
+        <button id="adminTab" data-page="admin" style="display:none; color: var(--green); font-weight: bold;">Painel Admin ⚙️</button>
       </nav>
       <div class="head-actions">
         <button class="icon-btn" aria-label="Pesquisar" title="Pesquisa" onclick="showToast('A pesquisa geral será ativada em breve.')">⌕</button>
         <button class="icon-btn" aria-label="Notificações" title="Notificações" onclick="showToast('As notificações estarão disponíveis em breve.')">♧</button>
-        <button class="login-btn" onclick="showToast('A área de contas será construída em breve.')">Entrar</button>
+        <button class="login-btn" id="openAuthModal">Entrar</button>
         <button class="icon-btn menu-toggle" id="menuToggle" aria-label="Abrir menu" aria-expanded="false">☰</button>
       </div>
     </div>
@@ -124,15 +139,10 @@
       </section>
     </div>
 
-    <div class="page" id="page-catalogo"><div class="wrap"><section class="page-intro"><div class="eyebrow">Espécies</div><h1 class="page-title">Catálogo de plantas</h1><p>Consulte espécies, nomes científicos e orientações de luz, rega e solo.</p></section><div class="plant-grid">
-      <article class="plant-card"><div class="plant-photo">🌿</div><div class="plant-body"><span class="pill">Ornamentais</span><h3>Plantas ornamentais</h3><p>Espécies para decorar e dar vida aos ambientes.</p></div></article>
-      <article class="plant-card"><div class="plant-photo">🌵</div><div class="plant-body"><span class="pill">Suculentas</span><h3>Cactos e suculentas</h3><p>Plantas adaptadas a armazenar água.</p></div></article>
-      <article class="plant-card"><div class="plant-photo">🌸</div><div class="plant-body"><span class="pill">Flores</span><h3>Plantas com flores</h3><p>Espécies floríferas e suas necessidades.</p></div></article>
-    </div><div class="construction"><div class="big-icon">🌱</div><h2>Catálogo completo em breve</h2><p>Em breve, fichas botânicas detalhadas estarão disponíveis.</p></div></div></div>
-
-    <div class="page" id="page-blog"><div class="wrap"><section class="page-intro"><div class="eyebrow">Artigos</div><h1 class="page-title">Blog e dicas</h1><p>Guias práticos de cultivo para o seu dia a dia.</p></section><div class="grid"><article class="feature-card"><div class="card-icon">💧</div><h3>Como regar suas plantas</h3><p>Aprenda a avaliar o substrato corretamente.</p></article><article class="feature-card"><div class="card-icon">☀️</div><h3>Luz para cada planta</h3><p>Entenda sol direto, meia-sombra e luz indireta.</p></article><article class="feature-card"><div class="card-icon">🐝</div><h3>Polinizadores</h3><p>A importância das abelhas e outros animais.</p></article></div><div class="construction"><div class="big-icon">📚</div><h2>Conteúdos em breve</h2><p>Artigos completos sendo preparados para você.</p></div></div></div>
-
-    <div class="page" id="page-loja"><div class="wrap"><section class="page-intro"><div class="eyebrow">Loja</div><h1 class="page-title">Loja Explorar Plantas</h1><p>Materiais digitais e e-books especializados.</p></section><div class="grid"><article class="feature-card"><div class="card-icon">📗</div><h3>E-books botânicos</h3><p>Guias digitais de cultivo e identificação.</p></article><article class="feature-card"><div class="card-icon">🪴</div><h3>Jardinagem</h3><p>Acessórios para o seu cultivo.</p></article><article class="feature-card"><div class="card-icon">🎁</div><h3>Presentes</h3><p>Opções para quem ama natureza.</p></article></div><div class="construction"><div class="big-icon">🛍️</div><h2>Loja em construção</h2><p>Lançamento em breve.</p></div></div></div>
+    <!-- PÁGINAS EXISTENTES -->
+    <div class="page" id="page-catalogo"><div class="wrap"><section class="page-intro"><div class="eyebrow">Espécies</div><h1 class="page-title">Catálogo de plantas</h1><p>Consulte espécies, nomes científicos e orientações de luz, rega e solo.</p></section><div class="construction"><div class="big-icon">🌱</div><h2>Catálogo completo em breve</h2></div></div></div>
+    <div class="page" id="page-blog"><div class="wrap"><section class="page-intro"><div class="eyebrow">Artigos</div><h1 class="page-title">Blog e dicas</h1></section><div class="construction"><div class="big-icon">📚</div><h2>Conteúdos em breve</h2></div></div></div>
+    <div class="page" id="page-loja"><div class="wrap"><section class="page-intro"><div class="eyebrow">Loja</div><h1 class="page-title">Loja Explorar Plantas</h1></section><div class="construction"><div class="big-icon">🛍️</div><h2>Loja em construção</h2></div></div></div>
 
     <div class="page" id="page-identificar">
       <div class="wrap">
@@ -148,13 +158,11 @@
           
           <div class="ep-opcoes">  
             <label class="ep-escolha" for="ep-camera">  
-              <span>📷</span>  
-              Tirar foto  
+              <span>📷</span> Tirar foto  
               <input id="ep-camera" type="file" accept="image/*" capture="environment" />  
             </label>  
             <label class="ep-escolha" for="ep-arquivo">  
-              <span>🖼️</span>  
-              Escolher arquivo  
+              <span>🖼️</span> Escolher arquivo  
               <input id="ep-arquivo" type="file" accept="image/*" />  
             </label>
           </div>    
@@ -169,12 +177,61 @@
       </div>
     </div>
 
-    <div class="page" id="page-jogos"><div class="wrap"><section class="page-intro"><div class="eyebrow">Jogos</div><h1 class="page-title">Jogos botânicos</h1><p>Desafios para testar seus conhecimentos.</p></section><div class="grid"><article class="feature-card"><div class="card-icon">🧠</div><h3>Quiz das plantas</h3><p>Perguntas sobre botânica.</p></article><article class="feature-card"><div class="card-icon">🔍</div><h3>Quem sou eu?</h3><p>Adivinhe a planta misteriosa.</p></article><article class="feature-card"><div class="card-icon">🌼</div><h3>Desafio das flores</h3><p>Reconheça partes das plantas.</p></article></div><div class="construction"><div class="big-icon">🎮</div><h2>Jogos em breve</h2><p>Em desenvolvimento.</p></div></div></div>
+    <div class="page" id="page-jogos"><div class="wrap"><section class="page-intro"><div class="eyebrow">Jogos</div><h1 class="page-title">Jogos botânicos</h1></section><div class="construction"><div class="big-icon">🎮</div><h2>Jogos em breve</h2></div></div></div>
+    <div class="page" id="page-comunidade"><div class="wrap"><section class="page-intro"><div class="eyebrow">Comunidade</div><h1 class="page-title">Comunidade</h1></section><div class="construction"><div class="big-icon">🌎</div><h2>Comunidade em breve</h2></div></div></div>
+    <div class="page" id="page-clube"><div class="wrap"><section class="page-intro"><div class="eyebrow">Clube</div><h1 class="page-title">Clube Explorar Plantas</h1></section><div class="construction"><div class="big-icon">👑</div><h2>Clube em breve</h2></div></div></div>
 
-    <div class="page" id="page-comunidade"><div class="wrap"><section class="page-intro"><div class="eyebrow">Comunidade</div><h1 class="page-title">Comunidade</h1><p>Espaço para troca de experiências.</p></section><div class="grid"><article class="feature-card"><div class="card-icon">💬</div><h3>Dúvidas</h3><p>Pergunte e receba respostas.</p></article><article class="feature-card"><div class="card-icon">📸</div><h3>Fotos</h3><p>Mostre suas plantas.</p></article><article class="feature-card"><div class="card-icon">🤝</div><h3>Troca</h3><p>Dicas em conjunto.</p></article></div><div class="construction"><div class="big-icon">🌎</div><h2>Comunidade em breve</h2><p>Em desenvolvimento.</p></div></div></div>
+    <!-- PÁGINA DO PAINEL DE ADMINISTRADOR -->
+    <div class="page" id="page-admin">
+      <div class="wrap">
+        <section class="page-intro">
+          <div class="eyebrow">Administração</div>
+          <h1 class="page-title">Painel Geral</h1>
+          <p>Acesso exclusivo para explicaplantas@gmail.com</p>
+        </section>
 
-    <div class="page" id="page-clube"><div class="wrap"><section class="page-intro"><div class="eyebrow">Clube</div><h1 class="page-title">Clube Explorar Plantas</h1><p>Benefícios exclusivos para assinantes.</p></section><div class="grid"><article class="feature-card"><div class="card-icon">🚫</div><h3>Sem anúncios</h3><p>Navegação limpa.</p></article><article class="feature-card"><div class="card-icon">🌿</div><h3>Conteúdos extras</h3><p>Guias exclusivos.</p></article><article class="feature-card"><div class="card-icon">✨</div><h3>Vantagens</h3><p>Recursos adicionais.</p></article></div><div class="construction"><div class="big-icon">👑</div><h2>Clube em breve</h2><p>Em desenvolvimento.</p></div></div></div>
+        <div class="admin-card">
+          <h3>📊 Métricas Globais</h3>
+          <p>• Identificações realizadas no mês: <strong>0</strong></p>
+          <p>• Usuários cadastrados: <strong>1</strong> (Admin)</p>
+        </div>
+
+        <div class="grid">
+          <article class="feature-card">
+            <h3>⚙️ Configurações da API</h3>
+            <p>Gerencie a chave Gemini e limites de requisição.</p>
+            <button class="primary" onclick="showToast('Área de configurações protegida.')">Gerenciar API</button>
+          </article>
+          <article class="feature-card">
+            <h3>📝 Gerenciador do Blog</h3>
+            <p>Crie, edite e publique novos artigos no portal.</p>
+            <button class="primary" onclick="showToast('Abertura do editor de postagens.')">Novo Artigo</button>
+          </article>
+        </div>
+      </div>
+    </div>
   </main>
+
+  <!-- MODAL DE ENTRADA / CADASTRO -->
+  <div class="modal-overlay" id="authModal">
+    <div class="auth-box">
+      <button class="close-modal" id="closeAuthModal">&times;</button>
+      <h2>Acessar o portal</h2>
+      <button class="auth-btn google" onclick="loginGoogle()">
+        <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.259h2.908c1.702-1.567 2.684-3.874 2.684-6.617z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/></svg>
+        Entrar com Google
+      </button>
+      <button class="auth-btn facebook" onclick="loginFacebook()">
+        Entrar com Facebook
+      </button>
+      <div class="auth-divider">ou use seu e-mail</div>
+      <form class="auth-form" onsubmit="handleDirectAuth(event)">
+        <input type="email" id="authEmail" placeholder="Seu e-mail" required />
+        <input type="password" id="authPassword" placeholder="Sua senha" required />
+        <button type="submit" class="primary" style="width:100%">Entrar / Cadastrar</button>
+      </form>
+    </div>
+  </div>
 
   <footer>
     <div class="wrap">
@@ -195,7 +252,9 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
-    const pages = ['inicio','catalogo','blog','loja','identificar','jogos','comunidade','clube'];
+    const pages = ['inicio','catalogo','blog','loja','identificar','jogos','comunidade','clube','admin'];
+    let currentUser = null;
+
     function showPage(name){
       if(!pages.includes(name)) name='inicio';
       document.querySelectorAll('.page').forEach(el=>el.classList.toggle('active',el.id==='page-'+name));
@@ -205,12 +264,51 @@
       window.scrollTo({top:0,behavior:'smooth'});
       if(location.hash !== '#'+name) history.replaceState(null,'','#'+name);
     }
+
     document.querySelectorAll('[data-page]').forEach(el=>el.addEventListener('click',e=>{e.preventDefault();showPage(el.dataset.page)}));
     document.querySelectorAll('[data-go]').forEach(el=>el.addEventListener('click',()=>showPage(el.dataset.go)));
+    
+    // Gestão do Modal
+    const authModal = document.getElementById('authModal');
+    document.getElementById('openAuthModal').onclick = () => authModal.classList.add('active');
+    document.getElementById('closeAuthModal').onclick = () => authModal.classList.remove('active');
+
+    function checkAdminAccess(email) {
+      if (email === 'explicaplantas@gmail.com') {
+        document.getElementById('adminTab').style.display = 'block';
+        showToast('Acesso de Administrador Concedido ⚙️');
+      }
+    }
+
+    function handleDirectAuth(e) {
+      e.preventDefault();
+      const email = document.getElementById('authEmail').value;
+      currentUser = { email };
+      authModal.classList.remove('active');
+      document.getElementById('openAuthModal').textContent = 'Perfil';
+      checkAdminAccess(email);
+    }
+
+    function loginGoogle() {
+      // Integração backend futura com OAuth
+      const email = prompt("Simulação de login com Google. Digite o e-mail:");
+      if(email) {
+        currentUser = { email };
+        authModal.classList.remove('active');
+        document.getElementById('openAuthModal').textContent = 'Perfil';
+        checkAdminAccess(email);
+      }
+    }
+
+    function loginFacebook() {
+      showToast("Integração com Facebook em configuração.");
+    }
+
     document.getElementById('menuToggle').addEventListener('click',()=>{
       const nav=document.getElementById('mainNav');const open=nav.classList.toggle('open');
       document.getElementById('menuToggle').setAttribute('aria-expanded',String(open));
     });
+
     let toastTimer;
     function showToast(message){
       const toast=document.getElementById('toast');toast.textContent=message;toast.style.display='block';
@@ -218,6 +316,7 @@
     }
     document.getElementById('year').textContent=new Date().getFullYear();
 
+    // Script do Identificador
     (() => {  
       const raiz = document.getElementById("explorar-identificador");  
       if (!raiz || raiz.dataset.iniciado) return;  
