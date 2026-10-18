@@ -449,46 +449,21 @@
     const EP_TOKEN_KEY = "ep_auth_token";
 
     // Comunicação com o Cloudflare Worker
-    async function epApi(caminho, dados = null, token = null) {
-      const opcoes = {
-        method: dados ? "POST" : "GET",
-        headers: {
-          "Content-Type": "application/json"
-        }
-      };
-
-      if (token) {
-        opcoes.headers.Authorization = `Bearer ${token}`;
-      }
-
-      if (dados) {
-        opcoes.body = JSON.stringify(dados);
-      }
-
+    async function epApi(caminho, dados = null, token = null, metodo = null) {
+      const tokenAtual = token || localStorage.getItem(EP_TOKEN_KEY) || "";
+      const opcoes = { method: metodo || (dados === null ? "GET" : "POST"), headers: { "Content-Type": "application/json" } };
+      if (tokenAtual) opcoes.headers.Authorization = `Bearer ${tokenAtual}`;
+      if (dados !== null) opcoes.body = JSON.stringify(dados);
       const resposta = await fetch(EP_API + caminho, opcoes);
-
-      let resultado;
-      try {
-        resultado = await resposta.json();
-      } catch {
-        throw new Error("O servidor retornou uma resposta inválida.");
+      let resultado = {};
+      try { resultado = await resposta.json(); } catch { throw new Error("O servidor retornou uma resposta inválida."); }
+      if (!resposta.ok || resultado.sucesso === false || resultado.success === false) {
+        throw new Error(resultado.erro || resultado.error || resultado.mensagem || `Erro ${resposta.status} ao acessar o servidor.`);
       }
-
-      if (
-        !resposta.ok ||
-        resultado.sucesso === false ||
-        resultado.success === false
-      ) {
-        throw new Error(
-          resultado.erro ||
-          resultado.error ||
-          resultado.mensagem ||
-          "Não foi possível concluir a operação."
-        );
-      }
-
       return resultado;
     }
+    function epToken() { return localStorage.getItem(EP_TOKEN_KEY) || ""; }
+    function epLista(resultado, nomes) { for (const nome of nomes) if (Array.isArray(resultado?.[nome])) return resultado[nome]; return []; }
 
     // Converte os dados do servidor para o formato usado pelo site.
     function epNormalizarUsuario(resposta) {
@@ -528,14 +503,13 @@
     ];
 
     function showPage(name){
-      if(!pages.includes(name)) name='inicio';
+      if(!pages.includes(name))name='inicio';
       document.querySelectorAll('.page').forEach(el=>el.classList.toggle('active',el.id==='page-'+name));
-      document.querySelectorAll('[data-page]').forEach(el=>el.classList.toggle('active',el.dataset.page===name && el.tagName==='BUTTON'));
-      document.getElementById('mainNav').classList.remove('open');
-      document.getElementById('menuToggle').setAttribute('aria-expanded','false');
-      window.scrollTo({top:0,behavior:'smooth'});
-      if(location.hash !== '#'+name) history.replaceState(null,'','#'+name);
-      if(name === 'comunidade') renderCommunityChat();
+      document.querySelectorAll('[data-page]').forEach(el=>el.classList.toggle('active',el.dataset.page===name&&el.tagName==='BUTTON'));
+      document.getElementById('mainNav').classList.remove('open');document.getElementById('menuToggle').setAttribute('aria-expanded','false');
+      window.scrollTo({top:0,behavior:'smooth'});if(location.hash!=='#'+name)history.replaceState(null,'','#'+name);
+      if(name==='comunidade'){renderCommunityChat();renderNeighborsList()}
+      if(name==='perfil'&&currentUser){renderGardenGrid();renderNeighborsList()}
     }
 
     document.querySelectorAll('[data-page]').forEach(el=>el.addEventListener('click',e=>{e.preventDefault();showPage(el.dataset.page)}));
@@ -588,24 +562,25 @@
 
     function renderUserSession(user) {
       user.termsAcceptedVersion = CURRENT_TERMS_VERSION;
-      user.garden = user.garden || [];
-      user.neighbors = user.neighbors || [];
-      currentUser = user;
-      localStorage.setItem('ep_user', JSON.stringify(user));
-
+      user.garden = Array.isArray(user.garden) ? user.garden : [];
+      user.neighbors = Array.isArray(user.neighbors) ? user.neighbors : [];
+      currentUser = user; localStorage.setItem('ep_user', JSON.stringify(user));
       openAuthBtn.textContent = 'Perfil';
       document.getElementById('profileName').textContent = user.name || user.email.split('@')[0];
       document.getElementById('profileEmail').textContent = user.email;
+      renderAvatarDisplay(user); renderGardenGrid(); renderNeighborsList();
+      document.getElementById('adminTab').style.display = user.email?.toLowerCase() === 'explicaplantas@gmail.com' ? 'block' : 'none';
+    }
 
-      renderAvatarDisplay(user);
-      renderGardenGrid();
-      renderNeighborsList();
-
-      if (user.email && user.email.toLowerCase() === 'explicaplantas@gmail.com') {
-        document.getElementById('adminTab').style.display = 'block';
-      } else {
-        document.getElementById('adminTab').style.display = 'none';
-      }
+    async function sincronizarDadosUsuario() {
+      if (!currentUser || !epToken()) return;
+      try {
+        const [j,v,n] = await Promise.all([epApi('/api/jardim'), epApi('/api/vizinhos'), epApi('/api/notificacoes')]);
+        currentUser.garden = epLista(j,['jardim','plantas','items','dados']);
+        currentUser.neighbors = epLista(v,['vizinhos','neighbors','dados']);
+        localStorage.setItem('ep_user', JSON.stringify(currentUser)); renderGardenGrid(); renderNeighborsList();
+        atualizarNotificacoes(epLista(n,['notificacoes','notifications','dados']));
+      } catch(e) { console.warn('Falha ao sincronizar:',e); }
     }
 
     function renderAvatarDisplay(user) {
@@ -683,185 +658,85 @@
       showToast('Foto de perfil removida.');
     }
 
-    function addToGarden(plantData) {
-      if (!currentUser) {
-        showToast('Faça login para salvar plantas no seu Jardim Digital!');
-        authModal.classList.add('active');
-        return;
-      }
-
-      const exists = currentUser.garden.some(p => p.nomePopular === plantData.nomePopular);
-      if (exists) {
-        showToast('Esta planta já está no seu Jardim!');
-        return;
-      }
-
-      currentUser.garden.push({
-        id: Date.now(),
-        nomePopular: plantData.nomePopular || plantData.identificacao,
-        nomeCientifico: plantData.nomeCientifico || plantData.nome_cientifico,
-        iluminacao: plantData.luz || plantData.iluminacao,
-        rega: plantData.rega,
-        solo: plantData.solo,
-        addedAt: new Date().toLocaleDateString('pt-BR')
-      });
-
-      renderUserSession(currentUser);
-      showToast('🌱 Planta adicionada ao seu Jardim Digital!');
+    async function addToGarden(plantData) {
+      if (!currentUser || !epToken()) { showToast('Faça login para salvar plantas no seu Jardim Digital!'); authModal.classList.add('active'); return; }
+      const nomePopular=plantData.nomePopular||plantData.identificacao||'Planta identificada';
+      if ((currentUser.garden||[]).some(p=>String(p.nomePopular||'').toLowerCase()===nomePopular.toLowerCase())) { showToast('Esta planta já está no seu Jardim!'); return; }
+      try {
+        const r=await epApi('/api/jardim',{nomePopular,nomeCientifico:plantData.nomeCientifico||plantData.nome_cientifico||'',familia:plantData.familia||'',confianca:plantData.confianca||'',caracteristicas:plantData.caracteristicas||'',luz:plantData.luz||plantData.iluminacao||'',rega:plantData.rega||'',solo:plantData.solo||'',adubacao:plantData.adubacao||'',propagacao:plantData.propagacao||'',toxicidade:plantData.toxicidade||'',cuidados:plantData.cuidados||'',observacao:plantData.observacao||''});
+        const item=r.planta||r.jardim||r.item; if(item) currentUser.garden.unshift(item); else await sincronizarDadosUsuario();
+        localStorage.setItem('ep_user',JSON.stringify(currentUser)); renderGardenGrid(); showToast('🌱 Planta adicionada ao seu Jardim Digital!');
+      } catch(e){showToast(e.message||'Não foi possível salvar a planta.');}
     }
 
     function renderGardenGrid() {
-      const grid = document.getElementById('myGardenGrid');
-      const garden = currentUser ? (currentUser.garden || []) : [];
-      document.getElementById('gardenCount').textContent = garden.length;
+      const grid=document.getElementById('myGardenGrid'); if(!grid)return; const garden=currentUser?.garden||[]; const count=document.getElementById('gardenCount'); if(count)count.textContent=garden.length;
+      if(!garden.length){grid.innerHTML='<p style="grid-column:1/-1;color:var(--muted);text-align:center;padding:30px;">Seu Jardim ainda está vazio. Use a ferramenta "Identificar" para descobrir espécies e adicioná-las aqui!</p>';return;}
+      grid.innerHTML=garden.map(p=>`<article class="plant-card"><div class="plant-photo">🪴</div><div class="plant-body"><span class="pill">No seu Jardim</span><h3>${epEsc(p.nomePopular||'Planta')}</h3><div class="latin">${epEsc(p.nomeCientifico||'')}</div><p style="margin-top:8px;">☀️ ${epEsc(p.luz||p.iluminacao||'Não informado')}<br>💧 ${epEsc(p.rega||'Não informado')}<br>🪴 ${epEsc(p.solo||'Não informado')}</p><button class="text-link" type="button" onclick="sharePlantToCommunity(${JSON.stringify(p.nomePopular||'Planta')})">Compartilhar na Comunidade ↗</button><button type="button" style="border:1px solid var(--line);background:white;color:#a33;padding:7px 10px;border-radius:10px;margin-top:5px;" onclick="removerDoJardim(${JSON.stringify(p.id||p._id||'')})">Remover</button></div></article>`).join('');
+    }
+    function epEsc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+    async function removerDoJardim(id){if(!id||!currentUser)return;if(!confirm('Remover esta planta do seu Jardim?'))return;try{await epApi('/api/jardim/'+encodeURIComponent(id),null,null,'DELETE');currentUser.garden=(currentUser.garden||[]).filter(p=>String(p.id||p._id)!==String(id));localStorage.setItem('ep_user',JSON.stringify(currentUser));renderGardenGrid();showToast('Planta removida do Jardim.')}catch(e){showToast(e.message||'Não foi possível remover a planta.')}}
 
-      if (garden.length === 0) {
-        grid.innerHTML = '<p style="grid-column:1/-1; color:var(--muted); text-align:center; padding:30px;">Seu Jardim ainda está vazio. Use a ferramenta "Identificar" para descobrir espécies e adicioná-las aqui!</p>';
+    async function renderCommunityChat(){
+      const c=document.getElementById('communityChatMessages');if(!c)return;if(!epToken()){c.innerHTML='<p style="text-align:center;color:var(--muted);padding:20px;">Entre na sua conta para carregar o chat.</p>';return;}
+      try{const r=await epApi('/api/comunidade');communityMessages=epLista(r,['mensagens','messages','comunidade','dados']).map(m=>({id:m.id,author:m.nome||m.usuario_nome||m.author||'Usuário',text:m.mensagem||m.text||'',plant:m.planta_nome||m.plant||'',time:m.criado_em||''}));c.innerHTML=communityMessages.map(m=>`<div class="msg-item ${currentUser&&(m.usuario_id===currentUser.id||m.author===currentUser.name)?'own':''}"><div class="msg-avatar">${epEsc((m.author||'U')[0])}</div><div class="msg-bubble"><div class="msg-author">${epEsc(m.author)}</div><div>${epEsc(m.text)}</div>${m.plant?`<div>🪴 <strong>${epEsc(m.plant)}</strong></div>`:''}</div></div>`).join('')||'<p style="text-align:center;color:var(--muted);padding:20px;">Ainda não há mensagens.</p>';c.scrollTop=c.scrollHeight;}catch(e){c.innerHTML=`<p style="color:#a33;padding:15px;">${epEsc(e.message)}</p>`;}
+    }
+    async function sendCommunityMessage(){const input=document.getElementById('communityMsgInput'),text=input.value.trim();if(!text)return;if(!currentUser||!epToken()){showToast('Entre na sua conta para conversar na Comunidade.');authModal.classList.add('active');return;}try{await epApi('/api/comunidade',{mensagem:text});input.value='';await renderCommunityChat();}catch(e){showToast(e.message||'Não foi possível enviar a mensagem.')}}
+
+    async function sharePlantToCommunity(plantName){if(!currentUser||!epToken())return;try{await epApi('/api/comunidade',{mensagem:'Galera, acabei de adicionar esta espécie ao meu Jardim Digital!',planta_nome:plantName});showToast('Compartilhado no chat da comunidade!');showPage('comunidade')}catch(e){showToast(e.message||'Não foi possível compartilhar.')}}
+
+    async function renderNeighborsList(){
+      const c=document.getElementById('neighborsList');
+      if(!c)return;
+      if(!currentUser||!epToken()){
+        c.innerHTML='<p style="font-size:.8rem;color:var(--muted);">Entre na sua conta para encontrar vizinhos.</p>';
         return;
       }
-
-      grid.innerHTML = garden.map(p => `
-        <article class="plant-card">
-          <div class="plant-photo">🪴</div>
-          <div class="plant-body">
-            <span class="pill">No seu Jardim</span>
-            <h3>${p.nomePopular}</h3>
-            <div class="latin">${p.nomeCientifico || ''}</div>
-            <p style="margin-top:8px;">☀️ ${p.iluminacao || 'Luz adequada'}<br>💧 ${p.rega || 'Rega moderada'}</p>
-            <button class="text-link" type="button" onclick="sharePlantToCommunity('${p.nomePopular}')">Compartilhar na Comunidade ↗</button>
-          </div>
-        </article>
-      `).join('');
+      try{
+        const r=await epApi('/api/vizinhos');
+        const lista=epLista(r,['vizinhos','neighbors','dados']);
+        currentUser.neighbors=lista;
+        localStorage.setItem('ep_user',JSON.stringify(currentUser));
+        const pend=lista.filter(v=>(v.status||'').toLowerCase()==='pendente'&&(v.destinatario_id===currentUser.id||v.vizinho_id===currentUser.id));
+        const ace=lista.filter(v=>['aceito','aceita'].includes((v.status||'').toLowerCase()));
+        c.innerHTML='<input id="neighborSearchInput" type="search" placeholder="Buscar usuário..." style="width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:10px;margin-bottom:10px;"><div id="neighborSearchResults"></div><div style="margin-top:10px;"><strong style="font-size:.82rem;color:var(--forest);">Solicitações recebidas</strong><div id="neighborRequests"></div></div><div style="margin-top:12px;"><strong style="font-size:.82rem;color:var(--forest);">Meus vizinhos</strong><div id="neighborAccepted"></div></div>';
+        const search=document.getElementById('neighborSearchInput');
+        const results=document.getElementById('neighborSearchResults');
+        search.addEventListener('input',async function(){
+          const q=search.value.trim();
+          if(q.length<2){results.innerHTML='';return;}
+          try{
+            const x=await epApi('/api/usuarios/buscar?q='+encodeURIComponent(q));
+            const us=epLista(x,['usuarios','users','dados']).filter(function(u){return String(u.id)!==String(currentUser.id)});
+            results.innerHTML=us.map(function(u){return '<div class="neighbor-item"><strong style="font-size:.85rem;">'+epEsc(u.nome||u.name||u.email)+'</strong><button class="primary neighbor-add-btn" data-user-id="'+epEsc(u.id)+'" style="padding:4px 8px;font-size:.75rem;">Adicionar</button></div>'}).join('')||'<p style="font-size:.8rem;color:var(--muted);">Nenhum usuário encontrado.</p>';
+            results.querySelectorAll('.neighbor-add-btn').forEach(function(btn){btn.addEventListener('click',function(){addNeighbor(btn.dataset.userId,'usuário')})});
+          }catch(e){results.innerHTML='<p style="font-size:.8rem;color:#a33;">'+epEsc(e.message)+'</p>'}
+        });
+        const req=document.getElementById('neighborRequests');
+        req.innerHTML=pend.length?pend.map(function(v){return '<div class="neighbor-item"><strong style="font-size:.82rem;">'+epEsc(v.nome||v.usuario_nome||v.remetente_nome||'Usuário')+'</strong><span><button class="primary neighbor-accept-btn" data-id="'+epEsc(v.id)+'" style="padding:4px 7px;font-size:.72rem;">Aceitar</button><button class="neighbor-reject-btn" data-id="'+epEsc(v.id)+'" style="padding:4px 7px;font-size:.72rem;border:1px solid var(--line);background:white;border-radius:9px;">Recusar</button></span></div>'}).join(''):'<p style="font-size:.8rem;color:var(--muted);">Nenhuma solicitação pendente.</p>';
+        req.querySelectorAll('.neighbor-accept-btn').forEach(function(btn){btn.addEventListener('click',function(){aceitarVizinho(btn.dataset.id)})});
+        req.querySelectorAll('.neighbor-reject-btn').forEach(function(btn){btn.addEventListener('click',function(){recusarVizinho(btn.dataset.id)})});
+        const acc=document.getElementById('neighborAccepted');
+        acc.innerHTML=ace.length?ace.map(function(v){
+          const id=String(v.usuario_id)===String(currentUser.id)?v.vizinho_id:v.usuario_id;
+          const nome=v.outro_nome||v.vizinho_nome||v.nome||'Vizinho';
+          return '<div class="neighbor-item"><strong style="font-size:.82rem;">'+epEsc(nome)+'</strong><span><button class="primary neighbor-chat-btn" data-user-id="'+epEsc(id)+'" data-user-name="'+epEsc(nome)+'" style="padding:4px 7px;font-size:.72rem;">💬</button><button class="neighbor-remove-btn" data-id="'+epEsc(v.id)+'" style="padding:4px 7px;font-size:.72rem;border:1px solid var(--line);background:white;border-radius:9px;">Remover</button></span></div>';
+        }).join(''):'<p style="font-size:.8rem;color:var(--muted);">Você ainda não possui vizinhos.</p>';
+        acc.querySelectorAll('.neighbor-chat-btn').forEach(function(btn){btn.addEventListener('click',function(){openPrivateChat(btn.dataset.userId,btn.dataset.userName)})});
+        acc.querySelectorAll('.neighbor-remove-btn').forEach(function(btn){btn.addEventListener('click',function(){removerVizinho(btn.dataset.id)})});
+      }catch(e){c.innerHTML='<p style="font-size:.8rem;color:#a33;">'+epEsc(e.message)+'</p>'}
     }
+    async function addNeighbor(id,nome){try{await epApi('/api/vizinhos',{vizinho_id:id});showToast(`Solicitação enviada para ${nome}!`);await renderNeighborsList()}catch(e){showToast(e.message||'Não foi possível enviar a solicitação.')}}
+    async function aceitarVizinho(id){try{await epApi('/api/vizinhos/aceitar',{id});showToast('Vizinho aceito!');await renderNeighborsList();await carregarNotificacoes()}catch(e){showToast(e.message||'Não foi possível aceitar.')}}
+    async function recusarVizinho(id){try{await epApi('/api/vizinhos/recusar',{id});showToast('Solicitação recusada.');await renderNeighborsList()}catch(e){showToast(e.message||'Não foi possível recusar.')}}
+    async function removerVizinho(id){try{await epApi('/api/vizinhos/remover',{id});showToast('Vizinho removido.');await renderNeighborsList()}catch(e){showToast(e.message||'Não foi possível remover.')}}
+    async function openPrivateChat(id,nome){if(!currentUser||!epToken())return;currentActiveNeighbor={id,name:nome};document.getElementById('privateChatTitle').textContent=`Chat Privado com ${nome} 🔒`;document.getElementById('privateChatMessages').innerHTML='<p style="text-align:center;color:var(--muted);">Carregando conversa...</p>';document.getElementById('privateChatModal').classList.add('active');try{const r=await epApi('/api/mensagens-privadas?usuarioId='+encodeURIComponent(id));const ms=epLista(r,['mensagens','messages','dados']);const box=document.getElementById('privateChatMessages');box.innerHTML=ms.map(m=>`<div class="msg-item ${String(m.remetente_id||m.usuario_id)===String(currentUser.id)?'own':''}"><div class="msg-bubble">${epEsc(m.mensagem||m.text||'')}</div></div>`).join('')||'<p style="text-align:center;color:var(--muted);">Nenhuma mensagem ainda.</p>';box.scrollTop=box.scrollHeight;await carregarNotificacoes()}catch(e){document.getElementById('privateChatMessages').innerHTML=`<p style="color:#a33;">${epEsc(e.message)}</p>`}}
+    function closePrivateChatModal(){document.getElementById('privateChatModal').classList.remove('active');currentActiveNeighbor=null}
+    async function sendPrivateMessage(){const input=document.getElementById('privateMsgInput'),text=input.value.trim();if(!text||!currentActiveNeighbor||!currentUser)return;try{await epApi('/api/mensagens-privadas',{destinatario_id:currentActiveNeighbor.id,mensagem:text});input.value='';await openPrivateChat(currentActiveNeighbor.id,currentActiveNeighbor.name)}catch(e){showToast(e.message||'Não foi possível enviar a mensagem.')}}
 
-    function renderCommunityChat() {
-      const container = document.getElementById('communityChatMessages');
-      if(!container) return;
-      container.innerHTML = communityMessages.map(m => `
-        <div class="msg-item ${currentUser && currentUser.name === m.author ? 'own' : ''}">
-          <div class="msg-avatar">${m.author[0]}</div>
-          <div class="msg-bubble">
-            <div class="msg-author">${m.author}</div>
-            <div>${m.text}</div>
-            ${m.plant ? `<div class="msg-plant-attach">🪴 <strong>${m.plant}</strong> (Compartilhado do Jardim)</div>` : ''}
-          </div>
-        </div>
-      `).join('');
-      container.scrollTop = container.scrollHeight;
-    }
-
-    function sendCommunityMessage() {
-      const input = document.getElementById('communityMsgInput');
-      const text = input.value.trim();
-      if (!text) return;
-
-      if (!currentUser) {
-        showToast('Entre na sua conta para conversar na Comunidade.');
-        authModal.classList.add('active');
-        return;
-      }
-
-      communityMessages.push({
-        id: Date.now(),
-        author: currentUser.name || currentUser.email.split('@')[0],
-        text: text,
-        time: new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})
-      });
-
-      input.value = '';
-      renderCommunityChat();
-    }
-
-    function sharePlantToCommunity(plantName) {
-      if (!currentUser) return;
-      communityMessages.push({
-        id: Date.now(),
-        author: currentUser.name,
-        text: `Galera, acabei de adicionar esta espécie ao meu Jardim Digital!`,
-        plant: plantName,
-        time: new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})
-      });
-      showToast('Compartilhado no chat da comunidade!');
-      showPage('comunidade');
-    }
-
-    function renderNeighborsList() {
-      const container = document.getElementById('neighborsList');
-      if(!container) return;
-      const db = getUsersDB();
-      const available = db.filter(u => u.email !== (currentUser ? currentUser.email : ''));
-
-      if (available.length === 0) {
-        container.innerHTML = '<p style="font-size:.8rem; color:var(--muted);">Nenhum vizinho encontrado ainda.</p>';
-        return;
-      }
-
-      container.innerHTML = available.map(u => `
-        <div class="neighbor-item">
-          <div>
-            <strong style="font-size:.85rem; display:block;">${u.name}</strong>
-          </div>
-          <button class="primary" type="button" style="padding:4px 8px; font-size:.75rem;" onclick="addNeighbor('${u.name}')">Add Vizinho</button>
-        </div>
-      `).join('');
-    }
-
-    function addNeighbor(neighborName) {
-      if (!currentUser) return;
-      showToast(`Solicitação enviada para ${neighborName}!`);
-      addNotification(`Seu vizinho ${neighborName} aceitou seu convite! Agora vocês podem conversar no privado.`);
-      openPrivateChat(neighborName);
-    }
-
-    function openPrivateChat(neighborName) {
-      currentActiveNeighbor = neighborName;
-      document.getElementById('privateChatTitle').textContent = `Chat Privado com ${neighborName} 🔒`;
-      document.getElementById('privateChatModal').classList.add('active');
-    }
-
-    function closePrivateChatModal() { document.getElementById('privateChatModal').classList.remove('active'); }
-
-    function sendPrivateMessage() {
-      const input = document.getElementById('privateMsgInput');
-      const text = input.value.trim();
-      if (!text) return;
-
-      const container = document.getElementById('privateChatMessages');
-      container.innerHTML += `
-        <div class="msg-item own">
-          <div class="msg-bubble" style="background:var(--forest); color:white;">${text}</div>
-        </div>
-      `;
-      input.value = '';
-      container.scrollTop = container.scrollHeight;
-
-      setTimeout(() => {
-        addNotification(`Seu vizinho ${currentActiveNeighbor} respondeu sua mensagem privada!`);
-      }, 3000);
-    }
-
-    function addNotification(msg) {
-      notifications.unshift({ id: Date.now(), text: msg, read: false });
-      const badge = document.getElementById('notifBadge');
-      if(badge) badge.style.display = 'block';
-    }
-
-    function openNotifModal() {
-      const list = document.getElementById('notifList');
-      if (notifications.length === 0) {
-        list.innerHTML = '<p style="text-align:center; color:var(--muted);">Nenhuma notificação no momento.</p>';
-      } else {
-        list.innerHTML = notifications.map(n => `
-          <div class="notif-item ${n.read ? '' : 'unread'}">
-            <p style="margin:0;">🔔 ${n.text}</p>
-          </div>
-        `).join('');
-      }
-      notifications.forEach(n => n.read = true);
-      const badge = document.getElementById('notifBadge');
-      if(badge) badge.style.display = 'none';
-      document.getElementById('notifModal').classList.add('active');
-    }
+    function atualizarNotificacoes(lista){notifications=Array.isArray(lista)?lista:[];const badge=document.getElementById('notifBadge');const n=notifications.filter(function(x){return Number(x.lida !== undefined ? x.lida : (x.read !== undefined ? x.read : 0))===0});if(badge)badge.style.display=n.length?'block':'none'}
+    async function carregarNotificacoes(){if(!currentUser||!epToken()){atualizarNotificacoes([]);return}try{const r=await epApi('/api/notificacoes');atualizarNotificacoes(epLista(r,['notificacoes','notifications','dados']))}catch(e){console.warn('Erro notificações:',e)}}
+    async function openNotifModal(){await carregarNotificacoes();const list=document.getElementById('notifList');if(!notifications.length){list.innerHTML='<p style="text-align:center;color:var(--muted);">Nenhuma notificação no momento.</p>'}else{list.innerHTML=notifications.map(n=>`<div class="notif-item ${Number(n.lida !== undefined ? n.lida : (n.read !== undefined ? n.read : 0))===0?'unread':''}"><p style="margin:0;">🔔 ${epEsc(n.mensagem||n.texto||n.text||'')}</p></div>`).join('');for(const n of notifications){if(n.id&&Number(n.lida !== undefined ? n.lida : (n.read !== undefined ? n.read : 0))===0){try{await epApi('/api/notificacoes/lida',{id:n.id})}catch(_){}}}await carregarNotificacoes()}document.getElementById('notifModal').classList.add('active')}
 
     function closeNotifModal() { document.getElementById('notifModal').classList.remove('active'); }
     function openTermsModal() { document.getElementById('termsModal').classList.add('active'); }
@@ -871,15 +746,7 @@
       document.getElementById('privacyModal').classList.remove('active');
     }
 
-    function logout() {
-      currentUser = null;
-      localStorage.removeItem('ep_user');
-      localStorage.removeItem(EP_TOKEN_KEY);
-      openAuthBtn.textContent = 'Entrar';
-      document.getElementById('adminTab').style.display = 'none';
-      showToast('Você saiu da sua conta.');
-      showPage('inicio');
-    }
+    async function logout(){try{if(epToken())await epApi('/api/auth/logout',null,null,'POST')}catch(_){}currentUser=null;notifications=[];localStorage.removeItem('ep_user');localStorage.removeItem(EP_TOKEN_KEY);openAuthBtn.textContent='Entrar';document.getElementById('adminTab').style.display='none';atualizarNotificacoes([]);showToast('Você saiu da sua conta.');showPage('inicio')}
 
     // CADASTRO CONECTADO AO WORKER
     async function handleRegisterSubmit(e) {
@@ -1112,11 +979,9 @@
     }
     document.getElementById('year').textContent=new Date().getFullYear();
 
-    window.addEventListener('DOMContentLoaded', () => {
-      const savedUser = localStorage.getItem('ep_user');
-      if (savedUser) {
-        try { renderUserSession(JSON.parse(savedUser)); } catch (_) {}
-      }
+    window.addEventListener('DOMContentLoaded', async () => {
+      const savedUser=localStorage.getItem('ep_user');if(savedUser){try{renderUserSession(JSON.parse(savedUser))}catch(_){}}
+      if(epToken()){try{const r=await epApi('/api/auth/me');renderUserSession(epNormalizarUsuario(r));await sincronizarDadosUsuario();await carregarNotificacoes()}catch(e){console.warn('Sessão não restaurada:',e)}}
     });
 
     // SCRIPT DO IDENTIFICADOR (INTEGRADO COM WORKER)
@@ -1161,7 +1026,7 @@
         const leitor = new FileReader();
         leitor.onload = async () => {
           try {
-            const resposta = await fetch("/api/identificar", {  
+            const resposta = await fetch(EP_API + "/api/identificar", {  
               method: "POST",  
               headers: { "Content-Type": "application/json" },  
               body: JSON.stringify({ imagem: leitor.result })  
