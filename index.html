@@ -29,7 +29,16 @@
     #explorar-identificador #ep-previa { display: block; max-width: 100%; max-height: 340px; margin: 16px auto; border-radius: 16px; object-fit: contain; }
     #explorar-identificador #ep-botao { width: 100%; padding: 15px; border: 0; border-radius: 14px; background: var(--forest); color: white; font: inherit; font-weight: bold; cursor: pointer; margin-top: 14px; }
     #explorar-identificador #ep-botao:disabled { opacity: .6; cursor: wait; }
-    #explorar-identificador #ep-status { overflow-wrap: anywhere; margin-top: 10px; color: var(--muted); font-size: .9rem; }
+    #explorar-identificador #ep-status { overflow-wrap: anywhere; margin-top: 12px; color: var(--muted); font-size: .95rem; display: flex; align-items: center; gap: 8px; }
+    
+    /* Animação da Lupa */
+    @keyframes lupaMove {
+      0% { transform: translateX(0) rotate(0deg); }
+      50% { transform: translateX(12px) rotate(15deg); }
+      100% { transform: translateX(0) rotate(0deg); }
+    }
+    .lupa-animada { display: inline-block; animation: lupaMove 1.2s infinite ease-in-out; font-size: 1.2rem; }
+
     #explorar-identificador #ep-resultado { margin-top: 20px; padding: 18px; background: #f0f4e9; border-radius: 18px; overflow-wrap: anywhere; white-space: pre-wrap; }
     #explorar-identificador .ep-item { padding: 12px 0; border-bottom: 1px solid #e6e0d2; }
     #explorar-identificador .ep-item:last-child { border-bottom: 0; }
@@ -228,7 +237,7 @@
       function limparResultado() {  
         resultado.replaceChildren();  
         resultado.hidden = true;  
-        status.textContent = "";  
+        status.innerHTML = "";  
       }  
       
       function selecionarArquivo(file) {  
@@ -361,13 +370,13 @@
         }  
   
         botao.disabled = true;  
-        status.textContent = "Preparando a imagem...";  
+        status.innerHTML = '<span class="lupa-animada">🔍</span> Explorando imagem...';  
         resultado.replaceChildren();  
         resultado.hidden = true;  
   
         try {  
           const imagem = await prepararImagem(arquivo);  
-          status.textContent = "Analisando com o Gemini...";  
+          status.innerHTML = '<span class="lupa-animada">🔍</span> Explorando imagem...';  
   
           const resposta = await fetch("/api/identificar", {  
             method: "POST",  
