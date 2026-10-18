@@ -1,23 +1,3 @@
-Que ótimo que a autenticação do Google respondeu direitinho, Marlon!
-
-Para resolver esse comportamento e deixar a experiência do usuário 100% fluida, ajustamos o sistema de sessão para:
-
-1. **Salvar a sessão no navegador (`localStorage`)**: Quando o usuário entra via Google ou e-mail/senha, ele continua logado mesmo se atualizar a página.
-2. **Atualizar a interface dinamicamente quando logado**:
-* O botão "Entrar" do cabeçalho vira **"Sair"** (ao clicar, desloga o usuário).
-* O botão na navegação muda para **"Meu Perfil"**.
-
-
-3. **Página de Perfil Funcional**:
-* Criação/exibição da visualização real do **Perfil do Usuário**, mostrando e-mail, nome/avatar (quando do Google) e o histórico de interações.
-* Botão de **"Sair da Conta"** dentro da própria página de perfil.
-* Se o usuário clicar na aba "Perfil" enquanto logado, ele é levado para essa visualização, e não mais para o modal de login.
-
-
-
-Abaixo está o código completo atualizado do `index.html` com essas alterações aplicadas e preservando todo o visual e funcionamento que tínhamos antes:
-
-```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
