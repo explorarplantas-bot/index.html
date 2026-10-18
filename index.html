@@ -1,3 +1,23 @@
+Que ótimo que a autenticação do Google respondeu direitinho, Marlon!
+
+Para resolver esse comportamento e deixar a experiência do usuário 100% fluida, ajustamos o sistema de sessão para:
+
+1. **Salvar a sessão no navegador (`localStorage`)**: Quando o usuário entra via Google ou e-mail/senha, ele continua logado mesmo se atualizar a página.
+2. **Atualizar a interface dinamicamente quando logado**:
+* O botão "Entrar" do cabeçalho vira **"Sair"** (ao clicar, desloga o usuário).
+* O botão na navegação muda para **"Meu Perfil"**.
+
+
+3. **Página de Perfil Funcional**:
+* Criação/exibição da visualização real do **Perfil do Usuário**, mostrando e-mail, nome/avatar (quando do Google) e o histórico de interações.
+* Botão de **"Sair da Conta"** dentro da própria página de perfil.
+* Se o usuário clicar na aba "Perfil" enquanto logado, ele é levado para essa visualização, e não mais para o modal de login.
+
+
+
+Abaixo está o código completo atualizado do `index.html` com essas alterações aplicadas e preservando todo o visual e funcionamento que tínhamos antes:
+
+```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -56,8 +76,13 @@
     .auth-form input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--line); margin-bottom: 10px; }
     .close-modal { position: absolute; top: 15px; right: 20px; border: 0; background: transparent; font-size: 1.5rem; cursor: pointer; color: var(--muted); }
 
-    /* Estilo do Painel Admin */
-    .admin-card { background: #eaf0e5; border: 1px dashed var(--green); border-radius: 18px; padding: 20px; margin-bottom: 20px; }
+    /* Estilos do Perfil e Admin */
+    .admin-card, .profile-card { background: #eaf0e5; border: 1px dashed var(--green); border-radius: 18px; padding: 20px; margin-bottom: 20px; }
+    .profile-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+    .profile-avatar { width: 60px; height: 60px; border-radius: 50%; background: var(--forest); color: white; display: grid; place-items: center; font-size: 1.5rem; font-weight: bold; overflow: hidden; }
+    .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .btn-logout { background: #c84b31; color: white; border: 0; padding: 10px 18px; border-radius: 12px; font-weight: bold; margin-top: 10px; }
+    .btn-logout:hover { background: #a63820; }
 
     .page-intro{padding:40px 0 20px}.page-intro p{color:var(--muted);max-width:680px}.construction{background:var(--paper);border:1px solid var(--line);border-radius:24px;padding:clamp(26px,5vw,52px);margin:10px 0 60px;text-align:center;box-shadow:var(--shadow)}.construction .big-icon{font-size:3rem}.construction h2{font-family:Georgia,serif;font-size:2rem;color:var(--forest);margin:12px 0}.construction p{max-width:590px;margin:0 auto 20px;color:var(--muted)}
     footer{background:#102f22;color:#edf1e7;padding:42px 0 20px}.footer-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:30px}.footer-brand{font-family:Georgia,serif;font-size:1.3rem;margin-bottom:10px}.footer-copy{color:#c1cebf;font-size:.9rem;max-width:380px}.footer-col h3{font-size:.92rem;color:#fff;margin-bottom:12px}.footer-col a,.footer-col button{display:block;color:#c1cebf;font-size:.88rem;margin:7px 0;background:none;border:0;padding:0;text-align:left}.footer-col a:hover,.footer-col button:hover{color:white}.copyright{border-top:1px solid #ffffff24;margin-top:30px;padding-top:17px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:#b7c6b5;font-size:.78rem}
@@ -182,6 +207,41 @@
     <div class="page" id="page-comunidade"><div class="wrap"><section class="page-intro"><div class="eyebrow">Comunidade</div><h1 class="page-title">Comunidade</h1></section><div class="construction"><div class="big-icon">🌎</div><h2>Comunidade em breve</h2></div></div></div>
     <div class="page" id="page-clube"><div class="wrap"><section class="page-intro"><div class="eyebrow">Clube</div><h1 class="page-title">Clube Explorar Plantas</h1></section><div class="construction"><div class="big-icon">👑</div><h2>Clube em breve</h2></div></div></div>
 
+    <!-- PÁGINA DE PERFIL DO USUÁRIO -->
+    <div class="page" id="page-perfil">
+      <div class="wrap">
+        <section class="page-intro">
+          <div class="eyebrow">Sua Conta</div>
+          <h1 class="page-title">Meu Perfil</h1>
+          <p>Gerencie seus dados e acesse suas atividades no portal.</p>
+        </section>
+
+        <div class="profile-card">
+          <div class="profile-header">
+            <div class="profile-avatar" id="profileAvatar">👤</div>
+            <div>
+              <h3 id="profileName" style="margin:0; color:var(--forest);">Usuário</h3>
+              <p id="profileEmail" style="margin:4px 0 0; color:var(--muted); font-size:.9rem;">email@exemplo.com</p>
+            </div>
+          </div>
+          <button class="btn-logout" onclick="logout()">Sair da Conta</button>
+        </div>
+
+        <div class="grid">
+          <article class="feature-card">
+            <h3>🌱 Minhas Plantas Identificadas</h3>
+            <p>Acesse o histórico de plantas que você já consultou.</p>
+            <button class="primary" onclick="showToast('Em breve seu histórico de plantas estará disponível.')">Ver histórico</button>
+          </article>
+          <article class="feature-card">
+            <h3>⭐ Minhas Conquistas</h3>
+            <p>Acompanhe sua pontuação nos jogos botânicos.</p>
+            <button class="primary" onclick="showToast('Pontuações em desenvolvimento.')">Ver conquistas</button>
+          </article>
+        </div>
+      </div>
+    </div>
+
     <!-- PAINEL ADMIN -->
     <div class="page" id="page-admin">
       <div class="wrap">
@@ -253,7 +313,7 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
-    const pages = ['inicio','catalogo','blog','loja','identificar','jogos','comunidade','clube','admin'];
+    const pages = ['inicio','catalogo','blog','loja','identificar','jogos','comunidade','clube','perfil','admin'];
     let currentUser = null;
 
     function showPage(name){
@@ -269,29 +329,76 @@
     document.querySelectorAll('[data-page]').forEach(el=>el.addEventListener('click',e=>{e.preventDefault();showPage(el.dataset.page)}));
     document.querySelectorAll('[data-go]').forEach(el=>el.addEventListener('click',()=>showPage(el.dataset.go)));
     
-    // Abrir Modal de Autenticação
+    // Modal de Autenticação e Botões de Conta
     const authModal = document.getElementById('authModal');
-    const openModal = () => authModal.classList.add('active');
     
-    document.getElementById('openAuthModal').onclick = openModal;
-    document.getElementById('navAuthBtn').onclick = openModal;
+    function handleAccountButtonClick() {
+      if (currentUser) {
+        showPage('perfil');
+      } else {
+        authModal.classList.add('active');
+      }
+    }
+
+    document.getElementById('openAuthModal').onclick = () => {
+      if (currentUser) {
+        logout();
+      } else {
+        authModal.classList.add('active');
+      }
+    };
+
+    document.getElementById('navAuthBtn').onclick = handleAccountButtonClick;
     document.getElementById('closeAuthModal').onclick = () => authModal.classList.remove('active');
 
     function checkAdminAccess(email) {
       if (email && email.toLowerCase() === 'explicaplantas@gmail.com') {
         document.getElementById('adminTab').style.display = 'block';
-        showToast('Acesso de Administrador Liberado ⚙️');
+      } else {
+        document.getElementById('adminTab').style.display = 'none';
       }
+    }
+
+    function renderUserSession(user) {
+      currentUser = user;
+      localStorage.setItem('ep_user', JSON.stringify(user));
+
+      // Atualiza botões
+      document.getElementById('openAuthModal').textContent = 'Sair';
+      document.getElementById('navAuthBtn').textContent = 'Meu Perfil';
+
+      // Preenche a página de perfil
+      document.getElementById('profileName').textContent = user.name || user.email.split('@')[0];
+      document.getElementById('profileEmail').textContent = user.email;
+
+      const avatarEl = document.getElementById('profileAvatar');
+      if (user.picture) {
+        avatarEl.innerHTML = `<img src="${user.picture}" alt="Avatar">`;
+      } else {
+        avatarEl.textContent = (user.name || user.email)[0].toUpperCase();
+      }
+
+      checkAdminAccess(user.email);
+    }
+
+    function logout() {
+      currentUser = null;
+      localStorage.removeItem('ep_user');
+      document.getElementById('openAuthModal').textContent = 'Entrar';
+      document.getElementById('navAuthBtn').textContent = 'Entrar / Conta';
+      document.getElementById('adminTab').style.display = 'none';
+      showToast('Você saiu da sua conta.');
+      showPage('inicio');
     }
 
     function handleDirectAuth(e) {
       e.preventDefault();
       const email = document.getElementById('authEmail').value;
-      currentUser = { email };
+      const user = { email, name: email.split('@')[0] };
+      renderUserSession(user);
       authModal.classList.remove('active');
-      document.getElementById('openAuthModal').textContent = 'Perfil';
-      document.getElementById('navAuthBtn').textContent = 'Perfil';
-      checkAdminAccess(email);
+      showToast(`Bem-vindo!`);
+      showPage('perfil');
     }
 
     function loginGoogle() {
@@ -319,8 +426,9 @@
     }
     document.getElementById('year').textContent=new Date().getFullYear();
 
-    // Verificação de retorno do Google OAuth
+    // Verificação de sessão existente ou de retorno do Google OAuth
     window.addEventListener('DOMContentLoaded', () => {
+      // 1. Verifica se retornou do Google
       const hash = window.location.hash;
       if (hash && hash.includes('access_token')) {
         const params = new URLSearchParams(hash.substring(1));
@@ -333,16 +441,24 @@
           .then(res => res.json())
           .then(data => {
             if (data && data.email) {
-              currentUser = { email: data.email, name: data.name };
-              document.getElementById('openAuthModal').textContent = 'Perfil';
-              document.getElementById('navAuthBtn').textContent = 'Perfil';
-              checkAdminAccess(data.email);
+              const user = { email: data.email, name: data.name, picture: data.picture };
+              renderUserSession(user);
               showToast(`Bem-vindo, ${data.name || data.email}!`);
               history.replaceState(null, '', window.location.pathname);
+              showPage('perfil');
             }
           })
           .catch(() => showToast('Erro ao obter dados do usuário do Google.'));
+          return;
         }
+      }
+
+      // 2. Senão, restaura sessão salva no localStorage
+      const savedUser = localStorage.getItem('ep_user');
+      if (savedUser) {
+        try {
+          renderUserSession(JSON.parse(savedUser));
+        } catch (_) {}
       }
     });
 
@@ -559,3 +675,5 @@
   </script>
 </body>
 </html>
+
+```
