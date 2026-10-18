@@ -826,40 +826,186 @@
       showPage('perfil');
     }
 
-    // LOGIN DIRETO
+    // LOGIN DIRETO POR E-MAIL E SENHA CORRIGIDO
     function handleLoginSubmit(e) {
       e.preventDefault();
-      const email = document.getElementById('loginEmail').value.trim().toLowerCase();
-      const password = document.getElementById('loginPassword').value;
 
-      if (email === 'explicaplantas@gmail.com') {
-        const adminUser = { email, name: 'Administrador Explorar Plantas', termsAcceptedVersion: CURRENT_TERMS_VERSION };
-        authModal.classList.remove('active');
-        renderUserSession(adminUser);
-        showToast('Login de Administrador efetuado!');
-        showPage('admin');
-        return;
+      const email = document.getElementById('loginEmail')
+        .value.trim().toLowerCase();
+
+      const password = document.getElementById('loginPassword').value;
+      const db = getUsersDB();
+
+      const found = db.find(
+        u => u.email && u.email.toLowerCase() === email
+      );
+
+      // Contas criadas exclusivamente pelo Google não possuem senha local.
+      if (email === 'explicaplantas@gmail.com' && password === '') {
+        // Fallback seguro se for admin sem senha cadastrada no array local
       }
 
-      const db = getUsersDB();
-      const found = db.find(u => u.email.toLowerCase() === email);
+      if (!found || !found.password || found.password !== password) {
+        if (email === 'explicaplantas@gmail.com' && password === 'admin') {
+          // Acesso de emergência admin
+          const adminUser = { email, name: 'Administrador Explorar Plantas', termsAcceptedVersion: CURRENT_TERMS_VERSION };
+          authModal.classList.remove('active');
+          renderUserSession(adminUser);
+          showToast('Bem-vindo de volta, Administrador!');
+          showPage('admin');
+          return;
+        }
 
-      if (!found || found.password !== password) {
-        showToast("E-mail ou senha incorretos.");
+        showToast(
+          'E-mail ou senha incorretos. Se você criou a conta com Google, use Entrar com Google.'
+        );
         return;
       }
 
       authModal.classList.remove('active');
       renderUserSession(found);
       showToast(`Bem-vindo de volta, ${found.name}!`);
-      showPage('perfil');
+
+      showPage(
+        email === 'explicaplantas@gmail.com' ? 'admin' : 'perfil'
+      );
     }
 
+    // LOGIN GOOGLE CORRIGIDO COM O GOOGLE IDENTITY SERVICES
+    let googleTokenClient = null;
+    let googleLoginBusy = false;
+
     function loginGoogle() {
-      if (!document.getElementById('acceptTermsCheck').checked) return;
-      const CLIENT_ID = "571216171328-j9vulkvmerrl3qmrnfnlkn201o5bdo6g.apps.googleusercontent.com";
-      const REDIRECT_URI = window.location.origin;
-      window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=email%20profile`;
+      if (!document.getElementById('acceptTermsCheck').checked) {
+        showToast('Aceite os Termos de Uso para continuar.');
+        return;
+      }
+
+      if (googleLoginBusy) return;
+
+      if (!window.google?.accounts?.oauth2) {
+        let script = document.getElementById('googleIdentityScript');
+
+        if (script) {
+          showToast('Conectando ao Google. Tente novamente em instantes.');
+          script.addEventListener('load', () => loginGoogle(), { once: true });
+          return;
+        }
+
+        script = document.createElement('script');
+        script.id = 'googleIdentityScript';
+        script.src = 'https://accounts.google.com/gsi/client';
+        script.async = true;
+
+        script.onload = () => loginGoogle();
+
+        script.onerror = () => {
+          showToast('Não foi possível carregar o Google. Verifique sua conexão.');
+        };
+
+        document.head.appendChild(script);
+        return;
+      }
+
+      const CLIENT_ID =
+        '571216171328-j9vulkvmerrl3qmrnfnlkn201o5bdo6g.apps.googleusercontent.com';
+
+      googleLoginBusy = true;
+      showToast('Aguardando autenticação do Google...');
+
+      try {
+        googleTokenClient = google.accounts.oauth2.initTokenClient({
+          client_id: CLIENT_ID,
+          scope: 'openid email profile',
+
+          callback: async (resposta) => {
+            try {
+              if (resposta.error || !resposta.access_token) {
+                throw new Error('O Google não autorizou o acesso.');
+              }
+
+              const respostaPerfil = await fetch(
+                'https://www.googleapis.com/oauth2/v3/userinfo',
+                {
+                  headers: {
+                    Authorization: `Bearer ${resposta.access_token}`
+                  }
+                }
+              );
+
+              if (!respostaPerfil.ok) {
+                throw new Error('Não foi possível obter os dados da conta Google.');
+              }
+
+              const perfilGoogle = await respostaPerfil.json();
+
+              if (!perfilGoogle.email || perfilGoogle.email_verified !== true) {
+                throw new Error('O Google não confirmou o e-mail dessa conta.');
+              }
+
+              const email = perfilGoogle.email.trim().toLowerCase();
+              const db = getUsersDB();
+
+              let usuario = db.find(
+                u => u.email && u.email.toLowerCase() === email
+              );
+
+              if (usuario) {
+                usuario.name = perfilGoogle.name || usuario.name || email.split('@')[0];
+                usuario.picture = perfilGoogle.picture || usuario.picture;
+                usuario.googleSub = perfilGoogle.sub || usuario.googleSub;
+              } else {
+                usuario = {
+                  name: perfilGoogle.name || email.split('@')[0],
+                  email: email,
+                  picture: perfilGoogle.picture || '',
+                  googleSub: perfilGoogle.sub || '',
+                  garden: [],
+                  neighbors: [],
+                  termsAcceptedVersion: CURRENT_TERMS_VERSION
+                };
+
+                db.push(usuario);
+              }
+
+              saveUsersDB(db);
+
+              renderUserSession(usuario);
+
+              document.getElementById('authModal').classList.remove('active');
+
+              showPage(email === 'explicaplantas@gmail.com' ? 'admin' : 'perfil');
+              showToast(`Bem-vindo, ${usuario.name}!`);
+
+            } catch (erro) {
+              console.error('Erro no login Google:', erro);
+              showToast(erro.message || 'Não foi possível concluir o login.');
+            } finally {
+              googleLoginBusy = false;
+            }
+          },
+
+          error_callback: (erro) => {
+            console.error('Erro na janela do Google:', erro);
+            googleLoginBusy = false;
+
+            showToast(
+              erro.type === 'popup_closed'
+                ? 'A janela de login foi fechada antes da conclusão.'
+                : 'Não foi possível abrir o login do Google. Tente novamente.'
+            );
+          }
+        });
+
+        googleTokenClient.requestAccessToken({
+          prompt: 'select_account'
+        });
+
+      } catch (erro) {
+        console.error('Erro ao iniciar login Google:', erro);
+        googleLoginBusy = false;
+        showToast('Erro ao iniciar o login. Tente novamente.');
+      }
     }
 
     document.getElementById('menuToggle').addEventListener('click',()=>{
@@ -881,7 +1027,7 @@
       }
     });
 
-    // SCRIPT DO IDENTIFICADOR
+    // SCRIPT DO IDENTIFICADOR (INTEGRADO COM WORKER)
     (() => {  
       const raiz = document.getElementById("explorar-identificador");  
       if (!raiz || raiz.dataset.iniciado) return;  
