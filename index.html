@@ -278,7 +278,7 @@
     document.getElementById('closeAuthModal').onclick = () => authModal.classList.remove('active');
 
     function checkAdminAccess(email) {
-      if (email.toLowerCase() === 'explicaplantas@gmail.com') {
+      if (email && email.toLowerCase() === 'explicaplantas@gmail.com') {
         document.getElementById('adminTab').style.display = 'block';
         showToast('Acesso de Administrador Liberado ⚙️');
       }
@@ -295,14 +295,13 @@
     }
 
     function loginGoogle() {
-      const email = prompt("Simulação de login via Google. Digite seu e-mail:");
-      if(email) {
-        currentUser = { email };
-        authModal.classList.remove('active');
-        document.getElementById('openAuthModal').textContent = 'Perfil';
-        document.getElementById('navAuthBtn').textContent = 'Perfil';
-        checkAdminAccess(email);
-      }
+      // Cole aqui o ID do cliente gerado no Google Cloud Console
+      const CLIENT_ID = "SEU_CLIENT_ID_DO_GOOGLE.apps.googleusercontent.com";
+      const REDIRECT_URI = window.location.origin;
+      
+      const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=email%20profile`;
+      
+      window.location.href = googleAuthUrl;
     }
 
     function loginFacebook() {
@@ -320,6 +319,33 @@
       clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.style.display='none',3200);
     }
     document.getElementById('year').textContent=new Date().getFullYear();
+
+    // Verificação de retorno do Google OAuth
+    window.addEventListener('DOMContentLoaded', () => {
+      const hash = window.location.hash;
+      if (hash && hash.includes('access_token')) {
+        const params = new URLSearchParams(hash.substring(1));
+        const accessToken = params.get('access_token');
+        
+        if (accessToken) {
+          fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+            headers: { 'Authorization': `Bearer ${accessToken}` }
+          })
+          .then(res => res.json())
+          .then(data => {
+            if (data && data.email) {
+              currentUser = { email: data.email, name: data.name };
+              document.getElementById('openAuthModal').textContent = 'Perfil';
+              document.getElementById('navAuthBtn').textContent = 'Perfil';
+              checkAdminAccess(data.email);
+              showToast(`Bem-vindo, ${data.name || data.email}!`);
+              history.replaceState(null, '', window.location.pathname);
+            }
+          })
+          .catch(() => showToast('Erro ao obter dados do usuário do Google.'));
+        }
+      }
+    });
 
     // Script do Identificador
     (() => {  
