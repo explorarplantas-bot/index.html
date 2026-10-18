@@ -4818,13 +4818,50 @@
   let googleLoginBusy = false;
 
 
+  async function concluirLoginGoogle(accessToken) {
+
+    const resposta =
+      await epApi(
+        '/api/auth/google',
+        {
+          accessToken
+        }
+      );
+
+    const usuario =
+      epSalvarSessao(resposta);
+
+    document
+      .getElementById('authModal')
+      .classList.remove('active');
+
+    showPage(
+      usuario.email?.toLowerCase() === 'explicaplantas@gmail.com'
+        ? 'admin'
+        : 'perfil'
+    );
+
+    showToast(
+      `Bem-vindo, ${usuario.name}!`
+    );
+
+    try {
+      await sincronizarDadosUsuario();
+      await carregarNotificacoes();
+    } catch (erro) {
+      console.warn(
+        'Login Google concluído, mas não foi possível sincronizar os dados:',
+        erro
+      );
+    }
+  }
+
+
   function loginGoogle() {
 
     if (
       !document
-        .getElementById(
-          'acceptTermsCheck'
-        )
+        .getElementById('acceptTermsCheck')
         .checked
     ) {
 
@@ -4837,15 +4874,10 @@
 
     if (googleLoginBusy) return;
 
-
-    if (
-      !window.google?.accounts?.oauth2
-    ) {
+    if (!window.google?.accounts?.oauth2) {
 
       let script =
-        document.getElementById(
-          'googleIdentityScript'
-        );
+        document.getElementById('googleIdentityScript');
 
       if (script) {
 
@@ -4863,9 +4895,7 @@
       }
 
       script =
-        document.createElement(
-          'script'
-        );
+        document.createElement('script');
 
       script.id =
         'googleIdentityScript';
@@ -4880,23 +4910,18 @@
 
       script.onerror =
         () => {
-
           showToast(
             'Não foi possível carregar o Google. Verifique sua conexão.'
           );
         };
 
-      document.head.appendChild(
-        script
-      );
+      document.head.appendChild(script);
 
       return;
     }
 
-
     const CLIENT_ID =
       '571216171328-j9vulkvmerrl3qmrnfnlkn201o5bdo6g.apps.googleusercontent.com';
-
 
     googleLoginBusy = true;
 
@@ -4904,211 +4929,70 @@
       'Aguardando autenticação do Google...'
     );
 
-
     try {
 
       googleTokenClient =
-        google.accounts.oauth2
-          .initTokenClient({
+        google.accounts.oauth2.initTokenClient({
 
-            client_id:
-              CLIENT_ID,
+          client_id: CLIENT_ID,
 
-            scope:
-              'openid email profile',
+          scope: 'openid email profile',
 
-            callback:
-              async (resposta) => {
+          callback: async (resposta) => {
 
-                try {
+            try {
 
-                  if (
-                    resposta.error ||
-                    !resposta.access_token
-                  ) {
-
-                    throw new Error(
-                      'O Google não autorizou o acesso.'
-                    );
-                  }
-
-
-                  const respostaPerfil =
-                    await fetch(
-                      'https://www.googleapis.com/oauth2/v3/userinfo',
-                      {
-                        headers: {
-                          Authorization:
-                            `Bearer ${resposta.access_token}`
-                        }
-                      }
-                    );
-
-
-                  if (
-                    !respostaPerfil.ok
-                  ) {
-
-                    throw new Error(
-                      'Não foi possível obter os dados da conta Google.'
-                    );
-                  }
-
-
-                  const perfilGoogle =
-                    await respostaPerfil.json();
-
-
-                  if (
-                    !perfilGoogle.email ||
-                    perfilGoogle.email_verified !== true
-                  ) {
-
-                    throw new Error(
-                      'O Google não confirmou o e-mail dessa conta.'
-                    );
-                  }
-
-
-                  const email =
-                    perfilGoogle.email
-                      .trim()
-                      .toLowerCase();
-
-
-                  const db =
-                    getUsersDB();
-
-
-                  let usuario =
-                    db.find(
-                      u =>
-                        u.email &&
-                        u.email.toLowerCase() ===
-                        email
-                    );
-
-
-                  if (usuario) {
-
-                    usuario.name =
-                      perfilGoogle.name ||
-                      usuario.name ||
-                      email.split('@')[0];
-
-                    usuario.picture =
-                      perfilGoogle.picture ||
-                      usuario.picture;
-
-                    usuario.googleSub =
-                      perfilGoogle.sub ||
-                      usuario.googleSub;
-
-                  } else {
-
-                    usuario = {
-
-                      name:
-                        perfilGoogle.name ||
-                        email.split('@')[0],
-
-                      email,
-
-                      picture:
-                        perfilGoogle.picture ||
-                        '',
-
-                      googleSub:
-                        perfilGoogle.sub ||
-                        '',
-
-                      garden: [],
-
-                      neighbors: [],
-
-                      termsAcceptedVersion:
-                        CURRENT_TERMS_VERSION
-                    };
-
-                    db.push(
-                      usuario
-                    );
-                  }
-
-
-                  saveUsersDB(
-                    db
-                  );
-
-                  renderUserSession(
-                    usuario
-                  );
-
-                  document
-                    .getElementById(
-                      'authModal'
-                    )
-                    .classList.remove(
-                      'active'
-                    );
-
-                  showPage(
-                    email ===
-                      'explicaplantas@gmail.com'
-                      ? 'admin'
-                      : 'perfil'
-                  );
-
-                  showToast(
-                    `Bem-vindo, ${usuario.name}!`
-                  );
-
-                } catch (erro) {
-
-                  console.error(
-                    'Erro no login Google:',
-                    erro
-                  );
-
-                  showToast(
-                    erro.message ||
-                    'Não foi possível concluir o login.'
-                  );
-
-                } finally {
-
-                  googleLoginBusy =
-                    false;
-                }
-              },
-
-            error_callback:
-              (erro) => {
-
-                console.error(
-                  'Erro na janela do Google:',
-                  erro
-                );
-
-                googleLoginBusy =
-                  false;
-
-                showToast(
-                  erro.type ===
-                    'popup_closed'
-                    ? 'A janela de login foi fechada antes da conclusão.'
-                    : 'Não foi possível abrir o login do Google. Tente novamente.'
+              if (
+                resposta.error ||
+                !resposta.access_token
+              ) {
+                throw new Error(
+                  'O Google não autorizou o acesso.'
                 );
               }
 
-          });
+              await concluirLoginGoogle(
+                resposta.access_token
+              );
 
+            } catch (erro) {
+
+              console.error(
+                'Erro no login Google:',
+                erro
+              );
+
+              showToast(
+                erro.message ||
+                'Não foi possível concluir o login.'
+              );
+
+            } finally {
+
+              googleLoginBusy = false;
+            }
+          },
+
+          error_callback: (erro) => {
+
+            console.error(
+              'Erro na janela do Google:',
+              erro
+            );
+
+            googleLoginBusy = false;
+
+            showToast(
+              erro.type === 'popup_closed'
+                ? 'A janela de login foi fechada antes da conclusão.'
+                : 'Não foi possível abrir o login do Google. Tente novamente.'
+            );
+          }
+        });
 
       googleTokenClient.requestAccessToken({
-        prompt:
-          'select_account'
+        prompt: 'select_account'
       });
-
 
     } catch (erro) {
 
@@ -5117,8 +5001,7 @@
         erro
       );
 
-      googleLoginBusy =
-        false;
+      googleLoginBusy = false;
 
       showToast(
         'Erro ao iniciar o login. Tente novamente.'
