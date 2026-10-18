@@ -294,14 +294,45 @@
       checkAdminAccess(email);
     }
 
-    function loginGoogle() {
-      const email = prompt("Simulação de login via Google. Digite seu e-mail:");
-      if(email) {
-        currentUser = { email };
-        authModal.classList.remove('active');
-        document.getElementById('openAuthModal').textContent = 'Perfil';
-        document.getElementById('navAuthBtn').textContent = 'Perfil';
-        checkAdminAccess(email);
+   function loginGoogle() {
+      // Substitua SEU_CLIENT_ID_DO_GOOGLE.apps.googleusercontent.com pelo ID real fornecido pelo Google Cloud Console
+      const CLIENT_ID = "SEU_CLIENT_ID_DO_GOOGLE.apps.googleusercontent.com";
+      const REDIRECT_URI = window.location.origin; // Vai pegar https://explorarplantas.pages.dev automaticamente
+      
+      const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=email%20profile`;
+      
+      // Redireciona o usuário para a página de login do Google
+      window.location.href = googleAuthUrl;
+    }
+
+    // Adicione esta verificação logo ao carregar a página para capturar o token quando o Google retornar de volta ao site
+    window.addEventListener('DOMContentLoaded', () => {
+      const hash = window.location.hash;
+      if (hash && hash.includes('access_token')) {
+        const params = new URLSearchParams(hash.substring(1));
+        const accessToken = params.get('access_token');
+        
+        if (accessToken) {
+          // Busca os dados do usuário logado no Google
+          fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+            headers: { 'Authorization': `Bearer ${accessToken}` }
+          })
+          .then(res => res.json())
+          .then(data => {
+            if (data && data.email) {
+              currentUser = { email: data.email, name: data.name };
+              document.getElementById('openAuthModal').textContent = 'Perfil';
+              document.getElementById('navAuthBtn').textContent = 'Perfil';
+              checkAdminAccess(data.email);
+              showToast(`Bem-vindo, ${data.name || data.email}!`);
+              // Limpa a URL removendo o token por segurança
+              history.replaceState(null, '', window.location.pathname);
+            }
+          })
+          .catch(() => showToast('Erro ao obter dados do usuário do Google.'));
+        }
+      }
+    });
       }
     }
 
