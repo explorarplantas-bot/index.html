@@ -61,15 +61,13 @@
     .terms-check a { color: var(--green); text-decoration: underline; font-weight: 700; cursor: pointer; }
     .close-modal { position: absolute; top: 15px; right: 20px; border: 0; background: transparent; font-size: 1.5rem; cursor: pointer; color: var(--muted); }
 
-    /* Estilos do Perfil, Jardim e Avatar Redondo */
+    /* Perfil, Jardim e Avatar Redondo */
     .profile-top { display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-top: 10px; margin-bottom: 25px; flex-wrap: wrap; background: var(--paper); padding: 20px; border-radius: 20px; border: 1px solid var(--line); }
     .profile-info { display: flex; align-items: center; gap: 16px; }
     .profile-avatar-wrapper { position: relative; width: 75px; height: 75px; flex: none; }
     .profile-avatar { width: 75px; height: 75px; border-radius: 50%; background: var(--forest); color: white; display: grid; place-items: center; font-size: 2rem; font-weight: bold; overflow: hidden; border: 2px solid var(--leaf); object-fit: cover; }
     .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
     .avatar-edit-btn { position: absolute; bottom: 0; right: 0; background: var(--green); color: white; border: none; border-radius: 50%; width: 26px; height: 26px; display: grid; place-items: center; font-size: .8rem; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-    
-    .location-badge { display: inline-flex; align-items: center; gap: 4px; font-size: .82rem; color: var(--muted); background: #eaf0e5; padding: 3px 10px; border-radius: 12px; margin-top: 4px; }
     .btn-logout { background: #c84b31; color: white; border: 0; padding: 10px 18px; border-radius: 12px; font-weight: 650; cursor: pointer; }
 
     /* Comunidade e Chat */
@@ -207,13 +205,13 @@
 
     <div class="page" id="page-jogos"><div class="wrap"><section class="page-intro"><div class="eyebrow">Jogos</div><h1 class="page-title">Jogos botânicos</h1></section><div class="construction"><div class="big-icon">🎮</div><h2>Jogos em breve</h2></div></div></div>
 
-    <!-- PÁGINA COMUNIDADE & CHAT PRIVADO DE VIZINHOS -->
+    <!-- PÁGINA COMUNIDADE & CHAT DE VIZINHOS -->
     <div class="page" id="page-comunidade">
       <div class="wrap">
         <section class="page-intro">
           <div class="eyebrow">Comunidade</div>
           <h1 class="page-title">Comunidade de Vizinhos Botânicos</h1>
-          <p>Conecte-se com cultivadores perto de você, compartilhe suas plantas do Jardim e troque ideias no chat.</p>
+          <p>Conecte-se com cultivadores, compartilhe suas plantas do Jardim e troque ideias no chat.</p>
         </section>
 
         <div class="community-grid">
@@ -229,7 +227,7 @@
           <div>
             <div class="neighbor-card" style="margin-bottom:15px;">
               <h3 style="margin-bottom:10px; color:var(--forest); font-size:1rem;">🏘️ Encontrar Vizinhos</h3>
-              <p style="font-size:.8rem; color:var(--muted); margin-bottom:10px;">Encontre cultivadores na sua cidade ou estado.</p>
+              <p style="font-size:.8rem; color:var(--muted); margin-bottom:10px;">Encontre outros amantes de plantas.</p>
               <div id="neighborsList"></div>
             </div>
 
@@ -264,11 +262,10 @@
             <div>
               <h2 id="profileName" style="margin:0; font-family:Georgia,serif; color:var(--forest); font-size:1.5rem;">Usuário</h2>
               <p id="profileEmail" style="margin:2px 0 0; color:var(--muted); font-size:.92rem;">email@exemplo.com</p>
-              <span class="location-badge" id="profileLocation">📍 Cidade / Estado não informados</span>
             </div>
           </div>
           <div style="display:flex; gap:8px;">
-            <button class="primary" type="button" onclick="openEditProfileModal()">Editar Perfil ✏️</button>
+            <button class="primary" type="button" onclick="openEditProfileModal()">Editar Nome ✏️</button>
             <button class="btn-logout" type="button" onclick="logout()">Sair</button>
           </div>
         </div>
@@ -303,21 +300,14 @@
     </div>
   </main>
 
-  <!-- MODAL DE EDIÇÃO DE PERFIL -->
+  <!-- MODAL DE EDIÇÃO DE PERFIL (APENAS NOME) -->
   <div class="modal-overlay" id="editProfileModal">
     <div class="auth-box">
       <button class="close-modal" type="button" onclick="closeEditProfileModal()">&times;</button>
       <h2>Editar Perfil ✏️</h2>
       <form class="auth-form" onsubmit="saveProfileChanges(event)">
-        <label style="font-size:.85rem; color:var(--muted);">Nome Completo:</label>
+        <label style="font-size:.85rem; color:var(--muted);">Seu Nome:</label>
         <input type="text" id="editNameInput" required />
-
-        <label style="font-size:.85rem; color:var(--muted);">Cidade:</label>
-        <input type="text" id="editCityInput" placeholder="Ex: Niterói" required />
-
-        <label style="font-size:.85rem; color:var(--muted);">Estado (UF):</label>
-        <input type="text" id="editStateInput" placeholder="Ex: RJ" maxlength="2" required />
-
         <button type="submit" class="primary" style="width:100%; margin-top:10px;">Salvar Alterações</button>
       </form>
     </div>
@@ -353,7 +343,7 @@
     </div>
   </div>
 
-  <!-- MODAL DE AUTENTICAÇÃO (ENTRAR OU CRIAR CONTA) -->
+  <!-- MODAL DE AUTENTICAÇÃO SIMPLIFICADO -->
   <div class="modal-overlay" id="authModal">
     <div class="auth-box">
       <button class="close-modal" id="closeAuthModal" type="button">&times;</button>
@@ -385,11 +375,9 @@
         <button type="submit" id="loginSubmitBtn" class="primary" style="width:100%; opacity:0.5; cursor:not-allowed;" disabled>Entrar na Conta</button>
       </form>
 
-      <!-- FORMULÁRIO DE CADASTRO -->
+      <!-- FORMULÁRIO DE CADASTRO SIMPLIFICADO -->
       <form class="auth-form" id="registerForm" style="display:none;" onsubmit="handleRegisterSubmit(event)">
         <input type="text" id="regName" placeholder="Seu nome completo" required />
-        <input type="text" id="regCity" placeholder="Sua cidade (Ex: Niterói)" required />
-        <input type="text" id="regState" placeholder="Seu estado UF (Ex: RJ)" maxlength="2" required />
         <input type="email" id="regEmail" placeholder="Seu e-mail" required />
         <input type="password" id="regPassword" placeholder="Crie uma senha (mínimo 6 caracteres)" minlength="6" required />
         <button type="submit" id="regSubmitBtn" class="primary" style="width:100%; opacity:0.5; cursor:not-allowed;" disabled>Cadastrar Minha Conta</button>
@@ -414,12 +402,8 @@
       <button class="close-modal" type="button" onclick="closeLegalModals()">&times;</button>
       <h2>Termos de Uso</h2>
       <p><em>Versão 1.1 — Outubro de 2026</em></p>
-      
       <h3>1. Aceitação dos Termos</h3>
       <p>Ao utilizar o portal <strong>Explorar Plantas</strong>, você concorda expressamente com os presentes Termos de Uso.</p>
-      
-      <h3>2. Descrição dos Serviços & Rede Social</h3>
-      <p>O portal disponibiliza ferramentas de identificação botânica por IA, catálogo "Meu Jardim Digital", chat público e vizinhos.</p>
     </div>
   </div>
 
@@ -429,7 +413,6 @@
       <button class="close-modal" type="button" onclick="closeLegalModals()">&times;</button>
       <h2>Política de Privacidade (LGPD)</h2>
       <p><em>Versão 1.1 — Em conformidade com a Lei nº 13.709/2018 (LGPD)</em></p>
-      
       <h3>1. Coleta de Dados Pessoais</h3>
       <p>Coletamos informações pessoais apenas com o seu consentimento explícito.</p>
     </div>
@@ -463,7 +446,7 @@
 
     let notifications = [];
     let communityMessages = [
-      { id: 1, author: "Mariana Silva", city: "Niterói, RJ", text: "Alguém tem dicas de adubação orgânica para Rosas do Deserto no verão?", time: "14:20" }
+      { id: 1, author: "Mariana Silva", text: "Alguém tem dicas de adubação orgânica para Rosas do Deserto no verão?", time: "14:20" }
     ];
 
     function showPage(name){
@@ -535,9 +518,6 @@
       openAuthBtn.textContent = 'Perfil';
       document.getElementById('profileName').textContent = user.name || user.email.split('@')[0];
       document.getElementById('profileEmail').textContent = user.email;
-      
-      const locText = (user.city && user.state) ? `📍 ${user.city}, ${user.state.toUpperCase()}` : '📍 Cidade / Estado não informados';
-      document.getElementById('profileLocation').textContent = locText;
 
       renderAvatarDisplay(user);
       renderGardenGrid();
@@ -562,8 +542,6 @@
     function openEditProfileModal() {
       if (!currentUser) return;
       document.getElementById('editNameInput').value = currentUser.name || '';
-      document.getElementById('editCityInput').value = currentUser.city || '';
-      document.getElementById('editStateInput').value = currentUser.state || '';
       document.getElementById('editProfileModal').classList.add('active');
     }
 
@@ -572,8 +550,6 @@
     function saveProfileChanges(e) {
       e.preventDefault();
       currentUser.name = document.getElementById('editNameInput').value.trim();
-      currentUser.city = document.getElementById('editCityInput').value.trim();
-      currentUser.state = document.getElementById('editStateInput').value.trim().toUpperCase();
 
       renderUserSession(currentUser);
       
@@ -585,7 +561,7 @@
       }
 
       closeEditProfileModal();
-      showToast('Perfil atualizado com sucesso!');
+      showToast('Nome atualizado com sucesso!');
     }
 
     function openAvatarModal() { document.getElementById('avatarModal').classList.add('active'); }
@@ -687,7 +663,7 @@
         <div class="msg-item ${currentUser && currentUser.name === m.author ? 'own' : ''}">
           <div class="msg-avatar">${m.author[0]}</div>
           <div class="msg-bubble">
-            <div class="msg-author">${m.author} <small style="font-weight:normal; opacity:.7;">• ${m.city || ''}</small></div>
+            <div class="msg-author">${m.author}</div>
             <div>${m.text}</div>
             ${m.plant ? `<div class="msg-plant-attach">🪴 <strong>${m.plant}</strong> (Compartilhado do Jardim)</div>` : ''}
           </div>
@@ -710,7 +686,6 @@
       communityMessages.push({
         id: Date.now(),
         author: currentUser.name || currentUser.email.split('@')[0],
-        city: (currentUser.city && currentUser.state) ? `${currentUser.city}, ${currentUser.state}` : '',
         text: text,
         time: new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})
       });
@@ -724,7 +699,6 @@
       communityMessages.push({
         id: Date.now(),
         author: currentUser.name,
-        city: currentUser.city ? `${currentUser.city}, ${currentUser.state}` : '',
         text: `Galera, acabei de adicionar esta espécie ao meu Jardim Digital!`,
         plant: plantName,
         time: new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})
@@ -740,7 +714,7 @@
       const available = db.filter(u => u.email !== (currentUser ? currentUser.email : ''));
 
       if (available.length === 0) {
-        container.innerHTML = '<p style="font-size:.8rem; color:var(--muted);">Nenhum vizinho encontrado na sua área ainda.</p>';
+        container.innerHTML = '<p style="font-size:.8rem; color:var(--muted);">Nenhum vizinho encontrado ainda.</p>';
         return;
       }
 
@@ -748,7 +722,6 @@
         <div class="neighbor-item">
           <div>
             <strong style="font-size:.85rem; display:block;">${u.name}</strong>
-            <small style="color:var(--muted); font-size:.75rem;">📍 ${u.city || 'Região'}, ${u.state || ''}</small>
           </div>
           <button class="primary" type="button" style="padding:4px 8px; font-size:.75rem;" onclick="addNeighbor('${u.name}')">Add Vizinho</button>
         </div>
@@ -757,7 +730,7 @@
 
     function addNeighbor(neighborName) {
       if (!currentUser) return;
-      showToast(`Solicitação de vizinho enviada para ${neighborName}!`);
+      showToast(`Solicitação enviada para ${neighborName}!`);
       addNotification(`Seu vizinho ${neighborName} aceitou seu convite! Agora vocês podem conversar no privado.`);
       openPrivateChat(neighborName);
     }
@@ -829,12 +802,10 @@
       showPage('inicio');
     }
 
-    // CADASTRO DE USUÁRIO CORRIGIDO
+    // CADASTRO DIRETO
     function handleRegisterSubmit(e) {
       e.preventDefault();
       const name = document.getElementById('regName').value.trim();
-      const city = document.getElementById('regCity').value.trim();
-      const state = document.getElementById('regState').value.trim().toUpperCase();
       const email = document.getElementById('regEmail').value.trim().toLowerCase();
       const password = document.getElementById('regPassword').value;
 
@@ -845,17 +816,17 @@
         return;
       }
 
-      const newUser = { name, city, state, email, password, garden: [], neighbors: [], termsAcceptedVersion: CURRENT_TERMS_VERSION };
+      const newUser = { name, email, password, garden: [], neighbors: [], termsAcceptedVersion: CURRENT_TERMS_VERSION };
       db.push(newUser);
       saveUsersDB(db);
 
       authModal.classList.remove('active');
       renderUserSession(newUser);
-      showToast(`Conta criada com sucesso! Bem-vindo, ${name}!`);
+      showToast(`Bem-vindo, ${name}!`);
       showPage('perfil');
     }
 
-    // LOGIN DE USUÁRIO CORRIGIDO
+    // LOGIN DIRETO
     function handleLoginSubmit(e) {
       e.preventDefault();
       const email = document.getElementById('loginEmail').value.trim().toLowerCase();
