@@ -57,11 +57,12 @@
     .close-modal { position: absolute; top: 15px; right: 20px; border: 0; background: transparent; font-size: 1.5rem; cursor: pointer; color: var(--muted); }
 
     /* Estilos do Perfil e Admin */
-    .admin-card, .profile-card { background: #eaf0e5; border: 1px dashed var(--green); border-radius: 18px; padding: 20px; margin-bottom: 20px; }
-    .profile-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
-    .profile-avatar { width: 60px; height: 60px; border-radius: 50%; background: var(--forest); color: white; display: grid; place-items: center; font-size: 1.5rem; font-weight: bold; overflow: hidden; }
+    .admin-card { background: #eaf0e5; border: 1px dashed var(--green); border-radius: 18px; padding: 20px; margin-bottom: 20px; }
+    .profile-top { display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-top: 10px; margin-bottom: 25px; flex-wrap: wrap; }
+    .profile-info { display: flex; align-items: center; gap: 16px; }
+    .profile-avatar { width: 60px; height: 60px; border-radius: 50%; background: var(--forest); color: white; display: grid; place-items: center; font-size: 1.5rem; font-weight: bold; overflow: hidden; flex: none; }
     .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
-    .btn-logout { background: #c84b31; color: white; border: 0; padding: 10px 18px; border-radius: 12px; font-weight: bold; margin-top: 10px; }
+    .btn-logout { background: #c84b31; color: white; border: 0; padding: 10px 18px; border-radius: 12px; font-weight: 650; cursor: pointer; transition: background .2s; }
     .btn-logout:hover { background: #a63820; }
 
     .page-intro{padding:40px 0 20px}.page-intro p{color:var(--muted);max-width:680px}.construction{background:var(--paper);border:1px solid var(--line);border-radius:24px;padding:clamp(26px,5vw,52px);margin:10px 0 60px;text-align:center;box-shadow:var(--shadow)}.construction .big-icon{font-size:3rem}.construction h2{font-family:Georgia,serif;font-size:2rem;color:var(--forest);margin:12px 0}.construction p{max-width:590px;margin:0 auto 20px;color:var(--muted)}
@@ -95,7 +96,6 @@
         <button data-page="jogos">Jogos</button>
         <button data-page="comunidade">Comunidade</button>
         <button data-page="clube">Clube</button>
-        <button id="navAuthBtn" style="font-weight: bold; color: var(--green);">Entrar / Conta</button>
         <button id="adminTab" data-page="admin" style="display:none; color: var(--green); font-weight: bold;">Painel Admin ⚙️</button>
       </nav>
       <div class="head-actions">
@@ -190,18 +190,19 @@
     <!-- PÁGINA DE PERFIL DO USUÁRIO -->
     <div class="page" id="page-perfil">
       <div class="wrap">
-        <section class="page-intro">
+        <section class="page-intro" style="padding-bottom:10px;">
           <div class="eyebrow">Sua Conta</div>
           <h1 class="page-title">Meu Perfil</h1>
           <p>Gerencie seus dados e acesse suas atividades no portal.</p>
         </section>
 
-        <div class="profile-card">
-          <div class="profile-header">
+        <!-- Cabeçalho Limpo do Perfil -->
+        <div class="profile-top">
+          <div class="profile-info">
             <div class="profile-avatar" id="profileAvatar">👤</div>
             <div>
-              <h3 id="profileName" style="margin:0; color:var(--forest);">Usuário</h3>
-              <p id="profileEmail" style="margin:4px 0 0; color:var(--muted); font-size:.9rem;">email@exemplo.com</p>
+              <h2 id="profileName" style="margin:0; font-family:Georgia,serif; color:var(--forest); font-size:1.5rem;">Usuário</h2>
+              <p id="profileEmail" style="margin:2px 0 0; color:var(--muted); font-size:.92rem;">email@exemplo.com</p>
             </div>
           </div>
           <button class="btn-logout" onclick="logout()">Sair da Conta</button>
@@ -309,26 +310,18 @@
     document.querySelectorAll('[data-page]').forEach(el=>el.addEventListener('click',e=>{e.preventDefault();showPage(el.dataset.page)}));
     document.querySelectorAll('[data-go]').forEach(el=>el.addEventListener('click',()=>showPage(el.dataset.go)));
     
-    // Modal de Autenticação e Botões de Conta
+    // Controle do Botão de Entrada / Perfil
     const authModal = document.getElementById('authModal');
+    const openAuthBtn = document.getElementById('openAuthModal');
     
-    function handleAccountButtonClick() {
+    openAuthBtn.onclick = () => {
       if (currentUser) {
         showPage('perfil');
       } else {
         authModal.classList.add('active');
       }
-    }
-
-    document.getElementById('openAuthModal').onclick = () => {
-      if (currentUser) {
-        logout();
-      } else {
-        authModal.classList.add('active');
-      }
     };
 
-    document.getElementById('navAuthBtn').onclick = handleAccountButtonClick;
     document.getElementById('closeAuthModal').onclick = () => authModal.classList.remove('active');
 
     function checkAdminAccess(email) {
@@ -343,11 +336,10 @@
       currentUser = user;
       localStorage.setItem('ep_user', JSON.stringify(user));
 
-      // Atualiza botões
-      document.getElementById('openAuthModal').textContent = 'Sair';
-      document.getElementById('navAuthBtn').textContent = 'Meu Perfil';
+      // Atualiza o botão do cabeçalho
+      openAuthBtn.textContent = 'Perfil';
 
-      // Preenche a página de perfil
+      // Atualiza a página de Perfil
       document.getElementById('profileName').textContent = user.name || user.email.split('@')[0];
       document.getElementById('profileEmail').textContent = user.email;
 
@@ -364,8 +356,7 @@
     function logout() {
       currentUser = null;
       localStorage.removeItem('ep_user');
-      document.getElementById('openAuthModal').textContent = 'Entrar';
-      document.getElementById('navAuthBtn').textContent = 'Entrar / Conta';
+      openAuthBtn.textContent = 'Entrar';
       document.getElementById('adminTab').style.display = 'none';
       showToast('Você saiu da sua conta.');
       showPage('inicio');
@@ -655,5 +646,3 @@
   </script>
 </body>
 </html>
-
-```
