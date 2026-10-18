@@ -2298,25 +2298,88 @@
 
   function epSalvarSessao(resposta) {
 
+    /*
+       Nunca crie um token falso no navegador.
+       O token precisa ser emitido pelo Worker para que
+       /api/auth/me, /api/jardim e /api/comunidade reconheçam
+       a sessão do usuário.
+    */
     const token =
-      resposta.token ||
-      resposta.sessionToken;
+      resposta?.token ||
+      resposta?.sessionToken ||
+      resposta?.accessToken ||
+      resposta?.sessao?.token ||
+      resposta?.session?.token ||
+      resposta?.data?.token ||
+      resposta?.dados?.token ||
+      resposta?.usuario?.token ||
+      resposta?.user?.token ||
+      '';
+
+    if (!token) {
+      throw new Error(
+        'O servidor não retornou um token de sessão. Faça o login novamente.'
+      );
+    }
 
     const usuario =
       epNormalizarUsuario(resposta);
 
-    const tokenSalvar =
-      token ||
-      "session_" + Date.now();
-
     localStorage.setItem(
       EP_TOKEN_KEY,
-      tokenSalvar
+      token
     );
 
     renderUserSession(usuario);
 
     return usuario;
+  }
+
+
+  /*
+     Garante que as ações protegidas tenham uma sessão válida.
+     Isso evita que o Jardim Digital e a Comunidade peçam login
+     novamente enquanto ainda existe uma sessão recuperável.
+  */
+  async function garantirSessao() {
+
+    if (!currentUser) {
+      const savedUser =
+        localStorage.getItem('ep_user');
+
+      if (savedUser) {
+        try {
+          renderUserSession(
+            JSON.parse(savedUser)
+          );
+        } catch (_) {}
+      }
+    }
+
+    if (currentUser && epToken()) {
+      return true;
+    }
+
+    if (epToken()) {
+      try {
+        const resposta =
+          await epApi('/api/auth/me');
+
+        renderUserSession(
+          epNormalizarUsuario(resposta)
+        );
+
+        return Boolean(
+          currentUser && epToken()
+        );
+      } catch (erro) {
+        /* Token inválido/expirado: não manter uma sessão quebrada. */
+        localStorage.removeItem(EP_TOKEN_KEY);
+        currentUser = null;
+      }
+    }
+
+    return false;
   }
 
 
@@ -2950,10 +3013,7 @@
     plantData
   ) {
 
-    if (
-      !currentUser ||
-      !epToken()
-    ) {
+    if (!(await garantirSessao())) {
 
       showToast(
         'Faça login para salvar plantas no seu Jardim Digital!'
@@ -3432,10 +3492,7 @@
 
     if (!text) return;
 
-    if (
-      !currentUser ||
-      !epToken()
-    ) {
+    if (!(await garantirSessao())) {
 
       showToast(
         'Entre na sua conta para conversar na Comunidade.'
@@ -5173,27 +5230,14 @@
       }
 
 
-      if (epToken()) {
+      if (await garantirSessao()) {
 
         try {
-
-          const r =
-            await epApi(
-              '/api/auth/me'
-            );
-
-          renderUserSession(
-            epNormalizarUsuario(r)
-          );
-
           await sincronizarDadosUsuario();
-
           await carregarNotificacoes();
-
         } catch (e) {
-
           console.warn(
-            'Sessão não restaurada:',
+            'Falha ao carregar os dados da sessão:',
             e
           );
         }
