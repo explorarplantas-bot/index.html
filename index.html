@@ -295,8 +295,7 @@
     }
 
     function loginGoogle() {
-      // Cole aqui o ID do cliente gerado no Google Cloud Console
-      const CLIENT_ID = "SEU_CLIENT_ID_DO_GOOGLE.apps.googleusercontent.com";
+      const CLIENT_ID = "571216171328-j9vulkvmerrl3qmrnfnlkn201o5bdo6g.apps.googleusercontent.com";
       const REDIRECT_URI = window.location.origin;
       
       const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=email%20profile`;
