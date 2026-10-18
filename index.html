@@ -85,7 +85,6 @@
     .msg-author { font-size: .75rem; font-weight: bold; margin-bottom: 2px; color: var(--green); }
     .msg-item.own .msg-author { color: var(--leaf); }
     .msg-plant-attach { display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.05); padding: 6px 10px; border-radius: 8px; margin-top: 6px; font-size: .8rem; }
-    .msg-plant-attach img { width: 35px; height: 35px; border-radius: 6px; object-fit: cover; }
 
     .chat-input-area { display: flex; gap: 8px; }
     .chat-input-area input { flex: 1; padding: 10px 14px; border-radius: 12px; border: 1px solid var(--line); }
@@ -219,26 +218,20 @@
         </section>
 
         <div class="community-grid">
-          <!-- Chat Geral da Comunidade -->
           <div class="chat-card">
             <h3 style="margin-bottom:12px; color:var(--forest);">Chat Geral da Comunidade 💬</h3>
-            <div class="chat-messages" id="communityChatMessages">
-              <!-- Mensagens renderizadas via JS -->
-            </div>
+            <div class="chat-messages" id="communityChatMessages"></div>
             <div class="chat-input-area">
               <input type="text" id="communityMsgInput" placeholder="Digite sua mensagem para a comunidade..." />
               <button class="primary" onclick="sendCommunityMessage()">Enviar</button>
             </div>
           </div>
 
-          <!-- Barra Lateral: Meus Vizinhos & Busca por Cidade -->
           <div>
             <div class="neighbor-card" style="margin-bottom:15px;">
               <h3 style="margin-bottom:10px; color:var(--forest); font-size:1rem;">🏘️ Encontrar Vizinhos</h3>
               <p style="font-size:.8rem; color:var(--muted); margin-bottom:10px;">Encontre cultivadores na sua cidade ou estado.</p>
-              <div id="neighborsList">
-                <!-- Lista de vizinhos da mesma região -->
-              </div>
+              <div id="neighborsList"></div>
             </div>
 
             <div class="neighbor-card">
@@ -281,7 +274,6 @@
           </div>
         </div>
 
-        <!-- SEÇÃO MEU JARDIM DIGITAL -->
         <div class="section-head" style="margin-top:20px;">
           <div>
             <div class="eyebrow">Seu Catálogo Pessoal</div>
@@ -290,9 +282,7 @@
           </div>
         </div>
 
-        <div class="plant-grid" id="myGardenGrid">
-          <!-- Cards do Jardim renderizados via JS -->
-        </div>
+        <div class="plant-grid" id="myGardenGrid"></div>
       </div>
     </div>
 
@@ -314,7 +304,7 @@
     </div>
   </main>
 
-  <!-- MODAL DE EDIÇÃO DE PERFIL (NOME, CIDADE, ESTADO) -->
+  <!-- MODAL DE EDIÇÃO DE PERFIL -->
   <div class="modal-overlay" id="editProfileModal">
     <div class="auth-box">
       <button class="close-modal" onclick="closeEditProfileModal()">&times;</button>
@@ -334,7 +324,7 @@
     </div>
   </div>
 
-  <!-- MODAL DE EDITAR AVATAR / UPLOAD DE FOTO -->
+  <!-- MODAL DE EDITAR AVATAR -->
   <div class="modal-overlay" id="avatarModal">
     <div class="auth-box">
       <button class="close-modal" onclick="closeAvatarModal()">&times;</button>
@@ -349,7 +339,7 @@
     </div>
   </div>
 
-  <!-- MODAL DE CHAT PRIVADO COM VIZINHO -->
+  <!-- MODAL DE CHAT PRIVADO -->
   <div class="modal-overlay" id="privateChatModal">
     <div class="auth-box" style="width:min(550px, 95%);">
       <button class="close-modal" onclick="closePrivateChatModal()">&times;</button>
@@ -364,7 +354,7 @@
     </div>
   </div>
 
-  <!-- MODAL DE AUTENTICAÇÃO REAL -->
+  <!-- MODAL DE AUTENTICAÇÃO -->
   <div class="modal-overlay" id="authModal">
     <div class="auth-box">
       <button class="close-modal" id="closeAuthModal">&times;</button>
@@ -417,7 +407,7 @@
     </div>
   </div>
 
-  <!-- MODAL DE TERMOS DE USO ATUALIZADO (v1.1) -->
+  <!-- MODAL DE TERMOS DE USO -->
   <div class="modal-overlay" id="termsModal">
     <div class="auth-box">
       <button class="close-modal" onclick="closeLegalModals()">&times;</button>
@@ -425,36 +415,25 @@
       <p><em>Versão 1.1 — Outubro de 2026</em></p>
       
       <h3>1. Aceitação dos Termos</h3>
-      <p>Ao utilizar o portal <strong>Explorar Plantas</strong>, você concorda expressamente com os presentes Termos de Uso. Caso não concorde com qualquer disposição, recomendamos que não utilize nossos serviços.</p>
+      <p>Ao utilizar o portal <strong>Explorar Plantas</strong>, você concorda expressamente com os presentes Termos de Uso.</p>
       
-      <h3>2. Descrição dos Serviços & Rede Social de Vizinhos</h3>
+      <h3>2. Descrição dos Serviços & Rede Social</h3>
       <p>O portal disponibiliza ferramentas de identificação botânica por Inteligência Artificial, catálogo informativo, catálogo pessoal "Meu Jardim Digital", chat público e sistema de vizinhos com mensagens privadas.</p>
       
-      <h3>3. Regras de Conduta da Comunidade</h3>
-      <p>É estritamente proibido publicar mensagens com teor ofensivo, discurso de ódio, spam ou imagens inadequadas nos chats públicos e privados. O descumprimento acarretará o banimento da conta.</p>
-
-      <h3>4. Isenção de Responsabilidade Botânica</h3>
-      <p>As identificações geradas por IA possuem caráter estritamente educativo e informativo. Recomenda-se cautela adicional antes de manusear espécies tóxicas.</p>
+      <h3>3. Regras de Conduta</h3>
+      <p>É estritamente proibido publicar mensagens ofensivas ou inadequadas.</p>
     </div>
   </div>
 
-  <!-- MODAL DE POLÍTICA DE PRIVACIDADE ATUALIZADO (v1.1) -->
+  <!-- MODAL DE POLÍTICA DE PRIVACIDADE -->
   <div class="modal-overlay" id="privacyModal">
     <div class="auth-box">
       <button class="close-modal" onclick="closeLegalModals()">&times;</button>
       <h2>Política de Privacidade (LGPD)</h2>
       <p><em>Versão 1.1 — Em conformidade com a Lei nº 13.709/2018 (LGPD)</em></p>
       
-      <h3>1. Coleta de Dados Pessoais e Localização</h3>
-      <p>Coletamos informações pessoais com o seu consentimento explícito:</p>
-      <ul>
-        <li><strong>Dados de Autenticação:</strong> E-mail, nome e foto de perfil.</li>
-        <li><strong>Dados de Localização:</strong> Cidade e Estado (UF) informados exclusivamente para conectar vizinhos da mesma região.</li>
-        <li><strong>Mensagens Privadas:</strong> As conversas entre vizinhos são mantidas em sigilo e não são exibidas publicamente no portal.</li>
-      </ul>
-      
-      <h3>2. Seus Direitos (Art. 18 da LGPD)</h3>
-      <p>Você pode editar ou excluir definitivamente sua conta, fotos e histórico do Jardim a qualquer momento pelo e-mail: <strong>explicaplantas@gmail.com</strong>.</p>
+      <h3>1. Coleta de Dados Pessoais</h3>
+      <p>Coletamos informações pessoais apenas com o seu consentimento explícito (E-mail, nome, localização para vizinhos e fotos do seu Jardim).</p>
     </div>
   </div>
 
@@ -573,7 +552,6 @@
       }
     }
 
-    // Modal Editar Perfil
     function openEditProfileModal() {
       if (!currentUser) return;
       document.getElementById('editNameInput').value = currentUser.name || '';
@@ -582,9 +560,7 @@
       document.getElementById('editProfileModal').classList.add('active');
     }
 
-    function closeEditProfileModal() {
-      document.getElementById('editProfileModal').classList.remove('active');
-    }
+    function closeEditProfileModal() { document.getElementById('editProfileModal').classList.remove('active'); }
 
     function saveProfileChanges(e) {
       e.preventDefault();
@@ -594,7 +570,6 @@
 
       renderUserSession(currentUser);
       
-      // Atualiza no banco local
       const db = getUsersDB();
       const idx = db.findIndex(u => u.email.toLowerCase() === currentUser.email.toLowerCase());
       if (idx !== -1) {
@@ -606,7 +581,6 @@
       showToast('Perfil atualizado com sucesso!');
     }
 
-    // Upload & Recorte Redondo do Avatar
     function openAvatarModal() { document.getElementById('avatarModal').classList.add('active'); }
     function closeAvatarModal() { document.getElementById('avatarModal').classList.remove('active'); }
 
@@ -619,12 +593,11 @@
         const img = new Image();
         img.onload = () => {
           const canvas = document.createElement('canvas');
-          const size = 200; // Tamanho ideal para avatar
+          const size = 200;
           canvas.width = size;
           canvas.height = size;
           const ctx = canvas.getContext('2d');
 
-          // Recorte Central Redondo
           const minDim = Math.min(img.width, img.height);
           const sx = (img.width - minDim) / 2;
           const sy = (img.height - minDim) / 2;
@@ -649,7 +622,6 @@
       showToast('Foto de perfil removida.');
     }
 
-    // MEU JARDIM DIGITAL
     function addToGarden(plantData) {
       if (!currentUser) {
         showToast('Faça login para salvar plantas no seu Jardim Digital!');
@@ -701,7 +673,6 @@
       `).join('');
     }
 
-    // COMUNIDADE & CHAT DE VIZINHOS
     function renderCommunityChat() {
       const container = document.getElementById('communityChatMessages');
       container.innerHTML = communityMessages.map(m => `
@@ -778,8 +749,6 @@
     function addNeighbor(neighborName) {
       if (!currentUser) return;
       showToast(`Solicitação de vizinho enviada para ${neighborName}!`);
-      
-      // Simula Notificação
       addNotification(`Seu vizinho ${neighborName} aceitou seu convite! Agora vocês podem conversar no privado.`);
       openPrivateChat(neighborName);
     }
@@ -790,9 +759,7 @@
       document.getElementById('privateChatModal').classList.add('active');
     }
 
-    function closePrivateChatModal() {
-      document.getElementById('privateChatModal').classList.remove('active');
-    }
+    function closePrivateChatModal() { document.getElementById('privateChatModal').classList.remove('active'); }
 
     function sendPrivateMessage() {
       const input = document.getElementById('privateMsgInput');
@@ -808,13 +775,11 @@
       input.value = '';
       container.scrollTop = container.scrollHeight;
 
-      // Resposta simulada com Notificação
       setTimeout(() => {
         addNotification(`Seu vizinho ${currentActiveNeighbor} respondeu sua mensagem privada!`);
       }, 3000);
     }
 
-    // NOTIFICAÇÕES
     function addNotification(msg) {
       notifications.unshift({ id: Date.now(), text: msg, read: false });
       const badge = document.getElementById('notifBadge');
@@ -838,7 +803,6 @@
     }
 
     function closeNotifModal() { document.getElementById('notifModal').classList.remove('active'); }
-
     function openTermsModal() { document.getElementById('termsModal').classList.add('active'); }
     function openPrivacyModal() { document.getElementById('privacyModal').classList.add('active'); }
     function closeLegalModals() {
@@ -933,7 +897,7 @@
       }
     });
 
-    // Script do Identificador + Botão de Adicionar ao Jardim
+    // SCRIPT DO IDENTIFICADOR CORRIGIDO
     (() => {  
       const raiz = document.getElementById("explorar-identificador");  
       if (!raiz || raiz.dataset.iniciado) return;  
@@ -958,36 +922,37 @@
         arquivo = file;  
         urlPrevia = URL.createObjectURL(file);  
         previa.src = urlPrevia;  
+        nomeArquivo.textContent = "Arquivo selecionado: " + file.name;
         status.textContent = "Imagem pronta para identificar.";  
       }  
   
       camera.addEventListener("change", () => selecionarArquivo(camera.files?.[0]));  
       arquivos.addEventListener("change", () => selecionarArquivo(arquivos.files?.[0]));  
   
-      botao.addEventListener("click", async () => {  
+      botao.addEventListener("click", () => {  
         if (!arquivo) { status.textContent = "Escolha uma imagem primeiro."; return; }  
         botao.disabled = true;  
         status.innerHTML = '<span class="lupa-animada">🔍</span> Explorando imagem...';  
         resultado.replaceChildren();  
         resultado.hidden = true;  
-  
-        try {  
-          const leitor = new FileReader();
-          leitor.readAsDataURL(arquivo);
-          leitor.onload = async () => {
+
+        const leitor = new FileReader();
+        leitor.onload = async () => {
+          try {
             const resposta = await fetch("/api/identificar", {  
               method: "POST",  
               headers: { "Content-Type": "application/json" },  
               body: JSON.stringify({ imagem: leitor.result })  
             });  
+            
             const dados = await resposta.json();  
-            if (!resposta.ok || !dados.sucesso) throw new Error(dados.erro || "Falha ao identificar.");  
+            if (!resposta.ok || !dados.sucesso) throw new Error(dados.erro || "Falha ao identificar a planta.");  
 
             const p = dados.planta || {};  
             ultimaPlantaIdentificada = p;
 
             const titulo = document.createElement("h3");  
-            titulo.textContent = p.nomePopular || "Identificação provável";  
+            titulo.textContent = p.nomePopular || p.identificacao || "Identificação provável";  
             resultado.appendChild(titulo);  
 
             const addBtn = document.createElement("button");
@@ -999,8 +964,8 @@
 
             const divInfo = document.createElement("div");
             divInfo.innerHTML = `
-              <p><strong>🔬 Nome científico:</strong> ${p.nomeCientifico || 'Não informado'}</p>
-              <p><strong>☀️ Luz:</strong> ${p.luz || 'Não informado'}</p>
+              <p><strong>🔬 Nome científico:</strong> ${p.nomeCientifico || p.nome_cientifico || 'Não informado'}</p>
+              <p><strong>☀️ Luz:</strong> ${p.luz || p.iluminacao || 'Não informado'}</p>
               <p><strong>💧 Rega:</strong> ${p.rega || 'Não informado'}</p>
               <p><strong>🪴 Solo:</strong> ${p.solo || 'Não informado'}</p>
             `;
@@ -1008,12 +973,19 @@
 
             resultado.hidden = false;  
             status.textContent = "Identificação concluída!";  
-          };
-        } catch (erro) {  
-          status.textContent = erro.message || "Erro na comunicação.";  
-        } finally {  
-          botao.disabled = false;  
-        }  
+          } catch (erro) {
+            status.textContent = erro.message || "Erro de conexão com o servidor de IA.";  
+          } finally {
+            botao.disabled = false;  
+          }
+        };
+
+        leitor.onerror = () => {
+          status.textContent = "Erro ao carregar a imagem selecionada.";
+          botao.disabled = false;
+        };
+
+        leitor.readAsDataURL(arquivo);
       });  
     })();
 
