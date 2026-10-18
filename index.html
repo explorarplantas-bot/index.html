@@ -44,11 +44,14 @@
     #explorar-identificador .ep-item strong { display: block; margin-bottom: 5px; color: var(--forest); }
     #explorar-identificador [hidden] { display: none !important; }
 
-    /* Modal de Autenticação */
+    /* Modais (Login e Legais) */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; place-items: center; z-index: 100; backdrop-filter: blur(4px); }
     .modal-overlay.active { display: grid; }
-    .auth-box { background: var(--paper); border-radius: 24px; padding: 30px; width: min(400px, 90%); box-shadow: var(--shadow); position: relative; }
-    .auth-box h2 { font-family: Georgia, serif; color: var(--forest); margin-bottom: 20px; text-align: center; }
+    .auth-box { background: var(--paper); border-radius: 24px; padding: 30px; width: min(500px, 90%); max-height: 85vh; overflow-y: auto; box-shadow: var(--shadow); position: relative; }
+    .auth-box h2 { font-family: Georgia, serif; color: var(--forest); margin-bottom: 16px; text-align: center; }
+    .auth-box h3 { font-size: 1.05rem; color: var(--forest); margin: 16px 0 6px; }
+    .auth-box p, .auth-box li { font-size: .88rem; color: var(--muted); line-height: 1.5; }
+    .auth-box ul { padding-left: 18px; margin: 6px 0; }
     .auth-btn { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--line); margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 600; cursor: pointer; background: white; }
     .auth-btn.google { color: #333; }
     .auth-btn.facebook { background: #1877f2; color: white; border: none; }
@@ -196,7 +199,6 @@
           <p>Gerencie seus dados e acesse suas atividades no portal.</p>
         </section>
 
-        <!-- Cabeçalho Limpo do Perfil -->
         <div class="profile-top">
           <div class="profile-info">
             <div class="profile-avatar" id="profileAvatar">👤</div>
@@ -275,17 +277,64 @@
     </div>
   </div>
 
+  <!-- MODAL DE TERMOS DE USO -->
+  <div class="modal-overlay" id="termsModal">
+    <div class="auth-box">
+      <button class="close-modal" onclick="closeLegalModals()">&times;</button>
+      <h2>Termos de Uso</h2>
+      <p><em>Última atualização: Outubro de 2026</em></p>
+      
+      <h3>1. Aceitação dos Termos</h3>
+      <p>Ao utilizar o portal <strong>Explorar Plantas</strong>, você concorda expressamente com os presentes Termos de Uso. Caso não concorde com qualquer disposição, recomendamos que não utilize nossos serviços.</p>
+      
+      <h3>2. Descrição dos Serviços</h3>
+      <p>O portal disponibiliza ferramentas de identificação botânica por Inteligência Artificial, catálogo informativo, artigos e jogos interativos sobre plantas.</p>
+      
+      <h3>3. Isenção de Responsabilidade Botânica</h3>
+      <p>As identificações geradas por IA possuem caráter estritamente educativo e informativo. Recomenda-se cautela adicional antes de manusear ou ingerir espécies identificadas como tóxicas ou medicinais.</p>
+      
+      <h3>4. Propriedade Intelectual</h3>
+      <p>Todo o conteúdo, logotipo, design e marcas presentes no portal são de propriedade exclusiva do Explorar Plantas.</p>
+    </div>
+  </div>
+
+  <!-- MODAL DE POLÍTICA DE PRIVACIDADE -->
+  <div class="modal-overlay" id="privacyModal">
+    <div class="auth-box">
+      <button class="close-modal" onclick="closeLegalModals()">&times;</button>
+      <h2>Política de Privacidade (LGPD)</h2>
+      <p><em>Em conformidade com a Lei nº 13.709/2018 (LGPD)</em></p>
+      
+      <h3>1. Coleta de Dados Pessoais</h3>
+      <p>Coletamos informações pessoais apenas com o seu consentimento explícito:</p>
+      <ul>
+        <li><strong>Dados de Autenticação:</strong> E-mail, nome e foto de perfil (via Google OAuth ou cadastro direto).</li>
+        <li><strong>Dados de Uso:</strong> Imagens enviadas para análise botânica.</li>
+      </ul>
+      
+      <h3>2. Finalidade do Tratamento</h3>
+      <p>Seus dados são utilizados para personalizar sua experiência no portal, salvar seu histórico de plantas e garantir o acesso seguro à sua conta.</p>
+      
+      <h3>3. Compartilhamento e Processamento</h3>
+      <p>Não vendemos ou compartilhamos seus dados pessoais com terceiros. As imagens enviadas são processadas com segurança via API Google Gemini exclusivamente para gerar o diagnóstico botânico.</p>
+
+      <h3>4. Seus Direitos (Art. 18 da LGPD)</h3>
+      <p>Você pode solicitar a alteração ou exclusão definitiva de seus dados a qualquer momento pelo e-mail: <strong>explicaplantas@gmail.com</strong>.</p>
+    </div>
+  </div>
+
   <footer>
     <div class="wrap">
       <div class="footer-grid">
         <div><div class="footer-brand">🌱 Explorar Plantas</div><p class="footer-copy">Descubra, aprenda e cultive o universo das plantas.</p></div>
         <div class="footer-col"><h3>Explore</h3><a href="#catalogo" data-page="catalogo">Catálogo</a><a href="#blog" data-page="blog">Blog</a><a href="#identificar" data-page="identificar">Identificar</a><a href="#jogos" data-page="jogos">Jogos</a></div>
         <div class="footer-col">
-          <h3>Contato</h3>
+          <h3>Contato & Legal</h3>
           <a href="mailto:explicaplantas@gmail.com">E-mail</a>
           <a href="https://www.instagram.com/explorarplantas/" target="_blank" rel="noopener noreferrer">Instagram @explorarplantas ↗</a>
           <a href="https://www.tiktok.com/@explorar.plantas" target="_blank" rel="noopener noreferrer">TikTok @explorar.plantas ↗</a>
-          <button onclick="showToast('Política de Privacidade em breve.')">Privacidade</button>
+          <button onclick="openTermsModal()">Termos de Uso</button>
+          <button onclick="openPrivacyModal()">Política de Privacidade</button>
         </div>
       </div>
       <div class="copyright"><span>© <span id="year"></span> Explorar Plantas. Todos os direitos reservados.</span><span>Feito com carinho 🌿</span></div>
@@ -323,6 +372,17 @@
     };
 
     document.getElementById('closeAuthModal').onclick = () => authModal.classList.remove('active');
+
+    // Modais Legais (Termos e Privacidade)
+    const termsModal = document.getElementById('termsModal');
+    const privacyModal = document.getElementById('privacyModal');
+
+    function openTermsModal() { termsModal.classList.add('active'); }
+    function openPrivacyModal() { privacyModal.classList.add('active'); }
+    function closeLegalModals() {
+      termsModal.classList.remove('active');
+      privacyModal.classList.remove('active');
+    }
 
     function checkAdminAccess(email) {
       if (email && email.toLowerCase() === 'explicaplantas@gmail.com') {
