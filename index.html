@@ -100,7 +100,7 @@
     .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--forest);color:white;padding:12px 18px;border-radius:12px;display:none;z-index:99;box-shadow:var(--shadow)}
     @media(max-width:1000px){.brand{min-width:auto}.head{gap:10px}nav button{padding:8px 7px;font-size:.82rem}.community-grid{grid-template-columns:1fr;}}
     @media(max-width:780px){.head{min-height:72px;flex-wrap:wrap}.brand{flex:1}.brand-name{font-size:1.12rem}.logo{width:46px;height:46px}.head-actions{margin-left:auto}.menu-toggle{display:grid}nav{display:none;order:3;width:100%;flex-basis:100%;padding:0 0 12px;grid-template-columns:repeat(2,1fr);gap:4px}nav.open{display:grid}nav button{text-align:left;padding:11px 12px}.head{padding:9px 0}.login-btn{padding:8px 12px;font-size:.82rem}.hero{padding:28px 0 10px}.grid,.plant-grid{grid-template-columns:repeat(2,1fr)}.footer-grid{grid-template-columns:1fr 1fr}.footer-grid>div:first-child{grid-column:1/-1}}
-    @media(max-width:520px){.wrap{width:min(100% - 26px,1160px)}.grid,.plant-grid{grid-template-columns:1fr}.feature-card{min-height:175px}.section{padding:24px 0}.section-head{align-items:flex-start;flex-direction:column;gap:6px}.footer-grid{grid-template-columns:1fr}.footer-grid>div:first-child{grid-column:auto}.copyright{flex-direction:column}#explorar-identificador .ep-opcoes{grid-template-columns:1fr}}
+    @media(max-width:520px){.wrap{width:min(100% - 26px,1160px)}.grid,.plant-grid{grid-template-columns:1fr}.feature-card{min-height:175px}.section{padding:24px 0}.section-head{align-items:flex-start;flex-direction:column;gap:6px}.footer-grid{grid-template-columns:1fr}#explorar-identificador .ep-opcoes{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
@@ -222,7 +222,7 @@
             <div class="chat-messages" id="communityChatMessages"></div>
             <div class="chat-input-area">
               <input type="text" id="communityMsgInput" placeholder="Digite sua mensagem para a comunidade..." />
-              <button class="primary" onclick="sendCommunityMessage()">Enviar</button>
+              <button class="primary" type="button" onclick="sendCommunityMessage()">Enviar</button>
             </div>
           </div>
 
@@ -259,7 +259,7 @@
           <div class="profile-info">
             <div class="profile-avatar-wrapper">
               <div class="profile-avatar" id="profileAvatar">👤</div>
-              <button class="avatar-edit-btn" title="Alterar Foto" onclick="openAvatarModal()">✏️</button>
+              <button class="avatar-edit-btn" type="button" title="Alterar Foto" onclick="openAvatarModal()">✏️</button>
             </div>
             <div>
               <h2 id="profileName" style="margin:0; font-family:Georgia,serif; color:var(--forest); font-size:1.5rem;">Usuário</h2>
@@ -268,8 +268,8 @@
             </div>
           </div>
           <div style="display:flex; gap:8px;">
-            <button class="primary" onclick="openEditProfileModal()">Editar Perfil ✏️</button>
-            <button class="btn-logout" onclick="logout()">Sair</button>
+            <button class="primary" type="button" onclick="openEditProfileModal()">Editar Perfil ✏️</button>
+            <button class="btn-logout" type="button" onclick="logout()">Sair</button>
           </div>
         </div>
 
@@ -306,7 +306,7 @@
   <!-- MODAL DE EDIÇÃO DE PERFIL -->
   <div class="modal-overlay" id="editProfileModal">
     <div class="auth-box">
-      <button class="close-modal" onclick="closeEditProfileModal()">&times;</button>
+      <button class="close-modal" type="button" onclick="closeEditProfileModal()">&times;</button>
       <h2>Editar Perfil ✏️</h2>
       <form class="auth-form" onsubmit="saveProfileChanges(event)">
         <label style="font-size:.85rem; color:var(--muted);">Nome Completo:</label>
@@ -326,14 +326,14 @@
   <!-- MODAL DE EDITAR AVATAR -->
   <div class="modal-overlay" id="avatarModal">
     <div class="auth-box">
-      <button class="close-modal" onclick="closeAvatarModal()">&times;</button>
+      <button class="close-modal" type="button" onclick="closeAvatarModal()">&times;</button>
       <h2>Foto de Perfil 📸</h2>
       <p style="text-align:center; color:var(--muted);">Escolha uma foto da galeria. Ela será ajustada em formato redondo automaticamente.</p>
       
       <div style="text-align:center; margin:20px 0;">
         <input type="file" id="avatarFileInput" accept="image/*" style="display:none;" onchange="handleAvatarUpload(event)" />
-        <button class="primary" onclick="document.getElementById('avatarFileInput').click()">Escolher Nova Foto 🖼️</button>
-        <button style="background:none; border:1px solid var(--line); padding:10px 14px; border-radius:12px; margin-left:8px;" onclick="removeAvatar()">Remover Foto</button>
+        <button class="primary" type="button" onclick="document.getElementById('avatarFileInput').click()">Escolher Nova Foto 🖼️</button>
+        <button type="button" style="background:none; border:1px solid var(--line); padding:10px 14px; border-radius:12px; margin-left:8px;" onclick="removeAvatar()">Remover Foto</button>
       </div>
     </div>
   </div>
@@ -341,22 +341,22 @@
   <!-- MODAL DE CHAT PRIVADO -->
   <div class="modal-overlay" id="privateChatModal">
     <div class="auth-box" style="width:min(550px, 95%);">
-      <button class="close-modal" onclick="closePrivateChatModal()">&times;</button>
+      <button class="close-modal" type="button" onclick="closePrivateChatModal()">&times;</button>
       <h2 id="privateChatTitle">Chat Privado 🔒</h2>
       <div class="chat-card" style="height:380px; border:none; padding:10px 0;">
         <div class="chat-messages" id="privateChatMessages"></div>
         <div class="chat-input-area">
           <input type="text" id="privateMsgInput" placeholder="Mensagem privada para seu vizinho..." />
-          <button class="primary" onclick="sendPrivateMessage()">Enviar</button>
+          <button class="primary" type="button" onclick="sendPrivateMessage()">Enviar</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- MODAL DE AUTENTICAÇÃO -->
+  <!-- MODAL DE AUTENTICAÇÃO (ENTRAR OU CRIAR CONTA) -->
   <div class="modal-overlay" id="authModal">
     <div class="auth-box">
-      <button class="close-modal" id="closeAuthModal">&times;</button>
+      <button class="close-modal" id="closeAuthModal" type="button">&times;</button>
       <h2>Acessar o portal</h2>
 
       <div class="auth-tabs">
@@ -378,12 +378,14 @@
 
       <div class="auth-divider" id="authDividerText">ou entre com e-mail e senha</div>
 
+      <!-- FORMULÁRIO DE LOGIN -->
       <form class="auth-form" id="loginForm" onsubmit="handleLoginSubmit(event)">
         <input type="email" id="loginEmail" placeholder="Seu e-mail registrado" required />
         <input type="password" id="loginPassword" placeholder="Sua senha" required />
         <button type="submit" id="loginSubmitBtn" class="primary" style="width:100%; opacity:0.5; cursor:not-allowed;" disabled>Entrar na Conta</button>
       </form>
 
+      <!-- FORMULÁRIO DE CADASTRO -->
       <form class="auth-form" id="registerForm" style="display:none;" onsubmit="handleRegisterSubmit(event)">
         <input type="text" id="regName" placeholder="Seu nome completo" required />
         <input type="text" id="regCity" placeholder="Sua cidade (Ex: Niterói)" required />
@@ -398,7 +400,7 @@
   <!-- MODAL DE NOTIFICAÇÕES -->
   <div class="modal-overlay" id="notifModal">
     <div class="auth-box">
-      <button class="close-modal" onclick="closeNotifModal()">&times;</button>
+      <button class="close-modal" type="button" onclick="closeNotifModal()">&times;</button>
       <h2>Notificações ♧</h2>
       <div id="notifList">
         <p style="text-align:center; color:var(--muted);">Nenhuma notificação no momento.</p>
@@ -409,7 +411,7 @@
   <!-- MODAL DE TERMOS DE USO -->
   <div class="modal-overlay" id="termsModal">
     <div class="auth-box">
-      <button class="close-modal" onclick="closeLegalModals()">&times;</button>
+      <button class="close-modal" type="button" onclick="closeLegalModals()">&times;</button>
       <h2>Termos de Uso</h2>
       <p><em>Versão 1.1 — Outubro de 2026</em></p>
       
@@ -417,22 +419,19 @@
       <p>Ao utilizar o portal <strong>Explorar Plantas</strong>, você concorda expressamente com os presentes Termos de Uso.</p>
       
       <h3>2. Descrição dos Serviços & Rede Social</h3>
-      <p>O portal disponibiliza ferramentas de identificação botânica por Inteligência Artificial, catálogo informativo, catálogo pessoal "Meu Jardim Digital", chat público e sistema de vizinhos com mensagens privadas.</p>
-      
-      <h3>3. Regras de Conduta</h3>
-      <p>É estritamente proibido publicar mensagens ofensivas ou inadequadas.</p>
+      <p>O portal disponibiliza ferramentas de identificação botânica por IA, catálogo "Meu Jardim Digital", chat público e vizinhos.</p>
     </div>
   </div>
 
   <!-- MODAL DE POLÍTICA DE PRIVACIDADE -->
   <div class="modal-overlay" id="privacyModal">
     <div class="auth-box">
-      <button class="close-modal" onclick="closeLegalModals()">&times;</button>
+      <button class="close-modal" type="button" onclick="closeLegalModals()">&times;</button>
       <h2>Política de Privacidade (LGPD)</h2>
       <p><em>Versão 1.1 — Em conformidade com a Lei nº 13.709/2018 (LGPD)</em></p>
       
       <h3>1. Coleta de Dados Pessoais</h3>
-      <p>Coletamos informações pessoais apenas com o seu consentimento explícito (E-mail, nome, localização para vizinhos e fotos do seu Jardim).</p>
+      <p>Coletamos informações pessoais apenas com o seu consentimento explícito.</p>
     </div>
   </div>
 
@@ -446,8 +445,8 @@
           <a href="mailto:explicaplantas@gmail.com">E-mail</a>
           <a href="https://www.instagram.com/explorarplantas/" target="_blank" rel="noopener noreferrer">Instagram @explorarplantas ↗</a>
           <a href="https://www.tiktok.com/@explorar.plantas" target="_blank" rel="noopener noreferrer">TikTok @explorar.plantas ↗</a>
-          <button onclick="openTermsModal()">Termos de Uso</button>
-          <button onclick="openPrivacyModal()">Política de Privacidade</button>
+          <button type="button" onclick="openTermsModal()">Termos de Uso</button>
+          <button type="button" onclick="openPrivacyModal()">Política de Privacidade</button>
         </div>
       </div>
       <div class="copyright"><span>© <span id="year"></span> Explorar Plantas. Todos os direitos reservados.</span><span>Feito com carinho 🌿</span></div>
@@ -510,16 +509,19 @@
 
     function saveUsersDB(db) {
       localStorage.setItem('ep_users_db', JSON.stringify(db));
-      document.getElementById('adminUserCount').textContent = db.length + 1;
+      const el = document.getElementById('adminUserCount');
+      if (el) el.textContent = db.length + 1;
     }
 
     function toggleAuthButtons() {
       const accepted = document.getElementById('acceptTermsCheck').checked;
       const btns = [document.getElementById('googleAuthBtn'), document.getElementById('loginSubmitBtn'), document.getElementById('regSubmitBtn')];
       btns.forEach(btn => {
-        btn.disabled = !accepted;
-        btn.style.opacity = accepted ? '1' : '0.5';
-        btn.style.cursor = accepted ? 'pointer' : 'not-allowed';
+        if(btn) {
+          btn.disabled = !accepted;
+          btn.style.opacity = accepted ? '1' : '0.5';
+          btn.style.cursor = accepted ? 'pointer' : 'not-allowed';
+        }
       });
     }
 
@@ -541,7 +543,6 @@
       renderGardenGrid();
       renderNeighborsList();
 
-      // Oculta admin para não-admins
       if (user.email && user.email.toLowerCase() === 'explicaplantas@gmail.com') {
         document.getElementById('adminTab').style.display = 'block';
       } else {
@@ -673,7 +674,7 @@
             <h3>${p.nomePopular}</h3>
             <div class="latin">${p.nomeCientifico || ''}</div>
             <p style="margin-top:8px;">☀️ ${p.iluminacao || 'Luz adequada'}<br>💧 ${p.rega || 'Rega moderada'}</p>
-            <button class="text-link" onclick="sharePlantToCommunity('${p.nomePopular}')">Compartilhar na Comunidade ↗</button>
+            <button class="text-link" type="button" onclick="sharePlantToCommunity('${p.nomePopular}')">Compartilhar na Comunidade ↗</button>
           </div>
         </article>
       `).join('');
@@ -681,6 +682,7 @@
 
     function renderCommunityChat() {
       const container = document.getElementById('communityChatMessages');
+      if(!container) return;
       container.innerHTML = communityMessages.map(m => `
         <div class="msg-item ${currentUser && currentUser.name === m.author ? 'own' : ''}">
           <div class="msg-avatar">${m.author[0]}</div>
@@ -733,6 +735,7 @@
 
     function renderNeighborsList() {
       const container = document.getElementById('neighborsList');
+      if(!container) return;
       const db = getUsersDB();
       const available = db.filter(u => u.email !== (currentUser ? currentUser.email : ''));
 
@@ -747,7 +750,7 @@
             <strong style="font-size:.85rem; display:block;">${u.name}</strong>
             <small style="color:var(--muted); font-size:.75rem;">📍 ${u.city || 'Região'}, ${u.state || ''}</small>
           </div>
-          <button class="primary" style="padding:4px 8px; font-size:.75rem;" onclick="addNeighbor('${u.name}')">Add Vizinho</button>
+          <button class="primary" type="button" style="padding:4px 8px; font-size:.75rem;" onclick="addNeighbor('${u.name}')">Add Vizinho</button>
         </div>
       `).join('');
     }
@@ -789,7 +792,7 @@
     function addNotification(msg) {
       notifications.unshift({ id: Date.now(), text: msg, read: false });
       const badge = document.getElementById('notifBadge');
-      badge.style.display = 'block';
+      if(badge) badge.style.display = 'block';
     }
 
     function openNotifModal() {
@@ -804,7 +807,8 @@
         `).join('');
       }
       notifications.forEach(n => n.read = true);
-      document.getElementById('notifBadge').style.display = 'none';
+      const badge = document.getElementById('notifBadge');
+      if(badge) badge.style.display = 'none';
       document.getElementById('notifModal').classList.add('active');
     }
 
@@ -825,7 +829,7 @@
       showPage('inicio');
     }
 
-    // CADASTRO DE USUÁRIO - CORRIGIDO PARA LOGAR DIRETO
+    // CADASTRO DE USUÁRIO CORRIGIDO
     function handleRegisterSubmit(e) {
       e.preventDefault();
       const name = document.getElementById('regName').value.trim();
@@ -845,13 +849,13 @@
       db.push(newUser);
       saveUsersDB(db);
 
-      renderUserSession(newUser);
       authModal.classList.remove('active');
+      renderUserSession(newUser);
       showToast(`Conta criada com sucesso! Bem-vindo, ${name}!`);
       showPage('perfil');
     }
 
-    // LOGIN DE USUÁRIO - CORRIGIDO PARA LOGAR DIRETO
+    // LOGIN DE USUÁRIO CORRIGIDO
     function handleLoginSubmit(e) {
       e.preventDefault();
       const email = document.getElementById('loginEmail').value.trim().toLowerCase();
@@ -859,8 +863,8 @@
 
       if (email === 'explicaplantas@gmail.com') {
         const adminUser = { email, name: 'Administrador Explorar Plantas', termsAcceptedVersion: CURRENT_TERMS_VERSION };
-        renderUserSession(adminUser);
         authModal.classList.remove('active');
+        renderUserSession(adminUser);
         showToast('Login de Administrador efetuado!');
         showPage('admin');
         return;
@@ -874,8 +878,8 @@
         return;
       }
 
-      renderUserSession(found);
       authModal.classList.remove('active');
+      renderUserSession(found);
       showToast(`Bem-vindo de volta, ${found.name}!`);
       showPage('perfil');
     }
