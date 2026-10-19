@@ -2193,11 +2193,19 @@
         JSON.stringify(dados);
     }
 
-    const resposta =
-      await fetch(
+    let resposta;
+
+    try {
+      resposta = await fetch(
         EP_WORKER + caminho,
         opcoes
       );
+    } catch (erro) {
+      console.error("Falha de conexão com o Worker:", erro);
+      throw new Error(
+        "Não foi possível conectar ao servidor. Atualize a página e tente novamente."
+      );
+    }
 
     let resultado = {};
 
